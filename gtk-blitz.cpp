@@ -18,7 +18,7 @@ void GridCanvas::setData(
 	blitz::Array<double, 2> data[3] = { data_r, data_g, data_b };
 	const int h = data[0].shape()[0];
 	const int w = data[0].shape()[1];
-	data_h = w;
+	data_h = h;
 	data_w = w;
 
 	if(buf) {
@@ -89,10 +89,17 @@ MouseCanvas::MouseCanvas() {
 
 MouseCanvas::~MouseCanvas() { }
 
+void MouseCanvas::updateMouseCoords(int evt_x, int evt_y) {
+	Gtk::Allocation allocation = get_allocation();
+	const int aw = allocation.get_width();
+	const int ah = allocation.get_height();
+	mouse_x = evt_x * (data_w-1) / (aw-1);
+	mouse_y = evt_y * (data_h-1) / (ah-1);
+}
+
 bool MouseCanvas::on_motion_notify_event(GdkEventMotion* event) {
 	//std::cout << "Motion " << event->state << std::endl;
-	mouse_x = event->x;
-	mouse_y = event->y;
+	updateMouseCoords(event->x, event->y);
 	button1 = (event->state & Gdk::BUTTON1_MASK);
 	button2 = (event->state & Gdk::BUTTON2_MASK);
 	button3 = (event->state & Gdk::BUTTON3_MASK);
@@ -103,8 +110,7 @@ bool MouseCanvas::on_motion_notify_event(GdkEventMotion* event) {
 bool MouseCanvas::on_enter_notify_event(GdkEventCrossing* event) {
 	//std::cout << "enter_notify" << event->state << std::endl;
 	mouse_in = true;
-	mouse_x = event->x;
-	mouse_y = event->y;
+	updateMouseCoords(event->x, event->y);
 	button1 = (event->state & Gdk::BUTTON1_MASK);
 	button2 = (event->state & Gdk::BUTTON2_MASK);
 	button3 = (event->state & Gdk::BUTTON3_MASK);
@@ -123,20 +129,19 @@ bool MouseCanvas::on_leave_notify_event(GdkEventCrossing* event) {
 }
 
 bool MouseCanvas::on_button_press_event(GdkEventButton* event) {
-	mouse_x = event->x;
-	mouse_y = event->y;
+	updateMouseCoords(event->x, event->y);
 	//std::cout << "state " << event->state << "," << event->button << std::endl;
 	mouse_clicked(event->button);
 	return true;
 }
 
 void MouseCanvas::mouse_motion() {
-	std::cout
-		<< "mouse: " << mouse_in << "," << mouse_x << "," << mouse_y
-		<< " / " << button1 << "," << button2 << "," << button3
-		<< std::endl;
+//	std::cout
+//		<< "mouse: " << mouse_in << "," << mouse_x << "," << mouse_y
+//		<< " / " << button1 << "," << button2 << "," << button3
+//		<< std::endl;
 }
 
 void MouseCanvas::mouse_clicked(int button) {
-	std::cout << "click: " << button << std::endl;
+	std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << std::endl;
 }

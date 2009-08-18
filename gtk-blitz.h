@@ -36,7 +36,6 @@ public:
 
 	virtual void mouse_clicked(int button);
 
-protected:
 	virtual bool on_motion_notify_event(GdkEventMotion* event);
 
 	virtual bool on_enter_notify_event(GdkEventCrossing* event);
@@ -46,8 +45,11 @@ protected:
 	virtual bool on_button_press_event(GdkEventButton* event);
 
 	bool mouse_in;
-	double mouse_x, mouse_y;
+	int mouse_x, mouse_y;
 	bool button1, button2, button3;
+
+private:
+	virtual void updateMouseCoords(int evt_x, int evt_y);
 };
 
 #endif // GTK_BLITZ_H
