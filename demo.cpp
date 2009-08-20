@@ -10,58 +10,59 @@ class Plot1D;
 class PlotTrace {
 public:
 	PlotTrace() : 
-		npts(0),
-		xpts(0),
-		ypts(0)
+		npts(0), xpts(0), ypts(0),
+		xmin(0), xmax(1), ymin(0), ymax(1)
 	{ }
 
 	// FIXME - destructor, copy, etc
 
-	virtual void setData(double *_ypts, int _npts) {
-		if(_npts != npts) {
-			npts = _npts;
-			if(xpts) delete[] xpts;
-			if(ypts) delete[] ypts;
-			xpts = new double[npts];
-			ypts = new double[npts];
-		}
-		for(int i=0; i<npts; i++) {
-			xpts[i] = i;
-			ypts[i] = _ypts[i];
-		}
-	}
+	virtual void setXRange(double min, double max);
+	virtual void setYRange(double min, double max);
+	virtual void setData(double *_ypts, int _npts);
 
 	virtual void draw(Cairo::RefPtr<Cairo::Context>, Plot1D *parent);
 	
 	int npts;
 	double *xpts;
 	double *ypts;
+	double xmin, xmax, ymin, ymax;
 };
 
 class Plot1D : public Gtk::HBox {
 public:
 	Plot1D();
 	virtual ~Plot1D() { }
+
+	virtual void addTrace();
 	virtual void setXRange(double min, double max);
 	virtual void setYRange(double min, double max);
 	virtual bool on_expose_event(GdkEventExpose* event);
 
-	PlotTrace trace;
+	PlotTrace *trace;
 	double xmin, xmax, ymin, ymax;
 };
 
 Plot1D::Plot1D() :
+	trace(0),
 	xmin(0), xmax(1), ymin(0), ymax(1)
 { }
+
+void Plot1D::addTrace() {
+	trace = new PlotTrace();
+	trace->setXRange(xmin, xmax);
+	trace->setYRange(ymin, ymax);
+}
 
 void Plot1D::setXRange(double min, double max) {
 	xmin = min;
 	xmax = max;
+	if(trace) trace->setXRange(xmin, xmax);
 }
 
 void Plot1D::setYRange(double min, double max) {
 	ymin = min;
 	ymax = max;
+	if(trace) trace->setYRange(ymin, ymax);
 }
 
 bool Plot1D::on_expose_event(GdkEventExpose* event) {
@@ -71,9 +72,33 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 		cr->rectangle(event->area.x, event->area.y,
 			event->area.width, event->area.height);
 		cr->clip();
-		trace.draw(cr, this);
+		if(trace) trace->draw(cr, this);
 	}
 	return true;
+}
+
+void PlotTrace::setXRange(double min, double max) {
+	xmin = min;
+	xmax = max;
+}
+
+void PlotTrace::setYRange(double min, double max) {
+	ymin = min;
+	ymax = max;
+}
+
+void PlotTrace::setData(double *_ypts, int _npts) {
+	if(_npts != npts) {
+		npts = _npts;
+		if(xpts) delete[] xpts;
+		if(ypts) delete[] ypts;
+		xpts = new double[npts];
+		ypts = new double[npts];
+	}
+	for(int i=0; i<npts; i++) {
+		xpts[i] = i;
+		ypts[i] = _ypts[i];
+	}
 }
 
 void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr, Plot1D *parent) {
@@ -102,13 +127,14 @@ void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr, Plot1D *parent) {
 
 class Sinewave {
 public:
-	Sinewave(Plot1D &_hw) : hw(_hw) {
+	Sinewave(Plot1D &_hw) : plot(_hw) {
 		npts = 1000;
 		ypts = new double[npts];
 
-		hw.setXRange(0, npts-1);
-		hw.setYRange(-1, 1);
+		plot.setXRange(0, npts-1);
+		plot.setYRange(-1, 1);
 
+		plot.addTrace();
 		alpha = 0;
 
 		Glib::signal_idle().connect(
@@ -122,15 +148,15 @@ public:
 				alpha / 200.0) *
 				exp(-(i-npts/2)*(i-npts/2)/alpha);
 		}
-		hw.trace.setData(ypts, npts);
-		hw.queue_draw();
+		plot.trace->setData(ypts, npts);
+		plot.queue_draw();
 		return true;
 	}
 
-	double alpha; // FIXME
+	double alpha;
 	int npts;
 	double *ypts;
-	Plot1D &hw;
+	Plot1D &plot;
 };
 
 int main(int argc, char *argv[]) {
@@ -139,11 +165,11 @@ int main(int argc, char *argv[]) {
 	Gtk::Window win;
 	win.set_title("Test");
 
-	Plot1D test;
-	win.add(test);
-	test.show();
+	Plot1D plot;
+	win.add(plot);
+	plot.show();
 
-	Sinewave sw(test);
+	Sinewave sw(plot);
 
 	Gtk::Main::run(win);
 
