@@ -1,4 +1,4 @@
-#include "gtk-blitz.h"
+#include "gtk-blitz-gridcanvas.hpp"
 
 GridCanvas::GridCanvas() : buf(0) { }
 

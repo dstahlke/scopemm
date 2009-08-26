@@ -1,5 +1,5 @@
-#ifndef GTK_BLITZ_H
-#define GTK_BLITZ_H
+#ifndef GTK_BLITZ_GRIDCANVAS_H
+#define GTK_BLITZ_GRIDCANVAS_H
 
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/window.h>
@@ -52,4 +52,4 @@ private:
 	virtual void updateMouseCoords(int evt_x, int evt_y);
 };
 
-#endif // GTK_BLITZ_H
+#endif // GTK_BLITZ_GRIDCANVAS_H

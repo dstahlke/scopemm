@@ -1,5 +1,6 @@
 #include "gtk-blitz-lineplot.hpp"
 #include <boost/foreach.hpp>
+//#include <iostream>
 
 Plot1D::Plot1D() :
 	x_auto(true), y_auto(true),
@@ -130,12 +131,13 @@ void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {
 	size_t npts = xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
 	for(size_t i=0; i<npts; ++i) {
-		//if(i<5) {
-		//std::cout << "xpts=" << xpts[i] << std::endl;
-		//std::cout << "ypts=" << ypts[i] << std::endl;
-		//}
 		double x = (xpts[i]-xmin)/(xmax-xmin)*(w-1);
 		double y = (ymax-ypts[i])/(ymax-ymin)*(h-1);
+		//if(i<5) {
+		//	std::cout << "xpts=" << xpts[i] << std::endl;
+		//	std::cout << "ypts=" << ypts[i] << std::endl;
+		//	std::cout << "xy=" << x << "," << y << std::endl;
+		//}
 		if(!i) {
 			cr->move_to(x, y);
 		} else {

@@ -1,5 +1,5 @@
-#ifndef GTK_BLITZ_LINEPLOT
-#define GTK_BLITZ_LINEPLOT
+#ifndef GTK_BLITZ_LINEPLOT_H
+#define GTK_BLITZ_LINEPLOT_H
 
 #include <gtkmm/main.h>
 #include <gtkmm/box.h>
@@ -12,7 +12,7 @@ class PlotTrace;
 
 typedef boost::shared_ptr<PlotTrace> PlotTracePtr;
 
-class Plot1D : public Gtk::HBox {
+class Plot1D : public Gtk::DrawingArea {
 	friend class PlotTrace;
 
 public:
@@ -106,4 +106,4 @@ void PlotTrace::setXYData(T _xpts, T _ypts) {
 	setXYData(_xpts.begin(), _xpts.end(), _ypts.begin(), _ypts.end());
 }
 
-#endif // GTK_BLITZ_LINEPLOT
+#endif // GTK_BLITZ_LINEPLOT_H
