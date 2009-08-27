@@ -14,7 +14,7 @@ class PlotTrace;
 
 typedef boost::shared_ptr<PlotTrace> PlotTracePtr;
 
-class Plot1D : public Gtk::DrawingArea {
+class Plot1D : public Gtk::DrawingArea, public boost::noncopyable {
 	friend class PlotTrace;
 
 public:
@@ -26,17 +26,21 @@ public:
 	virtual void setYAutoRange();
 	virtual void setXRange(double min, double max);
 	virtual void setYRange(double min, double max);
+	virtual void setSwapAxes(bool state);
 	virtual bool on_expose_event(GdkEventExpose* event);
 	template <int N>
 	void setYData(blitz::Array<blitz::TinyVector<double, N>, 1> ydata);
+	virtual PlotTracePtr trace(int idx);
 
 private:
-	void dataChanged();
-	void recalcAutoRange();
+	virtual void dataChanged();
+	virtual void configChanged();
+	virtual void recalcAutoRange();
 
 	std::vector<PlotTracePtr> traces;
 	bool x_auto, y_auto;
 	double xmin, xmax, ymin, ymax;
+	bool swap_axes;
 };
 
 class PlotTrace : private boost::noncopyable {
@@ -53,6 +57,7 @@ public:
 	//PlotTracePtr setYAutoRange();
 	PlotTracePtr setXRange(double min, double max);
 	PlotTracePtr setYRange(double min, double max);
+	PlotTracePtr setSwapAxes(bool state);
 	PlotTracePtr setColor(double r, double g, double b);
 
 	template <class Iter>
@@ -70,6 +75,7 @@ public:
 
 private:
 	void dataChanged();
+	void configChanged();
 	
 	boost::weak_ptr<PlotTrace> selfref;
 	Plot1D *parent;
@@ -77,6 +83,7 @@ private:
 	std::vector<double> ypts;
 	//bool x_auto, y_auto;
 	double xmin, xmax, ymin, ymax;
+	bool swap_axes;
 	double rgb[3];
 };
 

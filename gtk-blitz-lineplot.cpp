@@ -1,12 +1,14 @@
 #include "gtk-blitz-lineplot.hpp"
 #include <boost/foreach.hpp>
+#include <algorithm>
 #include <iostream> // FIXME
 
 /// Plot1D ////////////////////////////////////////
 
 Plot1D::Plot1D() :
 	x_auto(true), y_auto(true),
-	xmin(0), xmax(1), ymin(0), ymax(1)
+	xmin(0), xmax(1), ymin(0), ymax(1),
+	swap_axes(false)
 { }
 
 PlotTracePtr Plot1D::addTrace() {
@@ -44,6 +46,13 @@ void Plot1D::setYRange(double min, double max) {
 	}
 }
 
+void Plot1D::setSwapAxes(bool state) {
+	swap_axes = state;
+	BOOST_FOREACH(PlotTracePtr t, traces) {
+		t->setSwapAxes(state);
+	}
+}
+
 bool Plot1D::on_expose_event(GdkEventExpose* event) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
 	if(window) {
@@ -58,7 +67,16 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 	return true;
 }
 
+PlotTracePtr Plot1D::trace(int idx) {
+	return traces[idx];
+}
+
 void Plot1D::dataChanged() {
+	recalcAutoRange();
+	queue_draw();
+}
+
+void Plot1D::configChanged() {
 	recalcAutoRange();
 	queue_draw();
 }
@@ -87,6 +105,7 @@ PlotTrace::PlotTrace(Plot1D *_parent) :
 	setColor(1, 0, 0);
 	setXRange(parent->xmin, parent->xmax);
 	setYRange(parent->ymin, parent->ymax);
+	setSwapAxes(parent->swap_axes);
 }
 
 PlotTrace::~PlotTrace() {
@@ -100,12 +119,20 @@ void PlotTrace::setSelfRef(PlotTracePtr ref) {
 PlotTracePtr PlotTrace::setXRange(double min, double max) {
 	xmin = min;
 	xmax = max;
+	configChanged();
 	return selfref.lock();
 }
 
 PlotTracePtr PlotTrace::setYRange(double min, double max) {
 	ymin = min;
 	ymax = max;
+	configChanged();
+	return selfref.lock();
+}
+
+PlotTracePtr PlotTrace::setSwapAxes(bool state) {
+	swap_axes = state;
+	configChanged();
 	return selfref.lock();
 }
 
@@ -113,11 +140,16 @@ PlotTracePtr PlotTrace::setColor(double r, double g, double b) {
 	rgb[0] = r;
 	rgb[1] = g;
 	rgb[2] = b;
+	configChanged();
 	return selfref.lock();
 }
 
 void PlotTrace::dataChanged() {
 	parent->dataChanged();
+}
+
+void PlotTrace::configChanged() {
+	parent->configChanged();
 }
 
 PlotTracePtr PlotTrace::setYData(double *_ypts, size_t _npts) {
@@ -142,8 +174,12 @@ void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {
 	size_t npts = xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
 	for(size_t i=0; i<npts; ++i) {
-		double x = (xpts[i]-xmin)/(xmax-xmin)*(w-1);
-		double y = (ymax-ypts[i])/(ymax-ymin)*(h-1);
+		double x = (xpts[i]-xmin)/(xmax-xmin);
+		double y = (ypts[i]-ymin)/(ymax-ymin);
+		if(swap_axes) std::swap(x, y);
+		y = 1.0-y;
+		x *= (w-1);
+		y *= (h-1);
 		//if(i<5) {
 		//	std::cout << "xpts=" << xpts[i] << std::endl;
 		//	std::cout << "ypts=" << ypts[i] << std::endl;
