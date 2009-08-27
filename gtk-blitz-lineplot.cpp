@@ -56,10 +56,28 @@ void Plot1D::setSwapAxes(bool state) {
 bool Plot1D::on_expose_event(GdkEventExpose* event) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
 	if(window) {
+		const int w = get_allocation().get_width();
+		const int h = get_allocation().get_height();
+
 		Cairo::RefPtr<Cairo::Context> cr = window->create_cairo_context();
 		cr->rectangle(event->area.x, event->area.y,
 			event->area.width, event->area.height);
 		cr->clip();
+
+		if(true) {// FIXME
+			cr->set_line_width(1);
+			cr->set_source_rgb(0.5, 0.5, 0.5);
+			double y = ymax/(ymax-ymin);
+			if(swap_axes) {
+				cr->move_to(y*(w-1), 0);
+				cr->line_to(y*(w-1), h);
+			} else {
+				cr->move_to(0, y*(h-1));
+				cr->line_to(w, y*(h-1));
+			}
+			cr->stroke();
+		}
+
 		BOOST_FOREACH(PlotTracePtr t, traces) {
 			t->draw(cr);
 		}
