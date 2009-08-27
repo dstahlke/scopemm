@@ -1,11 +1,20 @@
 #include "gtk-blitz-lineplot.hpp"
 #include <boost/foreach.hpp>
-//#include <iostream>
+#include <iostream> // FIXME
+
+/// Plot1D ////////////////////////////////////////
 
 Plot1D::Plot1D() :
 	x_auto(true), y_auto(true),
 	xmin(0), xmax(1), ymin(0), ymax(1)
 { }
+
+PlotTracePtr Plot1D::addTrace() {
+	PlotTracePtr trace(new PlotTrace(this));
+	trace->setSelfRef(trace);
+	traces.push_back(trace);
+	return trace;
+}
 
 void Plot1D::setXAutoRange() {
 	x_auto = true;
@@ -51,6 +60,7 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 
 void Plot1D::dataChanged() {
 	recalcAutoRange();
+	queue_draw();
 }
 
 void Plot1D::recalcAutoRange() {
@@ -69,7 +79,7 @@ void Plot1D::recalcAutoRange() {
 //	}
 }
 
-///////////////////////////////////////////
+/// PlotTrace ////////////////////////////////////////
 
 PlotTrace::PlotTrace(Plot1D *_parent) : 
 	parent(_parent)
@@ -80,44 +90,45 @@ PlotTrace::PlotTrace(Plot1D *_parent) :
 }
 
 PlotTrace::~PlotTrace() {
-	//std::cout << "PlotTrace dtor" << std::endl;
+	std::cout << "PlotTrace dtor" << std::endl;
 }
 
-PlotTracePtr Plot1D::addTrace() {
-	PlotTracePtr trace(new PlotTrace(this));
-	traces.push_back(trace);
-	return trace;
+void PlotTrace::setSelfRef(PlotTracePtr ref) {
+	selfref = ref;
 }
 
-void PlotTrace::setXRange(double min, double max) {
+PlotTracePtr PlotTrace::setXRange(double min, double max) {
 	xmin = min;
 	xmax = max;
+	return selfref.lock();
 }
 
-void PlotTrace::setYRange(double min, double max) {
+PlotTracePtr PlotTrace::setYRange(double min, double max) {
 	ymin = min;
 	ymax = max;
+	return selfref.lock();
 }
 
-void PlotTrace::setColor(double r, double g, double b) {
+PlotTracePtr PlotTrace::setColor(double r, double g, double b) {
 	rgb[0] = r;
 	rgb[1] = g;
 	rgb[2] = b;
+	return selfref.lock();
 }
 
 void PlotTrace::dataChanged() {
 	parent->dataChanged();
 }
 
-void PlotTrace::setYData(double *_ypts, size_t _npts) {
-	setYData(_ypts, _ypts+_npts);
+PlotTracePtr PlotTrace::setYData(double *_ypts, size_t _npts) {
+	return setYData(_ypts, _ypts+_npts);
 }
 
-void PlotTrace::setXYData(double *_xpts, double *_ypts, size_t _npts) {
+PlotTracePtr PlotTrace::setXYData(double *_xpts, double *_ypts, size_t _npts) {
 	if(_xpts) {
-		setXYData(_xpts, _xpts+_npts, _ypts, _ypts+_npts);
+		return setXYData(_xpts, _xpts+_npts, _ypts, _ypts+_npts);
 	} else {
-		setYData(_ypts, _ypts+_npts);
+		return setYData(_ypts, _ypts+_npts);
 	}
 }
 

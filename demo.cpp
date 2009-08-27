@@ -11,10 +11,8 @@ public:
 	{
 		plot.setYRange(-1, 1);
 
-		t1 = plot.addTrace();
-		t2 = plot.addTrace();
-		t1->setColor(1, 0, 0);
-		t2->setColor(0, 0, 1);
+		t1 = plot.addTrace()->setColor(1, 0, 0);
+		t2 = plot.addTrace()->setColor(0, 0, 1);
 		alpha = 0;
 
 		Glib::signal_idle().connect(
@@ -38,7 +36,6 @@ public:
 
 		t1->setXYData(xpts, ypts);
 		t2->setYData(ypts);
-		plot.queue_draw();
 		return true;
 	}
 
