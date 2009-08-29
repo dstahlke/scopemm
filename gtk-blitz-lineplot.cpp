@@ -249,7 +249,7 @@ void Plot1D::recalcAutoRange() {
 			double sub_min = *std::min_element(t->xpts.begin(), t->xpts.end());
 			double sub_max = *std::max_element(t->xpts.begin(), t->xpts.end());
 			if(first || sub_min < min) min = sub_min;
-			if(first || sub_max < max) max = sub_max;
+			if(first || sub_max > max) max = sub_max;
 			first = false;
 		}
 		double delta = max-min;
@@ -269,7 +269,7 @@ void Plot1D::recalcAutoRange() {
 			double sub_min = *std::min_element(t->ypts.begin(), t->ypts.end());
 			double sub_max = *std::max_element(t->ypts.begin(), t->ypts.end());
 			if(first || sub_min < min) min = sub_min;
-			if(first || sub_max < max) max = sub_max;
+			if(first || sub_max > max) max = sub_max;
 			first = false;
 		}
 		double delta = max-min;
