@@ -8,7 +8,9 @@
 Plot1D::Plot1D() :
 	x_auto(true), y_auto(true),
 	xmin(0), xmax(1), ymin(0), ymax(1),
-	swap_axes(false)
+	swap_axes(false), 
+	draw_x_axis(false), draw_y_axis(false),
+	draw_x_grid(false), draw_y_grid(false)
 { }
 
 PlotTracePtr Plot1D::addTrace() {
@@ -21,36 +23,155 @@ PlotTracePtr Plot1D::addTrace() {
 void Plot1D::setXAutoRange() {
 	x_auto = true;
 	recalcAutoRange();
+	configChanged();
 }
 
 void Plot1D::setYAutoRange() {
 	y_auto = true;
 	recalcAutoRange();
+	configChanged();
 }
 
 void Plot1D::setXRange(double min, double max) {
+	assert(min < max);
 	xmin = min;
 	xmax = max;
 	x_auto = false;
-	BOOST_FOREACH(PlotTracePtr t, traces) {
-		t->setXRange(xmin, xmax);
-	}
+	configChanged();
 }
 
 void Plot1D::setYRange(double min, double max) {
+	assert(min < max);
 	ymin = min;
 	ymax = max;
 	y_auto = false;
-	BOOST_FOREACH(PlotTracePtr t, traces) {
-		t->setYRange(ymin, ymax);
-	}
+	configChanged();
 }
 
 void Plot1D::setSwapAxes(bool state) {
 	swap_axes = state;
-	BOOST_FOREACH(PlotTracePtr t, traces) {
-		t->setSwapAxes(state);
+	configChanged();
+}
+
+void Plot1D::setDrawAxes(bool state) {
+	draw_x_axis = state;
+	draw_y_axis = state;
+	configChanged();
+}
+
+void Plot1D::setDrawXAxis(bool state) {
+	draw_x_axis = state;
+	configChanged();
+}
+
+void Plot1D::setDrawYAxis(bool state) {
+	draw_y_axis = state;
+	configChanged();
+}
+
+void Plot1D::setDrawGrids(bool state) {
+	draw_x_grid = state;
+	draw_y_grid = state;
+	configChanged();
+}
+
+void Plot1D::setDrawXGrid(bool state) {
+	draw_x_grid = state;
+	configChanged();
+}
+
+void Plot1D::setDrawYGrid(bool state) {
+	draw_y_grid = state;
+	configChanged();
+}
+
+void Plot1D::drawGrid(Cairo::RefPtr<Cairo::Context> cr) {
+	double grid_fg = 0.7;
+	double canvas_bg = 1.0;
+
+	const int w = get_allocation().get_width();
+	const int h = get_allocation().get_height();
+
+	cr->save();
+	cr->set_line_width(1);
+	cr->set_antialias(Cairo::ANTIALIAS_NONE);
+
+	if(draw_x_grid) {
+		double range = fabs(xmax-xmin);
+		double mag = log(range * 1.0) / log(10);
+
+		double frac = ceil(mag) - mag;
+		frac = frac*2.0 - 1.0;
+		if(frac > 0) {
+			double color = grid_fg*frac + canvas_bg*(1.0-frac);
+			cr->set_source_rgb(color, color, color);
+			double step = pow(10, floor(mag)-1.0);
+			// FIXME - ensure xmin<xmax
+			for(double x=step*ceil(xmin/step); x<xmax; x+=step) {
+				double x1, y1, x2, y2;
+				coordToScreen(w, h, x, ymin, x1, y1);
+				coordToScreen(w, h, x, ymax, x2, y2);
+				cr->move_to(x1, y1);
+				cr->line_to(x2, y2);
+				cr->stroke();
+			}
+		}
 	}
+
+	if(draw_y_grid) {
+		double range = fabs(ymax-ymin);
+		double mag = log(range * 1.0) / log(10);
+
+		double frac = ceil(mag) - mag;
+		frac = frac*2.0 - 1.0;
+		if(frac > 0) {
+			double color = grid_fg*frac + canvas_bg*(1.0-frac);
+			cr->set_source_rgb(color, color, color);
+			double step = pow(10, floor(mag)-1.0);
+			// FIXME - ensure xmin<xmax
+			for(double y=step*ceil(ymin/step); y<ymax; y+=step) {
+				double x1, y1, x2, y2;
+				coordToScreen(w, h, xmin, y, x1, y1);
+				coordToScreen(w, h, xmax, y, x2, y2);
+				cr->move_to(x1, y1);
+				cr->line_to(x2, y2);
+				cr->stroke();
+			}
+		}
+	}
+
+	if(draw_x_grid) {
+		double range = fabs(xmax-xmin);
+		double mag = log(range * 1.0) / log(10);
+
+		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
+		double step = pow(10, floor(mag));
+		for(double x=step*ceil(xmin/step); x<xmax; x+=step) {
+			double x1, y1, x2, y2;
+			coordToScreen(w, h, x, ymin, x1, y1);
+			coordToScreen(w, h, x, ymax, x2, y2);
+			cr->move_to(x1, y1);
+			cr->line_to(x2, y2);
+			cr->stroke();
+		}
+	}
+
+	if(draw_y_grid) {
+		double range = fabs(ymax-ymin);
+		double mag = log(range * 1.0) / log(10);
+
+		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
+		double step = pow(10, floor(mag));
+		for(double y=step*ceil(ymin/step); y<ymax; y+=step) {
+			double x1, y1, x2, y2;
+			coordToScreen(w, h, xmin, y, x1, y1);
+			coordToScreen(w, h, xmax, y, x2, y2);
+			cr->move_to(x1, y1);
+			cr->line_to(x2, y2);
+			cr->stroke();
+		}
+	}
+	cr->restore();
 }
 
 bool Plot1D::on_expose_event(GdkEventExpose* event) {
@@ -60,22 +181,43 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 		const int h = get_allocation().get_height();
 
 		Cairo::RefPtr<Cairo::Context> cr = window->create_cairo_context();
-		cr->rectangle(event->area.x, event->area.y,
-			event->area.width, event->area.height);
-		cr->clip();
+		if(event) {
+			cr->rectangle(event->area.x, event->area.y,
+				event->area.width, event->area.height);
+			cr->clip();
+		}
 
-		if(true) {// FIXME
+		cr->save();
+		cr->set_source_rgb(1, 1, 1);
+		cr->paint();
+		cr->restore();
+
+		if(draw_x_grid || draw_y_grid) {
+			drawGrid(cr);
+		}
+
+		if(draw_x_axis || draw_y_axis) {
+			cr->save();
 			cr->set_line_width(1);
-			cr->set_source_rgb(0.5, 0.5, 0.5);
-			double y = ymax/(ymax-ymin);
-			if(swap_axes) {
-				cr->move_to(y*(w-1), 0);
-				cr->line_to(y*(w-1), h);
-			} else {
-				cr->move_to(0, y*(h-1));
-				cr->line_to(w, y*(h-1));
+			cr->set_source_rgb(0.3, 0.3, 0.3);
+			cr->set_antialias(Cairo::ANTIALIAS_NONE);
+			if(draw_x_axis) {
+				double x1, y1, x2, y2;
+				coordToScreen(w, h, 0, ymin, x1, y1);
+				coordToScreen(w, h, 0, ymax, x2, y2);
+				cr->move_to(x1, y1);
+				cr->line_to(x2, y2);
+				cr->stroke();
 			}
-			cr->stroke();
+			if(draw_y_axis) {
+				double x1, y1, x2, y2;
+				coordToScreen(w, h, xmin, 0, x1, y1);
+				coordToScreen(w, h, xmax, 0, x2, y2);
+				cr->move_to(x1, y1);
+				cr->line_to(x2, y2);
+				cr->stroke();
+			}
+			cr->restore();
 		}
 
 		BOOST_FOREACH(PlotTracePtr t, traces) {
@@ -95,24 +237,50 @@ void Plot1D::dataChanged() {
 }
 
 void Plot1D::configChanged() {
-	recalcAutoRange();
 	queue_draw();
 }
 
 void Plot1D::recalcAutoRange() {
-// FIXME
-//	if(x_auto) {
-//		setXRange(
-//			*std::min_element(xpts.begin(), xpts.end()),
-//			*std::max_element(xpts.begin(), xpts.end())
-//		);
-//	}
-//	if(y_auto) {
-//		setYRange(
-//			*std::min_element(ypts.begin(), ypts.end()),
-//			*std::max_element(ypts.begin(), ypts.end())
-//		);
-//	}
+	if(x_auto) {
+		bool first = true;
+		double min=0, max=0;
+		BOOST_FOREACH(PlotTracePtr t, traces) {
+			if(t->xpts.size() == 0) continue;
+			double sub_min = *std::min_element(t->xpts.begin(), t->xpts.end());
+			double sub_max = *std::max_element(t->xpts.begin(), t->xpts.end());
+			if(first || sub_min < min) min = sub_min;
+			if(first || sub_max < max) max = sub_max;
+			first = false;
+		}
+		double delta = max-min;
+		min -= delta * 0.05;
+		max += delta * 0.05;
+		// if no traces
+		if(first) { min = 0; max = 1; }
+		if(min == max) { min -= 1; max += 1; }
+		xmin = min;
+		xmax = max;
+	}
+	if(y_auto) {
+		bool first = true;
+		double min=0, max=0;
+		BOOST_FOREACH(PlotTracePtr t, traces) {
+			if(t->ypts.size() == 0) continue;
+			double sub_min = *std::min_element(t->ypts.begin(), t->ypts.end());
+			double sub_max = *std::max_element(t->ypts.begin(), t->ypts.end());
+			if(first || sub_min < min) min = sub_min;
+			if(first || sub_max < max) max = sub_max;
+			first = false;
+		}
+		double delta = max-min;
+		min -= delta * 0.05;
+		max += delta * 0.05;
+		// if no traces
+		if(first) { min = 0; max = 1; }
+		if(min == max) { min -= 1; max += 1; }
+		ymin = min;
+		ymax = max;
+	}
 }
 
 /// PlotTrace ////////////////////////////////////////
@@ -121,9 +289,6 @@ PlotTrace::PlotTrace(Plot1D *_parent) :
 	parent(_parent)
 { 
 	setColor(1, 0, 0);
-	setXRange(parent->xmin, parent->xmax);
-	setYRange(parent->ymin, parent->ymax);
-	setSwapAxes(parent->swap_axes);
 }
 
 PlotTrace::~PlotTrace() {
@@ -134,40 +299,12 @@ void PlotTrace::setSelfRef(PlotTracePtr ref) {
 	selfref = ref;
 }
 
-PlotTracePtr PlotTrace::setXRange(double min, double max) {
-	xmin = min;
-	xmax = max;
-	configChanged();
-	return selfref.lock();
-}
-
-PlotTracePtr PlotTrace::setYRange(double min, double max) {
-	ymin = min;
-	ymax = max;
-	configChanged();
-	return selfref.lock();
-}
-
-PlotTracePtr PlotTrace::setSwapAxes(bool state) {
-	swap_axes = state;
-	configChanged();
-	return selfref.lock();
-}
-
 PlotTracePtr PlotTrace::setColor(double r, double g, double b) {
 	rgb[0] = r;
 	rgb[1] = g;
 	rgb[2] = b;
-	configChanged();
-	return selfref.lock();
-}
-
-void PlotTrace::dataChanged() {
-	parent->dataChanged();
-}
-
-void PlotTrace::configChanged() {
 	parent->configChanged();
+	return selfref.lock();
 }
 
 PlotTracePtr PlotTrace::setYData(double *_ypts, size_t _npts) {
@@ -183,11 +320,18 @@ PlotTracePtr PlotTrace::setXYData(double *_xpts, double *_ypts, size_t _npts) {
 }
 
 void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {
+	cr->save();
 	cr->set_line_width(1);
 	cr->set_source_rgb(rgb[0], rgb[1], rgb[2]);
 
 	const int w = parent->get_allocation().get_width();
 	const int h = parent->get_allocation().get_height();
+
+	const double xmin = parent->xmin;
+	const double xmax = parent->xmax;
+	const double ymin = parent->ymin;
+	const double ymax = parent->ymax;
+	const bool swap_axes = parent->swap_axes;
 
 	size_t npts = xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
@@ -210,4 +354,5 @@ void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {
 		}
 	}
 	cr->stroke();
+	cr->restore();
 }

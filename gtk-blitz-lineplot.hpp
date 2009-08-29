@@ -26,13 +26,30 @@ public:
 	virtual void setYAutoRange();
 	virtual void setXRange(double min, double max);
 	virtual void setYRange(double min, double max);
-	virtual void setSwapAxes(bool state);
+	virtual void setSwapAxes(bool state=true);
+	virtual void setDrawAxes(bool state=true);
+	virtual void setDrawXAxis(bool state=true);
+	virtual void setDrawYAxis(bool state=true);
+	virtual void setDrawGrids(bool state=true);
+	virtual void setDrawXGrid(bool state=true);
+	virtual void setDrawYGrid(bool state=true);
 	virtual bool on_expose_event(GdkEventExpose* event);
 	template <int N>
 	void setYData(blitz::Array<blitz::TinyVector<double, N>, 1> ydata);
 	virtual PlotTracePtr trace(int idx);
 
 private:
+	virtual void drawGrid(Cairo::RefPtr<Cairo::Context>);
+
+	inline void coordToScreen(int w, int h, double xi, double yi, double &xo, double &yo) {
+		double x = (xi-xmin)/(xmax-xmin);
+		double y = (yi-ymin)/(ymax-ymin);
+		if(swap_axes) std::swap(x, y);
+		y = 1.0-y;
+		xo = x * (w-1);
+		yo = y * (h-1);
+	}
+
 	virtual void dataChanged();
 	virtual void configChanged();
 	virtual void recalcAutoRange();
@@ -41,6 +58,8 @@ private:
 	bool x_auto, y_auto;
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes;
+	bool draw_x_axis, draw_y_axis;
+	bool draw_x_grid, draw_y_grid;
 };
 
 class PlotTrace : private boost::noncopyable {
@@ -53,11 +72,6 @@ class PlotTrace : private boost::noncopyable {
 public:
 	~PlotTrace();
 
-	//PlotTracePtr setXAutoRange();
-	//PlotTracePtr setYAutoRange();
-	PlotTracePtr setXRange(double min, double max);
-	PlotTracePtr setYRange(double min, double max);
-	PlotTracePtr setSwapAxes(bool state);
 	PlotTracePtr setColor(double r, double g, double b);
 
 	template <class Iter>
@@ -74,16 +88,10 @@ public:
 	void draw(Cairo::RefPtr<Cairo::Context>);
 
 private:
-	void dataChanged();
-	void configChanged();
-	
 	boost::weak_ptr<PlotTrace> selfref;
 	Plot1D *parent;
 	std::vector<double> xpts;
 	std::vector<double> ypts;
-	//bool x_auto, y_auto;
-	double xmin, xmax, ymin, ymax;
-	bool swap_axes;
 	double rgb[3];
 };
 
@@ -96,7 +104,7 @@ PlotTracePtr PlotTrace::setYData(Iter _yfirst, Iter _ylast) {
 	size_t npts = ypts.size();
 	for(size_t i=0; i<npts; ++i) xpts.push_back(i);
 
-	dataChanged();
+	parent->dataChanged();
 
 	return selfref.lock();
 }
@@ -111,7 +119,7 @@ PlotTracePtr PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter 
 
 	assert(xpts.size() == ypts.size());
 
-	dataChanged();
+	parent->dataChanged();
 
 	return selfref.lock();
 }
