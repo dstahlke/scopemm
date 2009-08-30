@@ -75,13 +75,11 @@ public:
 	PlotTracePtr setColor(double r, double g, double b);
 
 	template <class Iter>
-	PlotTracePtr setYData(Iter _yfirst, Iter _ylast);
+	PlotTracePtr setYData(Iter _yfirst, Iter _ylast, bool steps=false);
 	template <class Iter>
 	PlotTracePtr setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast);
-	PlotTracePtr setYData(double *_ypts, size_t _npts);
-	PlotTracePtr setXYData(double *_xpts, double *_ypts, size_t _npts);
 	template <class T>
-	PlotTracePtr setYData(T _ypts);
+	PlotTracePtr setYData(T _ypts, bool steps=false);
 	template <class T>
 	PlotTracePtr setXYData(T _xpts, T _ypts);
 
@@ -96,13 +94,32 @@ private:
 };
 
 template <class Iter>
-PlotTracePtr PlotTrace::setYData(Iter _yfirst, Iter _ylast) {
+PlotTracePtr PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
+	size_t npts;
 	ypts.clear();
-	ypts.insert(ypts.begin(), _yfirst, _ylast);
+	if(steps) {
+		Iter p = yfirst;
+		npts = 0;
+		while(p != ylast) {
+			ypts.push_back(*p);
+			ypts.push_back(*p);
+			++p;
+			++npts;
+		}
+	} else {
+		ypts.insert(ypts.begin(), yfirst, ylast);
+		npts = ypts.size();
+	}
 
 	xpts.clear();
-	size_t npts = ypts.size();
-	for(size_t i=0; i<npts; ++i) xpts.push_back(i);
+	if(steps) {
+		for(size_t i=0; i<npts; ++i) {
+			xpts.push_back(i);
+			xpts.push_back(i+1);
+		}
+	} else {
+		for(size_t i=0; i<npts; ++i) xpts.push_back(i);
+	}
 
 	parent->dataChanged();
 
@@ -125,8 +142,8 @@ PlotTracePtr PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter 
 }
 
 template <class T>
-PlotTracePtr PlotTrace::setYData(T _ypts) {
-	return setYData(_ypts.begin(), _ypts.end());
+PlotTracePtr PlotTrace::setYData(T _ypts, bool steps) {
+	return setYData(_ypts.begin(), _ypts.end(), steps);
 }
 
 template <class T>

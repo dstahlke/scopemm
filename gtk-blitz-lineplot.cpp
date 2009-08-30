@@ -307,18 +307,6 @@ PlotTracePtr PlotTrace::setColor(double r, double g, double b) {
 	return selfref.lock();
 }
 
-PlotTracePtr PlotTrace::setYData(double *_ypts, size_t _npts) {
-	return setYData(_ypts, _ypts+_npts);
-}
-
-PlotTracePtr PlotTrace::setXYData(double *_xpts, double *_ypts, size_t _npts) {
-	if(_xpts) {
-		return setXYData(_xpts, _xpts+_npts, _ypts, _ypts+_npts);
-	} else {
-		return setYData(_ypts, _ypts+_npts);
-	}
-}
-
 void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {
 	cr->save();
 	cr->set_line_width(1);
