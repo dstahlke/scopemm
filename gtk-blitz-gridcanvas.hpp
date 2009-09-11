@@ -11,6 +11,8 @@ public:
 
 	virtual ~GridCanvas();
 
+	void setFlipAxes(bool state=true);
+
 	void setData(blitz::Array<double, 2> data);
 
 	void setData(
@@ -24,6 +26,7 @@ protected:
 
 	guchar *buf;
 	int data_h, data_w;
+	bool flip_axes;
 };
 
 class MouseCanvas : public GridCanvas {

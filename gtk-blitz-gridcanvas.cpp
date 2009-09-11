@@ -1,9 +1,15 @@
 #include "gtk-blitz-gridcanvas.hpp"
 
-GridCanvas::GridCanvas() : buf(0) { }
+GridCanvas::GridCanvas() : 
+	buf(0)
+{ }
 
 GridCanvas::~GridCanvas() { 
 	if(buf) delete[] buf;
+}
+
+void GridCanvas::setFlipAxes(bool state) {
+	flip_axes = state;
 }
 
 void GridCanvas::setData(blitz::Array<double, 2> data) {
@@ -16,10 +22,10 @@ void GridCanvas::setData(
 	blitz::Array<double, 2> data_b
 ) {
 	blitz::Array<double, 2> data[3] = { data_r, data_g, data_b };
-	const int h = data[0].shape()[0];
-	const int w = data[0].shape()[1];
-	data_h = h;
+	const int w = data[0].shape()[flip_axes ? 0 : 1];
+	const int h = data[0].shape()[flip_axes ? 1 : 0];
 	data_w = w;
+	data_h = h;
 
 	if(buf) {
 		delete[] buf;
@@ -32,10 +38,19 @@ void GridCanvas::setData(
 		for(int band=0; band<3; band++) {
 			const double min = blitz::min(data[band]);
 			const double max = blitz::max(data[band]);
-			for(int y=0; y<data_h; y++) {
-				for(int x=0; x<data_w; x++) {
-					const int v = int(255.0 * (data[band](y,x)-min) / (max-min));
-					buf[(y*data_w + x)*3 + band] = v;
+			if(flip_axes) {
+				for(int y=0; y<data_h; y++) {
+					for(int x=0; x<data_w; x++) {
+						const int v = int(255.0 * (data[band](x,y)-min) / (max-min));
+						buf[(y*data_w + x)*3 + band] = v;
+					}
+				}
+			} else {
+				for(int y=0; y<data_h; y++) {
+					for(int x=0; x<data_w; x++) {
+						const int v = int(255.0 * (data[band](y,x)-min) / (max-min));
+						buf[(y*data_w + x)*3 + band] = v;
+					}
 				}
 			}
 		}
