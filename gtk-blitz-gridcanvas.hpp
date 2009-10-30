@@ -24,7 +24,7 @@ public:
 protected:
 	virtual bool on_expose_event(GdkEventExpose* event);
 
-	guchar *buf;
+	std::vector<guchar> buf;
 	int data_h, data_w;
 	bool flip_axes;
 };
@@ -34,6 +34,10 @@ public:
 	MouseCanvas();
 
 	virtual ~MouseCanvas();
+
+	void screenToGrid(double sx, double sy, double &tx, double &ty);
+
+	void gridToScreen(double tx, double ty, double &sx, double &sy);
 
 	virtual void mouse_motion();
 
@@ -48,7 +52,7 @@ public:
 	virtual bool on_button_press_event(GdkEventButton* event);
 
 	bool mouse_in;
-	int mouse_x, mouse_y;
+	double mouse_x, mouse_y;
 	bool button1, button2, button3;
 
 private:

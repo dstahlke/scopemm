@@ -1,12 +1,8 @@
 #include "gtk-blitz-gridcanvas.hpp"
 
-GridCanvas::GridCanvas() : 
-	buf(0)
-{ }
+GridCanvas::GridCanvas() { }
 
-GridCanvas::~GridCanvas() { 
-	if(buf) delete[] buf;
-}
+GridCanvas::~GridCanvas() { }
 
 void GridCanvas::setFlipAxes(bool state) {
 	flip_axes = state;
@@ -27,13 +23,8 @@ void GridCanvas::setData(
 	data_w = w;
 	data_h = h;
 
-	if(buf) {
-		delete[] buf;
-		buf = 0;
-	}
-
 	if(h>0 && w>0) {
-		buf = new guchar[h*w*3];
+		buf.resize(h*w*3);
 
 		for(int band=0; band<3; band++) {
 			const double min = blitz::min(data[band]);
@@ -59,15 +50,15 @@ void GridCanvas::setData(
 	queue_draw();
 }
 
-bool GridCanvas::on_expose_event(GdkEventExpose* event) {
+bool GridCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) ) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
-	if(window && buf) {
+	if(window && buf.size()) {
 		Gtk::Allocation allocation = get_allocation();
 		const int width = allocation.get_width();
 		const int height = allocation.get_height();
 
 		// FIXME - only needed if sizes don't match
-		guchar *buf2 = new guchar[height*width*3];
+		std::vector<guchar> buf2(height*width*3);
 		for(int y=0; y<height; y++) {
 			const int j = y * (data_h-1) / (height-1);
 			for(int x=0; x<width; x++) {
@@ -83,10 +74,8 @@ bool GridCanvas::on_expose_event(GdkEventExpose* event) {
 			get_style()->get_fg_gc(Gtk::STATE_NORMAL),
 			0, 0, width, height,
 			Gdk::RGB_DITHER_NONE,
-			buf2, width*3
+			&buf2[0], width*3
 		);
-
-		delete[] buf2;
 	}
 	return true;
 }
@@ -104,12 +93,24 @@ MouseCanvas::MouseCanvas() {
 
 MouseCanvas::~MouseCanvas() { }
 
-void MouseCanvas::updateMouseCoords(int evt_x, int evt_y) {
+void MouseCanvas::screenToGrid(double sx, double sy, double &tx, double &ty) {
 	Gtk::Allocation allocation = get_allocation();
 	const int aw = allocation.get_width();
 	const int ah = allocation.get_height();
-	mouse_x = evt_x * (data_w-1) / (aw-1);
-	mouse_y = evt_y * (data_h-1) / (ah-1);
+	tx = sx * (data_w-1) / (aw-1);
+	ty = sy * (data_h-1) / (ah-1);
+}
+
+void MouseCanvas::gridToScreen(double tx, double ty, double &sx, double &sy) {
+	Gtk::Allocation allocation = get_allocation();
+	const int aw = allocation.get_width();
+	const int ah = allocation.get_height();
+	sx = tx * (aw-1) / (data_w-1);
+	sy = ty * (ah-1) / (data_h-1);
+}
+
+void MouseCanvas::updateMouseCoords(int evt_x, int evt_y) {
+	screenToGrid(evt_x, evt_y, mouse_x, mouse_y);
 }
 
 bool MouseCanvas::on_motion_notify_event(GdkEventMotion* event) {
