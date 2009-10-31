@@ -1,6 +1,8 @@
 #include "gtk-blitz-gridcanvas.hpp"
 
-GridCanvas::GridCanvas() { }
+GridCanvas::GridCanvas() : 
+	flip_axes(false)
+{ }
 
 GridCanvas::~GridCanvas() { }
 
