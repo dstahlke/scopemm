@@ -15,7 +15,6 @@ Plot1D::Plot1D() :
 
 PlotTracePtr Plot1D::addTrace() {
 	PlotTracePtr trace(new PlotTrace(this));
-	trace->setSelfRef(trace);
 	traces.push_back(trace);
 	return trace;
 }
@@ -292,19 +291,14 @@ PlotTrace::PlotTrace(Plot1D *_parent) :
 }
 
 PlotTrace::~PlotTrace() {
-	std::cout << "PlotTrace dtor" << std::endl;
 }
 
-void PlotTrace::setSelfRef(PlotTracePtr ref) {
-	selfref = ref;
-}
-
-PlotTracePtr PlotTrace::setColor(double r, double g, double b) {
+PlotTrace& PlotTrace::setColor(double r, double g, double b) {
 	rgb[0] = r;
 	rgb[1] = g;
 	rgb[2] = b;
 	parent->configChanged();
-	return selfref.lock();
+	return *this;
 }
 
 void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {

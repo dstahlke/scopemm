@@ -67,26 +67,23 @@ class PlotTrace : private boost::noncopyable {
 
 	PlotTrace(Plot1D *_parent);
 
-	void setSelfRef(PlotTracePtr ref);
-
 public:
 	~PlotTrace();
 
-	PlotTracePtr setColor(double r, double g, double b);
+	PlotTrace& setColor(double r, double g, double b);
 
 	template <class Iter>
-	PlotTracePtr setYData(Iter _yfirst, Iter _ylast, bool steps=false);
+	PlotTrace& setYData(Iter _yfirst, Iter _ylast, bool steps=false);
 	template <class Iter>
-	PlotTracePtr setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast);
+	PlotTrace& setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast);
 	template <class T>
-	PlotTracePtr setYData(T _ypts, bool steps=false);
+	PlotTrace& setYData(T _ypts, bool steps=false);
 	template <class T>
-	PlotTracePtr setXYData(T _xpts, T _ypts);
+	PlotTrace& setXYData(T _xpts, T _ypts);
 
 	void draw(Cairo::RefPtr<Cairo::Context>);
 
 private:
-	boost::weak_ptr<PlotTrace> selfref;
 	Plot1D *parent;
 	std::vector<double> xpts;
 	std::vector<double> ypts;
@@ -94,7 +91,7 @@ private:
 };
 
 template <class Iter>
-PlotTracePtr PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
+PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 	size_t npts;
 	ypts.clear();
 	if(steps) {
@@ -123,11 +120,11 @@ PlotTracePtr PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 
 	parent->dataChanged();
 
-	return selfref.lock();
+	return *this;
 }
 
 template <class Iter>
-PlotTracePtr PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast) {
+PlotTrace& PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast) {
 	ypts.clear();
 	ypts.insert(ypts.begin(), _yfirst, _ylast);
 
@@ -138,16 +135,16 @@ PlotTracePtr PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter 
 
 	parent->dataChanged();
 
-	return selfref.lock();
+	return *this;
 }
 
 template <class T>
-PlotTracePtr PlotTrace::setYData(T _ypts, bool steps) {
+PlotTrace& PlotTrace::setYData(T _ypts, bool steps) {
 	return setYData(_ypts.begin(), _ypts.end(), steps);
 }
 
 template <class T>
-PlotTracePtr PlotTrace::setXYData(T _xpts, T _ypts) {
+PlotTrace& PlotTrace::setXYData(T _xpts, T _ypts) {
 	return setXYData(_xpts.begin(), _xpts.end(), _ypts.begin(), _ypts.end());
 }
 

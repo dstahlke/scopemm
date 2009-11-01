@@ -17,8 +17,10 @@ public:
 		plot.setDrawAxes();
 		plot.setDrawGrids();
 
-		t1 = plot.addTrace()->setColor(1, 0, 0);
-		t2 = plot.addTrace()->setColor(0, 0, 1);
+		(t1 = plot.addTrace())->
+			setColor(1, 0, 0);
+		(t2 = plot.addTrace())->
+			setColor(0, 0, 1);
 		alpha = 0;
 
 		Glib::signal_idle().connect(
