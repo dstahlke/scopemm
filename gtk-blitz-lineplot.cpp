@@ -1,4 +1,4 @@
-#include "gtk-blitz-lineplot.hpp"
+#include "gtk-blitz-lineplot.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
 #include <iostream> // FIXME
