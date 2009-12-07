@@ -1,6 +1,8 @@
 #ifndef GTK_BLITZ_GRIDCANVAS_H
 #define GTK_BLITZ_GRIDCANVAS_H
 
+#include <vector>
+
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/window.h>
 #include <blitz/array.h>
@@ -35,9 +37,9 @@ public:
 
 	virtual ~MouseCanvas();
 
-	void screenToGrid(double sx, double sy, double &tx, double &ty);
+	void screenToGrid(double sx, double sy, double *tx, double *ty);
 
-	void gridToScreen(double tx, double ty, double &sx, double &sy);
+	void gridToScreen(double tx, double ty, double *sx, double *sy);
 
 	virtual void mouse_motion();
 
