@@ -12,8 +12,6 @@
 class Plot1D;
 class PlotTrace;
 
-typedef boost::shared_ptr<PlotTrace> PlotTracePtr;
-
 class Plot1D : public Gtk::DrawingArea, public boost::noncopyable {
 	friend class PlotTrace;
 
@@ -21,7 +19,7 @@ public:
 	Plot1D();
 	virtual ~Plot1D() { }
 
-	virtual PlotTracePtr addTrace();
+	virtual PlotTrace addTrace();
 	virtual void setXAutoRange();
 	virtual void setYAutoRange();
 	virtual void setXRange(double min, double max);
@@ -34,7 +32,8 @@ public:
 	virtual void setDrawXGrid(bool state=true);
 	virtual void setDrawYGrid(bool state=true);
 	virtual bool on_expose_event(GdkEventExpose* event);
-	virtual PlotTracePtr trace(int idx) const;
+	virtual const PlotTrace &trace(int idx) const;
+	virtual PlotTrace &trace(int idx);
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T, int N>
@@ -63,7 +62,7 @@ private:
 	virtual void configChanged();
 	virtual void recalcAutoRange();
 
-	std::vector<PlotTracePtr> traces;
+	std::vector<PlotTrace> traces;
 	bool x_auto, y_auto;
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes;
@@ -71,12 +70,28 @@ private:
 	bool draw_x_grid, draw_y_grid;
 };
 
-class PlotTrace : private boost::noncopyable {
+class PlotTraceImpl : private boost::noncopyable {
+	friend class Plot1D;
+	friend class PlotTrace;
+
+private:
+	PlotTraceImpl(Plot1D *_parent);
+
+	Plot1D *parent;
+	std::vector<double> xpts;
+	std::vector<double> ypts;
+	double rgb[3];
+};
+
+class PlotTrace {
 	friend class Plot1D;
 
-	PlotTrace(Plot1D *_parent);
+public:
+	PlotTrace();
 
 public:
+	PlotTrace(Plot1D *_parent);
+
 	~PlotTrace();
 
 	PlotTrace& setColor(double r, double g, double b);
@@ -94,77 +109,75 @@ public:
 	template <class T>
 	PlotTrace& setYData(blitz::Array<T, 1> ydata, bool steps=false);
 	template <class T>
-	PlotTrace& setXYData(blitz::Array<T, 1> xdata, blitz::Array<double, 1> ydata);
+	PlotTrace& setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata);
 #endif // SCOPEMM_ENABLE_BLITZ
 
 	void draw(Cairo::RefPtr<Cairo::Context>);
 
 private:
-	Plot1D *parent;
-	std::vector<double> xpts;
-	std::vector<double> ypts;
-	double rgb[3];
+	boost::shared_ptr<PlotTraceImpl> impl;
 };
 
 template <class Iter>
 PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 	size_t npts;
-	ypts.clear();
+	impl->ypts.clear();
 	if(steps) {
 		Iter p = yfirst;
 		npts = 0;
 		while(p != ylast) {
-			ypts.push_back(*p);
-			ypts.push_back(*p);
+			impl->ypts.push_back(*p);
+			impl->ypts.push_back(*p);
 			++p;
 			++npts;
 		}
 	} else {
-		ypts.insert(ypts.begin(), yfirst, ylast);
-		npts = ypts.size();
+		impl->ypts.insert(impl->ypts.begin(), yfirst, ylast);
+		npts = impl->ypts.size();
 	}
 
-	xpts.clear();
+	impl->xpts.clear();
 	if(steps) {
 		for(size_t i=0; i<npts; ++i) {
-			xpts.push_back(i);
-			xpts.push_back(i+1);
+			impl->xpts.push_back(i);
+			impl->xpts.push_back(i+1);
 		}
 	} else {
-		for(size_t i=0; i<npts; ++i) xpts.push_back(i);
+		for(size_t i=0; i<npts; ++i) impl->xpts.push_back(i);
 	}
 
-	parent->dataChanged();
+	impl->parent->dataChanged();
 
 	return *this;
 }
 
 template <class IterX, class IterY>
 PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast) {
-	xpts.clear();
-	xpts.insert(xpts.begin(), xfirst, xlast);
+	// FIXME - use assign
+	impl->xpts.clear();
+	impl->xpts.insert(impl->xpts.begin(), xfirst, xlast);
 
-	ypts.clear();
-	ypts.insert(ypts.begin(), yfirst, ylast);
+	impl->ypts.clear();
+	impl->ypts.insert(impl->ypts.begin(), yfirst, ylast);
 
-	assert(xpts.size() == ypts.size());
+	assert(impl->xpts.size() == impl->ypts.size());
 
-	parent->dataChanged();
+	impl->parent->dataChanged();
 
 	return *this;
 }
 
 template <class Iter>
 PlotTrace& PlotTrace::setXYData(Iter xyfirst, Iter xylast) {
-	xpts.clear();
-	ypts.clear();
+	impl->xpts.clear();
+	impl->ypts.clear();
 
 	for(Iter p=xyfirst; p!=xylast; ++p) {
-		xpts.push_back(p->first);
-		ypts.push_back(p->second);
+		impl->xpts.push_back(p->first);
+		impl->ypts.push_back(p->second);
 	}
 
-	parent->dataChanged();
+	impl->parent->dataChanged();
 
 	return *this;
 }
@@ -176,15 +189,18 @@ PlotTrace& PlotTrace::setYData(blitz::Array<T, 1> ydata, bool steps) {
 }
 
 template <class T>
-PlotTrace& PlotTrace::setXYData(blitz::Array<T, 1> xdata, blitz::Array<double, 1> ydata) {
-	return setXYData(xdata.begin(), xdata.end(), ydata.begin(), ydata.end());
+PlotTrace& PlotTrace::setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata) {
+	return setXYData(
+		xydata[0].begin(), xydata[0].end(), 
+		xydata[1].begin(), xydata[1].end()
+	);
 }
 
 template <class T, int N>
 void Plot1D::setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata) {
 	assert(N == traces.size());
 	for(int i=0; i<N; i++) {
-		traces[i]->setYData(ydata[i]);
+		traces[i].setYData(ydata[i]);
 	}
 }
 #endif // SCOPEMM_ENABLE_BLITZ

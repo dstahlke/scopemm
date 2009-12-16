@@ -12,8 +12,8 @@ Plot1D::Plot1D() :
 	draw_x_grid(false), draw_y_grid(false)
 { }
 
-PlotTracePtr Plot1D::addTrace() {
-	PlotTracePtr trace(new PlotTrace(this));
+PlotTrace Plot1D::addTrace() {
+	PlotTrace trace(this);
 	traces.push_back(trace);
 	return trace;
 }
@@ -205,14 +205,18 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 			cr->restore();
 		}
 
-		BOOST_FOREACH(PlotTracePtr t, traces) {
-			t->draw(cr);
+		BOOST_FOREACH(PlotTrace &t, traces) {
+			t.draw(cr);
 		}
 	}
 	return true;
 }
 
-PlotTracePtr Plot1D::trace(int idx) const {
+const PlotTrace &Plot1D::trace(int idx) const {
+	return traces[idx];
+}
+
+PlotTrace &Plot1D::trace(int idx) {
 	return traces[idx];
 }
 
@@ -229,10 +233,10 @@ void Plot1D::recalcAutoRange() {
 	if(x_auto) {
 		bool first = true;
 		double min=0, max=0;
-		BOOST_FOREACH(PlotTracePtr t, traces) {
-			if(t->xpts.size() == 0) continue;
-			double sub_min = *std::min_element(t->xpts.begin(), t->xpts.end());
-			double sub_max = *std::max_element(t->xpts.begin(), t->xpts.end());
+		BOOST_FOREACH(PlotTrace &t, traces) {
+			if(t.impl->xpts.size() == 0) continue;
+			double sub_min = *std::min_element(t.impl->xpts.begin(), t.impl->xpts.end());
+			double sub_max = *std::max_element(t.impl->xpts.begin(), t.impl->xpts.end());
 			if(first || sub_min < min) min = sub_min;
 			if(first || sub_max > max) max = sub_max;
 			first = false;
@@ -249,10 +253,10 @@ void Plot1D::recalcAutoRange() {
 	if(y_auto) {
 		bool first = true;
 		double min=0, max=0;
-		BOOST_FOREACH(PlotTracePtr t, traces) {
-			if(t->ypts.size() == 0) continue;
-			double sub_min = *std::min_element(t->ypts.begin(), t->ypts.end());
-			double sub_max = *std::max_element(t->ypts.begin(), t->ypts.end());
+		BOOST_FOREACH(PlotTrace &t, traces) {
+			if(t.impl->ypts.size() == 0) continue;
+			double sub_min = *std::min_element(t.impl->ypts.begin(), t.impl->ypts.end());
+			double sub_max = *std::max_element(t.impl->ypts.begin(), t.impl->ypts.end());
 			if(first || sub_min < min) min = sub_min;
 			if(first || sub_max > max) max = sub_max;
 			first = false;
@@ -270,8 +274,14 @@ void Plot1D::recalcAutoRange() {
 
 /// PlotTrace ////////////////////////////////////////
 
-PlotTrace::PlotTrace(Plot1D *_parent) : 
+PlotTraceImpl::PlotTraceImpl(Plot1D *_parent) :
 	parent(_parent)
+{ }
+
+PlotTrace::PlotTrace() { }
+
+PlotTrace::PlotTrace(Plot1D *_parent) : 
+	impl(new PlotTraceImpl(_parent))
 { 
 	setColor(1, 0, 0);
 }
@@ -280,39 +290,39 @@ PlotTrace::~PlotTrace() {
 }
 
 PlotTrace& PlotTrace::setColor(double r, double g, double b) {
-	rgb[0] = r;
-	rgb[1] = g;
-	rgb[2] = b;
-	parent->configChanged();
+	impl->rgb[0] = r;
+	impl->rgb[1] = g;
+	impl->rgb[2] = b;
+	impl->parent->configChanged();
 	return *this;
 }
 
 void PlotTrace::draw(Cairo::RefPtr<Cairo::Context> cr) {
 	cr->save();
 	cr->set_line_width(1);
-	cr->set_source_rgb(rgb[0], rgb[1], rgb[2]);
+	cr->set_source_rgb(impl->rgb[0], impl->rgb[1], impl->rgb[2]);
 
-	const int w = parent->get_allocation().get_width();
-	const int h = parent->get_allocation().get_height();
+	const int w = impl->parent->get_allocation().get_width();
+	const int h = impl->parent->get_allocation().get_height();
 
-	const double xmin = parent->xmin;
-	const double xmax = parent->xmax;
-	const double ymin = parent->ymin;
-	const double ymax = parent->ymax;
-	const bool swap_axes = parent->swap_axes;
+	const double xmin = impl->parent->xmin;
+	const double xmax = impl->parent->xmax;
+	const double ymin = impl->parent->ymin;
+	const double ymax = impl->parent->ymax;
+	const bool swap_axes = impl->parent->swap_axes;
 
-	size_t npts = xpts.size();
+	size_t npts = impl->xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
 	for(size_t i=0; i<npts; ++i) {
-		double x = (xpts[i]-xmin)/(xmax-xmin);
-		double y = (ypts[i]-ymin)/(ymax-ymin);
+		double x = (impl->xpts[i]-xmin)/(xmax-xmin);
+		double y = (impl->ypts[i]-ymin)/(ymax-ymin);
 		if(swap_axes) std::swap(x, y);
 		y = 1.0-y;
 		x *= (w-1);
 		y *= (h-1);
 		//if(i<5) {
-		//	std::cout << "xpts=" << xpts[i] << std::endl;
-		//	std::cout << "ypts=" << ypts[i] << std::endl;
+		//	std::cout << "xpts=" << impl->xpts[i] << std::endl;
+		//	std::cout << "ypts=" << impl->ypts[i] << std::endl;
 		//	std::cout << "xy=" << x << "," << y << std::endl;
 		//}
 		if(!i) {

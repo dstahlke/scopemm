@@ -17,9 +17,9 @@ public:
 		plot.setDrawAxes();
 		plot.setDrawGrids();
 
-		(t1 = plot.addTrace())->setColor(1, 0, 0);
-		(t2 = plot.addTrace())->setColor(0, 1, 0);
-		(t3 = plot.addTrace())->setColor(0, 0, 1);
+		t1 = plot.addTrace().setColor(1, 0, 0);
+		t2 = plot.addTrace().setColor(0, 1, 0);
+		t3 = plot.addTrace().setColor(0, 0, 1);
 
 		alpha = 0;
 
@@ -37,6 +37,7 @@ public:
 		blitz::Array<double, 1> xpts(npts);
 		blitz::Array<double, 1> ypts(npts);
 		blitz::Array<double, 1> zpts(npts);
+		blitz::Array<blitz::TinyVector<double, 2>, 1> xypts(npts);
 		blitz::firstIndex i;
 
 		xpts = cos(10.0 * 2.0 * 3.14159 * (i-npts/2) / npts + alpha / 200.0) *
@@ -45,12 +46,14 @@ public:
 		ypts = sin(10.0 * 2.0 * 3.14159 * (i-npts/2) / npts + alpha / 200.0) *
 			exp(-(i-npts/2)*(i-npts/2)/alpha) * scale;
 
-		t1->setXYData(xpts, ypts);
-
 		zpts = 2.0 * (i-npts/2) / (double)npts * scale;
 
-		t2->setXYData(xpts, zpts);
-		t3->setXYData(zpts, ypts);
+		xypts[0] = xpts;
+		xypts[1] = ypts;
+
+		t1.setXYData(xypts);
+		t2.setXYData(xpts.begin(), xpts.end(), zpts.begin(), zpts.end());
+		t2.setXYData(zpts.begin(), zpts.end(), ypts.begin(), ypts.end());
 
 		plot.setXRange(-scale, scale);
 		plot.setYRange(-scale, scale);
@@ -60,9 +63,9 @@ public:
 
 	double alpha;
 	Plot1D &plot;
-	PlotTracePtr t1;
-	PlotTracePtr t2;
-	PlotTracePtr t3;
+	PlotTrace t1;
+	PlotTrace t2;
+	PlotTrace t3;
 };
 
 int main(int argc, char *argv[]) {

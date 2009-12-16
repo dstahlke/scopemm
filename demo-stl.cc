@@ -15,9 +15,9 @@ public:
 		plot.setDrawAxes();
 		plot.setDrawGrids();
 
-		(t1 = plot.addTrace())->setColor(1, 0, 0);
-		(t2 = plot.addTrace())->setColor(0, 1, 0);
-		(t3 = plot.addTrace())->setColor(0, 0, 1);
+		t1 = plot.addTrace().setColor(1, 0, 0);
+		t2 = plot.addTrace().setColor(0, 1, 0);
+		t3 = plot.addTrace().setColor(0, 0, 1);
 
 		alpha = 0;
 
@@ -52,9 +52,9 @@ public:
 			xypts.push_back(std::pair<double, double>(x, y));
 		}
 
-		t1->setXYData(xypts.begin(), xypts.end());
-		t2->setXYData(xpts.begin(), xpts.end(), zpts.begin(), zpts.end());
-		t3->setXYData(zpts.begin(), zpts.end(), ypts.begin(), ypts.end());
+		t1.setXYData(xypts.begin(), xypts.end());
+		t2.setXYData(xpts.begin(), xpts.end(), zpts.begin(), zpts.end());
+		t3.setXYData(zpts.begin(), zpts.end(), ypts.begin(), ypts.end());
 
 		plot.setXRange(-scale, scale);
 		plot.setYRange(-scale, scale);
@@ -64,9 +64,9 @@ public:
 
 	double alpha;
 	Plot1D &plot;
-	PlotTracePtr t1;
-	PlotTracePtr t2;
-	PlotTracePtr t3;
+	PlotTrace t1;
+	PlotTrace t2;
+	PlotTrace t3;
 };
 
 int main(int argc, char *argv[]) {

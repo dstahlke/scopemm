@@ -1,5 +1,5 @@
-#CPPFLAGS += -g -DBZ_DEBUG -O0
-CPPFLAGS += -g -O2
+CPPFLAGS += -g -DBZ_DEBUG -O0
+#CPPFLAGS += -g -O2
 
 CPPFLAGS += -Wall -I. `pkg-config blitz gtkmm-2.4 --cflags`
 

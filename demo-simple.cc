@@ -16,10 +16,10 @@ int main(int argc, char *argv[]) {
 	plot.setDrawAxes(true);
 	plot.setDrawGrids(true);
 
-	PlotTracePtr t1 = plot.addTrace();
-	PlotTracePtr t2 = plot.addTrace();
-	t1->setColor(1, 0, 0);
-	t2->setColor(0, 1, 0);
+	PlotTrace t1 = plot.addTrace();
+	PlotTrace t2 = plot.addTrace();
+	t1.setColor(1, 0, 0);
+	t2.setColor(0, 1, 0);
 
 	const int nsamps = 100;
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 		double theta = double(i) / nsamps * 2.0 * M_PI;
 		ypts.push_back(sin(theta));
 	}
-	t1->setYData(ypts.begin(), ypts.end());
+	t1.setYData(ypts.begin(), ypts.end());
 
 	std::vector<float> xpts;
 	ypts.clear();
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 		xpts.push_back(cos(theta) * nsamps);
 		ypts.push_back(sin(theta));
 	}
-	t2->setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+	t2.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
 
 	win.add(plot);
 	plot.show();
