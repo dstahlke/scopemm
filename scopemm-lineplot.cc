@@ -1,7 +1,6 @@
 #include "scopemm-lineplot.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
-#include <iostream> // FIXME
 
 /// Plot1D ////////////////////////////////////////
 
@@ -84,92 +83,79 @@ void Plot1D::setDrawYGrid(bool state) {
 	configChanged();
 }
 
-void Plot1D::drawGrid(Cairo::RefPtr<Cairo::Context> cr) {
-	double grid_fg = 0.7;
-	double canvas_bg = 1.0;
+void Plot1D::drawStripes(
+	const Cairo::RefPtr<Cairo::Context> &cr,
+	double from, double to, double step,
+	bool horiz
+) const {
+	if(from > to) std::swap(from, to);
 
 	const int w = get_allocation().get_width();
 	const int h = get_allocation().get_height();
+
+	for(double p=from; p<=to; p+=step) {
+		double x1, y1, x2, y2;
+		coordToScreen(w, h, horiz ? p : xmin, horiz ? ymin : p, x1, y1);
+		coordToScreen(w, h, horiz ? p : xmax, horiz ? ymax : p, x2, y2);
+		cr->move_to(x1, y1);
+		cr->line_to(x2, y2);
+	}
+
+	cr->stroke();
+}
+
+static double rangeMagnitude(double span) {
+	return log(fabs(span) * 1.0) / log(10);
+}
+
+void Plot1D::drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const {
+	double grid_fg = 0.7;
+	double canvas_bg = 1.0;
 
 	cr->save();
 	cr->set_line_width(1);
 	cr->set_antialias(Cairo::ANTIALIAS_NONE);
 
 	if(draw_x_grid) {
-		double range = fabs(xmax-xmin);
-		double mag = log(range * 1.0) / log(10);
-
+		double mag = rangeMagnitude(xmax-xmin);
 		double frac = ceil(mag) - mag;
 		frac = frac*2.0 - 1.0;
 		if(frac > 0) {
 			double color = grid_fg*frac + canvas_bg*(1.0-frac);
 			cr->set_source_rgb(color, color, color);
 			double step = pow(10, floor(mag)-1.0);
-			// FIXME - ensure xmin<xmax
-			for(double x=step*ceil(xmin/step); x<xmax; x+=step) {
-				double x1, y1, x2, y2;
-				coordToScreen(w, h, x, ymin, x1, y1);
-				coordToScreen(w, h, x, ymax, x2, y2);
-				cr->move_to(x1, y1);
-				cr->line_to(x2, y2);
-				cr->stroke();
-			}
+			drawStripes(cr, step*ceil(xmin/step), xmax, step, true);
 		}
 	}
 
 	if(draw_y_grid) {
-		double range = fabs(ymax-ymin);
-		double mag = log(range * 1.0) / log(10);
-
+		double mag = rangeMagnitude(ymax-ymin);
 		double frac = ceil(mag) - mag;
 		frac = frac*2.0 - 1.0;
 		if(frac > 0) {
 			double color = grid_fg*frac + canvas_bg*(1.0-frac);
 			cr->set_source_rgb(color, color, color);
 			double step = pow(10, floor(mag)-1.0);
-			// FIXME - ensure xmin<xmax
-			for(double y=step*ceil(ymin/step); y<ymax; y+=step) {
-				double x1, y1, x2, y2;
-				coordToScreen(w, h, xmin, y, x1, y1);
-				coordToScreen(w, h, xmax, y, x2, y2);
-				cr->move_to(x1, y1);
-				cr->line_to(x2, y2);
-				cr->stroke();
-			}
+			drawStripes(cr, step*ceil(ymin/step), ymax, step, false);
 		}
 	}
 
 	if(draw_x_grid) {
-		double range = fabs(xmax-xmin);
-		double mag = log(range * 1.0) / log(10);
+		double mag = rangeMagnitude(xmax-xmin);
 
 		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
 		double step = pow(10, floor(mag));
-		for(double x=step*ceil(xmin/step); x<xmax; x+=step) {
-			double x1, y1, x2, y2;
-			coordToScreen(w, h, x, ymin, x1, y1);
-			coordToScreen(w, h, x, ymax, x2, y2);
-			cr->move_to(x1, y1);
-			cr->line_to(x2, y2);
-			cr->stroke();
-		}
+		drawStripes(cr, step*ceil(xmin/step), xmax, step, true);
 	}
 
 	if(draw_y_grid) {
-		double range = fabs(ymax-ymin);
-		double mag = log(range * 1.0) / log(10);
+		double mag = rangeMagnitude(ymax-ymin);
 
 		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
 		double step = pow(10, floor(mag));
-		for(double y=step*ceil(ymin/step); y<ymax; y+=step) {
-			double x1, y1, x2, y2;
-			coordToScreen(w, h, xmin, y, x1, y1);
-			coordToScreen(w, h, xmax, y, x2, y2);
-			cr->move_to(x1, y1);
-			cr->line_to(x2, y2);
-			cr->stroke();
-		}
+		drawStripes(cr, step*ceil(ymin/step), ymax, step, false);
 	}
+
 	cr->restore();
 }
 
@@ -226,7 +212,7 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 	return true;
 }
 
-PlotTracePtr Plot1D::trace(int idx) {
+PlotTracePtr Plot1D::trace(int idx) const {
 	return traces[idx];
 }
 

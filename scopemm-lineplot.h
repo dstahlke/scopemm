@@ -36,12 +36,18 @@ public:
 	virtual bool on_expose_event(GdkEventExpose* event);
 	template <int N>
 	void setYData(blitz::Array<blitz::TinyVector<double, N>, 1> ydata);
-	virtual PlotTracePtr trace(int idx);
+	virtual PlotTracePtr trace(int idx) const;
 
 private:
-	virtual void drawGrid(Cairo::RefPtr<Cairo::Context>);
+	virtual void drawStripes(
+		const Cairo::RefPtr<Cairo::Context> &cr,
+		double from, double to, double step,
+		bool horiz
+	) const;
 
-	inline void coordToScreen(int w, int h, double xi, double yi, double &xo, double &yo) {
+	virtual void drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const;
+
+	inline void coordToScreen(int w, int h, double xi, double yi, double &xo, double &yo) const {
 		double x = (xi-xmin)/(xmax-xmin);
 		double y = (yi-ymin)/(ymax-ymin);
 		if(swap_axes) std::swap(x, y);
