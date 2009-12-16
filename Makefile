@@ -1,16 +1,19 @@
-#CFLAGS_O = -g -DBZ_DEBUG -O0
-CFLAGS_O = -g -O3
-CXXFLAGS = -Wall -I. `pkg-config blitz gtkmm-2.4 --cflags` $(CFLAGS_O)
+#CPPFLAGS += -g -DBZ_DEBUG -O0
+CPPFLAGS += -g -O2
+
+CPPFLAGS += -Wall -I. `pkg-config blitz gtkmm-2.4 --cflags`
+
 # blitz lib only needed if -DBZ_DEBUG used
-LIBRARIES = `pkg-config blitz gtkmm-2.4 --libs`
-EXEC = demo
+LDFLAGS += `pkg-config blitz gtkmm-2.4 --libs`
 
-OBJECTS = scopemm-gridcanvas.o scopemm-lineplot.o demo.o
+PROGS = demo-blitz
 
-all: $(EXEC)
+COMMON_OBJS = scopemm-gridcanvas.o scopemm-lineplot.o
 
-$(EXEC): $(OBJECTS)
-	g++ -o $@ $(OBJECTS) $(LIBRARIES)
+all: $(PROGS)
+
+demo-blitz: demo-blitz.o $(COMMON_OBJS)
+	g++ -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -f $(OBJECTS) $(EXEC)
+	rm -f *.o $(PROGS)
