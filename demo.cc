@@ -9,18 +9,16 @@ public:
 	Sinewave(Plot1D &_plot) : 
 		plot(_plot)
 	{
-		//plot.setXRange(-1, 1);
-		//plot.setYRange(-1, 1);
 		plot.setXAutoRange();
 		plot.setYAutoRange();
 		//plot.setSwapAxes();
 		plot.setDrawAxes();
 		plot.setDrawGrids();
 
-		(t1 = plot.addTrace())->
-			setColor(1, 0, 0);
-		(t2 = plot.addTrace())->
-			setColor(0, 0, 1);
+		(t1 = plot.addTrace())->setColor(1, 0, 0);
+		(t2 = plot.addTrace())->setColor(0, 1, 0);
+		(t3 = plot.addTrace())->setColor(0, 0, 1);
+
 		alpha = 0;
 
 		Glib::signal_idle().connect(
@@ -30,26 +28,30 @@ public:
 	virtual bool on_timeout() {
 		alpha += 10.0;
 
+		double scale = exp(-alpha/1000.0);
+
 		int npts = 1000;
 		//plot.setXRange(0, npts-1);
 		blitz::Array<double, 1> xpts(npts);
 		blitz::Array<double, 1> ypts(npts);
+		blitz::Array<double, 1> zpts(npts);
 		blitz::firstIndex i;
 
 		xpts = cos(10.0 * 2.0 * 3.14159 * (i-npts/2) / npts + alpha / 200.0) *
-			exp(-(i-npts/2)*(i-npts/2)/alpha);
+			exp(-(i-npts/2)*(i-npts/2)/alpha) * scale;
 
 		ypts = sin(10.0 * 2.0 * 3.14159 * (i-npts/2) / npts + alpha / 200.0) *
-			exp(-(i-npts/2)*(i-npts/2)/alpha);
+			exp(-(i-npts/2)*(i-npts/2)/alpha) * scale;
 
 		t1->setXYData(xpts, ypts);
 
-		xpts = 2.0 * (i-npts/2) / (double)npts;
+		zpts = 2.0 * (i-npts/2) / (double)npts * scale;
 
-		t2->setXYData(xpts, ypts);
+		t2->setXYData(xpts, zpts);
+		t3->setXYData(zpts, ypts);
 
-		plot.setXRange(-exp(alpha/1000.0), exp(alpha/1000.0));
-		plot.setYRange(-exp(alpha/1000.0), exp(alpha/1000.0));
+		plot.setXRange(-scale, scale);
+		plot.setYRange(-scale, scale);
 
 		return true;
 	}
@@ -58,6 +60,7 @@ public:
 	Plot1D &plot;
 	PlotTracePtr t1;
 	PlotTracePtr t2;
+	PlotTracePtr t3;
 };
 
 int main(int argc, char *argv[]) {
