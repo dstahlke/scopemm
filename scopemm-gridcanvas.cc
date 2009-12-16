@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "gtk-blitz-gridcanvas.h"
+#include "scopemm-gridcanvas.h"
 
 GridCanvas::GridCanvas() : 
 	flip_axes(false)

@@ -1,2 +1,2 @@
-#include "gtk-blitz-gridcanvas.h"
-#include "gtk-blitz-lineplot.h"
+#include "scopemm-gridcanvas.h"
+#include "scopemm-lineplot.h"

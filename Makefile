@@ -5,7 +5,7 @@ CXXFLAGS = -Wall -I. `pkg-config blitz gtkmm-2.4 --cflags` $(CFLAGS_O)
 LIBRARIES = `pkg-config blitz gtkmm-2.4 --libs`
 EXEC = demo
 
-OBJECTS = gtk-blitz-gridcanvas.o gtk-blitz-lineplot.o demo.o
+OBJECTS = scopemm-gridcanvas.o scopemm-lineplot.o demo.o
 
 all: $(EXEC)
 

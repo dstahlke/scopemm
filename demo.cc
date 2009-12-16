@@ -1,4 +1,4 @@
-#include "gtk-blitz.h"
+#include "scopemm.h"
 #include <gtkmm/main.h>
 #include <gtkmm/window.h>
 #include <iostream>
