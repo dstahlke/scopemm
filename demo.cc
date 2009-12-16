@@ -1,4 +1,6 @@
+#define SCOPEMM_ENABLE_BLITZ
 #include "scopemm.h"
+
 #include <gtkmm/main.h>
 #include <gtkmm/window.h>
 #include <iostream>

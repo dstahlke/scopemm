@@ -1,5 +1,5 @@
-#ifndef GTK_BLITZ_GRIDCANVAS_H
-#define GTK_BLITZ_GRIDCANVAS_H
+#ifndef SCOPEMM_GRIDCANVAS_H
+#define SCOPEMM_GRIDCANVAS_H
 
 #include <vector>
 
@@ -61,4 +61,4 @@ private:
 	virtual void updateMouseCoords(int evt_x, int evt_y);
 };
 
-#endif // GTK_BLITZ_GRIDCANVAS_H
+#endif // SCOPEMM_GRIDCANVAS_H

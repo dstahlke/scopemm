@@ -1,5 +1,5 @@
-#ifndef GTK_BLITZ_LINEPLOT_H
-#define GTK_BLITZ_LINEPLOT_H
+#ifndef SCOPEMM_LINEPLOT_H
+#define SCOPEMM_LINEPLOT_H
 
 #include <gtkmm/main.h>
 #include <gtkmm/box.h>
@@ -34,9 +34,12 @@ public:
 	virtual void setDrawXGrid(bool state=true);
 	virtual void setDrawYGrid(bool state=true);
 	virtual bool on_expose_event(GdkEventExpose* event);
-	template <int N>
-	void setYData(blitz::Array<blitz::TinyVector<double, N>, 1> ydata);
 	virtual PlotTracePtr trace(int idx) const;
+
+#ifdef SCOPEMM_ENABLE_BLITZ
+	template <class T, int N>
+	void setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata);
+#endif // SCOPEMM_ENABLE_BLITZ
 
 private:
 	virtual void drawStripes(
@@ -79,13 +82,15 @@ public:
 	PlotTrace& setColor(double r, double g, double b);
 
 	template <class Iter>
-	PlotTrace& setYData(Iter _yfirst, Iter _ylast, bool steps=false);
+	PlotTrace& setYData(Iter yfirst, Iter ylast, bool steps=false);
 	template <class Iter>
-	PlotTrace& setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast);
+	PlotTrace& setXYData(Iter xfirst, Iter xlast, Iter yfirst, Iter ylast);
+#ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
-	PlotTrace& setYData(T _ypts, bool steps=false);
+	PlotTrace& setYData(blitz::Array<T, 1> ydata, bool steps=false);
 	template <class T>
-	PlotTrace& setXYData(T _xpts, T _ypts);
+	PlotTrace& setXYData(blitz::Array<T, 1> xdata, blitz::Array<double, 1> ydata);
+#endif // SCOPEMM_ENABLE_BLITZ
 
 	void draw(Cairo::RefPtr<Cairo::Context>);
 
@@ -130,12 +135,12 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 }
 
 template <class Iter>
-PlotTrace& PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _ylast) {
+PlotTrace& PlotTrace::setXYData(Iter xfirst, Iter xlast, Iter yfirst, Iter ylast) {
 	ypts.clear();
-	ypts.insert(ypts.begin(), _yfirst, _ylast);
+	ypts.insert(ypts.begin(), yfirst, ylast);
 
 	xpts.clear();
-	xpts.insert(xpts.begin(), _xfirst, _xlast);
+	xpts.insert(xpts.begin(), xfirst, xlast);
 
 	assert(xpts.size() == ypts.size());
 
@@ -144,22 +149,24 @@ PlotTrace& PlotTrace::setXYData(Iter _xfirst, Iter _xlast, Iter _yfirst, Iter _y
 	return *this;
 }
 
+#ifdef SCOPEMM_ENABLE_BLITZ
 template <class T>
-PlotTrace& PlotTrace::setYData(T _ypts, bool steps) {
-	return setYData(_ypts.begin(), _ypts.end(), steps);
+PlotTrace& PlotTrace::setYData(blitz::Array<T, 1> ydata, bool steps) {
+	return setYData(ydata.begin(), ydata.end(), steps);
 }
 
 template <class T>
-PlotTrace& PlotTrace::setXYData(T _xpts, T _ypts) {
-	return setXYData(_xpts.begin(), _xpts.end(), _ypts.begin(), _ypts.end());
+PlotTrace& PlotTrace::setXYData(blitz::Array<T, 1> xdata, blitz::Array<double, 1> ydata) {
+	return setXYData(xdata.begin(), xdata.end(), ydata.begin(), ydata.end());
 }
 
-template <int N>
-void Plot1D::setYData(blitz::Array<blitz::TinyVector<double, N>, 1> ydata) {
+template <class T, int N>
+void Plot1D::setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata) {
 	assert(N == traces.size());
 	for(int i=0; i<N; i++) {
 		traces[i]->setYData(ydata[i]);
 	}
 }
+#endif // SCOPEMM_ENABLE_BLITZ
 
-#endif // GTK_BLITZ_LINEPLOT_H
+#endif // SCOPEMM_LINEPLOT_H
