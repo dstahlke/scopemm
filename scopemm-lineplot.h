@@ -83,8 +83,13 @@ public:
 
 	template <class Iter>
 	PlotTrace& setYData(Iter yfirst, Iter ylast, bool steps=false);
+
 	template <class Iter>
 	PlotTrace& setXYData(Iter xfirst, Iter xlast, Iter yfirst, Iter ylast);
+
+	template <class Iter>
+	PlotTrace& setXYData(Iter xyfirst, Iter xylast);
+
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
 	PlotTrace& setYData(blitz::Array<T, 1> ydata, bool steps=false);
@@ -136,13 +141,28 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 
 template <class Iter>
 PlotTrace& PlotTrace::setXYData(Iter xfirst, Iter xlast, Iter yfirst, Iter ylast) {
-	ypts.clear();
-	ypts.insert(ypts.begin(), yfirst, ylast);
-
 	xpts.clear();
 	xpts.insert(xpts.begin(), xfirst, xlast);
 
+	ypts.clear();
+	ypts.insert(ypts.begin(), yfirst, ylast);
+
 	assert(xpts.size() == ypts.size());
+
+	parent->dataChanged();
+
+	return *this;
+}
+
+template <class Iter>
+PlotTrace& PlotTrace::setXYData(Iter xyfirst, Iter xylast) {
+	xpts.clear();
+	ypts.clear();
+
+	for(Iter p=xyfirst; p!=xylast; ++p) {
+		xpts.push_back(p->first);
+		ypts.push_back(p->second);
+	}
 
 	parent->dataChanged();
 
