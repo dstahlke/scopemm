@@ -2,7 +2,7 @@
 
 #include <gtkmm/main.h>
 #include <gtkmm/window.h>
-#include <iostream>
+#include <math.h>
 
 class Sinewave {
 public:

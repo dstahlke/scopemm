@@ -84,8 +84,8 @@ public:
 	template <class Iter>
 	PlotTrace& setYData(Iter yfirst, Iter ylast, bool steps=false);
 
-	template <class Iter>
-	PlotTrace& setXYData(Iter xfirst, Iter xlast, Iter yfirst, Iter ylast);
+	template <class IterX, class IterY>
+	PlotTrace& setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast);
 
 	template <class Iter>
 	PlotTrace& setXYData(Iter xyfirst, Iter xylast);
@@ -139,8 +139,8 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 	return *this;
 }
 
-template <class Iter>
-PlotTrace& PlotTrace::setXYData(Iter xfirst, Iter xlast, Iter yfirst, Iter ylast) {
+template <class IterX, class IterY>
+PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast) {
 	xpts.clear();
 	xpts.insert(xpts.begin(), xfirst, xlast);
 
