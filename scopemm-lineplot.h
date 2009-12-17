@@ -13,13 +13,14 @@ class Plot1D;
 class PlotTrace;
 
 class Plot1D : public Gtk::DrawingArea, public boost::noncopyable {
-	friend class PlotTrace;
-
 public:
 	Plot1D();
-	~Plot1D() { }
+	~Plot1D();
 
 	PlotTrace addTrace();
+	const PlotTrace &trace(int idx) const;
+	PlotTrace &trace(int idx);
+
 	void setXAutoRange();
 	void setYAutoRange();
 	void setXRange(double min, double max);
@@ -31,9 +32,14 @@ public:
 	void setDrawGrids(bool state=true);
 	void setDrawXGrid(bool state=true);
 	void setDrawYGrid(bool state=true);
+
+	double getXMin() { return xmin; }
+	double getXMax() { return xmax; }
+	double getYMin() { return ymin; }
+	double getYMax() { return ymax; }
+	bool getSwapAxes() { return swap_axes; }
+
 	bool on_expose_event(GdkEventExpose* event);
-	const PlotTrace &trace(int idx) const;
-	PlotTrace &trace(int idx);
 	void fireChangeEvent();
 
 #ifdef SCOPEMM_ENABLE_BLITZ
@@ -73,9 +79,13 @@ class PlotTraceImpl : private boost::noncopyable {
 	friend class PlotTrace;
 
 private:
-	PlotTraceImpl(Plot1D *_parent);
+	PlotTraceImpl();
 
-	void fireChangeEvent() { parent->fireChangeEvent(); }
+	// this is set just after construction of PlotTrace and is
+	// reset during destruction of Plot1D
+	void setChangeListener(Plot1D *p) { parent = p; }
+
+	void fireChangeEvent() { if(parent) parent->fireChangeEvent(); }
 
 	Plot1D *parent;
 	std::vector<double> xpts;
@@ -84,15 +94,11 @@ private:
 };
 
 class PlotTrace {
-	friend class Plot1D; // FIXME
-
+	friend class Plot1D;
 public:
 	PlotTrace();
 
-public:
-	PlotTrace(Plot1D *_parent);
-
-	~PlotTrace();
+	~PlotTrace() { }
 
 	PlotTrace& setColor(double r, double g, double b);
 
@@ -121,6 +127,8 @@ public:
 	double getMaxY();
 
 private:
+	void setChangeListener(Plot1D *p) { impl->setChangeListener(p); }
+
 	void fireChangeEvent() { impl->fireChangeEvent(); }
 
 	boost::shared_ptr<PlotTraceImpl> impl;

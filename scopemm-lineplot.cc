@@ -12,9 +12,19 @@ Plot1D::Plot1D() :
 	draw_x_grid(false), draw_y_grid(false)
 { }
 
+Plot1D::~Plot1D() {
+	// now that our object no longer exists, it must not receive
+	// any more events
+	BOOST_FOREACH(PlotTrace &t, traces) {
+		t.setChangeListener(NULL);
+	}
+}
+
 PlotTrace Plot1D::addTrace() {
-	PlotTrace trace(this);
+	PlotTrace trace;
+	trace.setChangeListener(this);
 	traces.push_back(trace);
+	fireChangeEvent();
 	return trace;
 }
 
@@ -270,19 +280,14 @@ void Plot1D::recalcAutoRange() {
 
 /// PlotTrace ////////////////////////////////////////
 
-PlotTraceImpl::PlotTraceImpl(Plot1D *_parent) :
-	parent(_parent)
+PlotTraceImpl::PlotTraceImpl() :
+	parent(NULL)
 { }
 
-PlotTrace::PlotTrace() { }
-
-PlotTrace::PlotTrace(Plot1D *_parent) : 
-	impl(new PlotTraceImpl(_parent))
+PlotTrace::PlotTrace() :
+	impl(new PlotTraceImpl())
 { 
 	setColor(1, 0, 0);
-}
-
-PlotTrace::~PlotTrace() {
 }
 
 PlotTrace& PlotTrace::setColor(double r, double g, double b) {
@@ -301,11 +306,11 @@ void PlotTrace::draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	const int w = parent->get_allocation().get_width();
 	const int h = parent->get_allocation().get_height();
 
-	const double xmin = parent->xmin;
-	const double xmax = parent->xmax;
-	const double ymin = parent->ymin;
-	const double ymax = parent->ymax;
-	const bool swap_axes = parent->swap_axes;
+	const double xmin = parent->getXMin();
+	const double xmax = parent->getXMax();
+	const double ymin = parent->getYMin();
+	const double ymax = parent->getYMax();
+	const bool swap_axes = parent->getSwapAxes();
 
 	size_t npts = impl->xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
