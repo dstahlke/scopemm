@@ -54,6 +54,8 @@ public:
 		t2.setXYData(xpts.begin(), xpts.end(), zpts.begin(), zpts.end());
 		t3.setXYData(zpts.begin(), zpts.end(), ypts.begin(), ypts.end());
 
+		// autoscale would work too, but this is smoother and keeps the origin
+		// right in the middle
 		setXRange(-scale, scale);
 		setYRange(-scale, scale);
 

@@ -137,18 +137,15 @@ private:
 template <class Iter>
 PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 	size_t npts;
-	impl->ypts.clear();
 	if(steps) {
-		Iter p = yfirst;
-		npts = 0;
-		while(p != ylast) {
+		impl->ypts.clear();
+		for(Iter p=yfirst; p!=ylast; ++p) {
 			impl->ypts.push_back(*p);
 			impl->ypts.push_back(*p);
-			++p;
-			++npts;
 		}
+		npts = impl->ypts.size()/2;
 	} else {
-		impl->ypts.insert(impl->ypts.begin(), yfirst, ylast);
+		impl->ypts.assign(yfirst, ylast);
 		npts = impl->ypts.size();
 	}
 
@@ -169,12 +166,8 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 
 template <class IterX, class IterY>
 PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast) {
-	// FIXME - use assign
-	impl->xpts.clear();
-	impl->xpts.insert(impl->xpts.begin(), xfirst, xlast);
-
-	impl->ypts.clear();
-	impl->ypts.insert(impl->ypts.begin(), yfirst, ylast);
+	impl->xpts.assign(xfirst, xlast);
+	impl->ypts.assign(yfirst, ylast);
 
 	assert(impl->xpts.size() == impl->ypts.size());
 
