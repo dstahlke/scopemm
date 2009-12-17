@@ -17,23 +17,24 @@ class Plot1D : public Gtk::DrawingArea, public boost::noncopyable {
 
 public:
 	Plot1D();
-	virtual ~Plot1D() { }
+	~Plot1D() { }
 
-	virtual PlotTrace addTrace();
-	virtual void setXAutoRange();
-	virtual void setYAutoRange();
-	virtual void setXRange(double min, double max);
-	virtual void setYRange(double min, double max);
-	virtual void setSwapAxes(bool state=true);
-	virtual void setDrawAxes(bool state=true);
-	virtual void setDrawXAxis(bool state=true);
-	virtual void setDrawYAxis(bool state=true);
-	virtual void setDrawGrids(bool state=true);
-	virtual void setDrawXGrid(bool state=true);
-	virtual void setDrawYGrid(bool state=true);
-	virtual bool on_expose_event(GdkEventExpose* event);
-	virtual const PlotTrace &trace(int idx) const;
-	virtual PlotTrace &trace(int idx);
+	PlotTrace addTrace();
+	void setXAutoRange();
+	void setYAutoRange();
+	void setXRange(double min, double max);
+	void setYRange(double min, double max);
+	void setSwapAxes(bool state=true);
+	void setDrawAxes(bool state=true);
+	void setDrawXAxis(bool state=true);
+	void setDrawYAxis(bool state=true);
+	void setDrawGrids(bool state=true);
+	void setDrawXGrid(bool state=true);
+	void setDrawYGrid(bool state=true);
+	bool on_expose_event(GdkEventExpose* event);
+	const PlotTrace &trace(int idx) const;
+	PlotTrace &trace(int idx);
+	void fireChangeEvent();
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T, int N>
@@ -41,13 +42,13 @@ public:
 #endif // SCOPEMM_ENABLE_BLITZ
 
 private:
-	virtual void drawStripes(
+	void drawStripes(
 		const Cairo::RefPtr<Cairo::Context> &cr,
 		double from, double to, double step,
 		bool horiz
 	) const;
 
-	virtual void drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const;
+	void drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const;
 
 	inline void coordToScreen(int w, int h, double xi, double yi, double &xo, double &yo) const {
 		double x = (xi-xmin)/(xmax-xmin);
@@ -58,9 +59,7 @@ private:
 		yo = y * (h-1);
 	}
 
-	virtual void dataChanged();
-	virtual void configChanged();
-	virtual void recalcAutoRange();
+	void recalcAutoRange();
 
 	std::vector<PlotTrace> traces;
 	bool x_auto, y_auto;
@@ -71,11 +70,12 @@ private:
 };
 
 class PlotTraceImpl : private boost::noncopyable {
-	friend class Plot1D;
 	friend class PlotTrace;
 
 private:
 	PlotTraceImpl(Plot1D *_parent);
+
+	void fireChangeEvent() { parent->fireChangeEvent(); }
 
 	Plot1D *parent;
 	std::vector<double> xpts;
@@ -84,7 +84,7 @@ private:
 };
 
 class PlotTrace {
-	friend class Plot1D;
+	friend class Plot1D; // FIXME
 
 public:
 	PlotTrace();
@@ -112,9 +112,17 @@ public:
 	PlotTrace& setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata);
 #endif // SCOPEMM_ENABLE_BLITZ
 
-	void draw(Cairo::RefPtr<Cairo::Context>);
+	void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>);
+
+	bool empty() { return impl->xpts.empty(); }
+	double getMinX();
+	double getMaxX();
+	double getMinY();
+	double getMaxY();
 
 private:
+	void fireChangeEvent() { impl->fireChangeEvent(); }
+
 	boost::shared_ptr<PlotTraceImpl> impl;
 };
 
@@ -146,7 +154,7 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 		for(size_t i=0; i<npts; ++i) impl->xpts.push_back(i);
 	}
 
-	impl->parent->dataChanged();
+	fireChangeEvent();
 
 	return *this;
 }
@@ -162,7 +170,7 @@ PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY y
 
 	assert(impl->xpts.size() == impl->ypts.size());
 
-	impl->parent->dataChanged();
+	fireChangeEvent();
 
 	return *this;
 }
@@ -177,7 +185,7 @@ PlotTrace& PlotTrace::setXYData(Iter xyfirst, Iter xylast) {
 		impl->ypts.push_back(p->second);
 	}
 
-	impl->parent->dataChanged();
+	fireChangeEvent();
 
 	return *this;
 }
