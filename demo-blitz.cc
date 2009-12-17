@@ -6,20 +6,18 @@
 #include <iostream>
 #include <blitz/array.h>
 
-class Sinewave {
+class Sinewave : public Plot1D {
 public:
-	Sinewave(Plot1D &_plot) : 
-		plot(_plot)
-	{
-		plot.setXAutoRange();
-		plot.setYAutoRange();
-		//plot.setSwapAxes();
-		plot.setDrawAxes();
-		plot.setDrawGrids();
+	Sinewave() {
+		setXAutoRange();
+		setYAutoRange();
+		//setSwapAxes();
+		setDrawAxes();
+		setDrawGrids();
 
-		t1 = plot.addTrace().setColor(1, 0, 0);
-		t2 = plot.addTrace().setColor(0, 1, 0);
-		t3 = plot.addTrace().setColor(0, 0, 1);
+		t1 = addTrace().setColor(1, 0, 0);
+		t2 = addTrace().setColor(0, 1, 0);
+		t3 = addTrace().setColor(0, 0, 1);
 
 		alpha = 0;
 
@@ -33,7 +31,7 @@ public:
 		double scale = exp(-alpha/1000.0);
 
 		int npts = 1000;
-		//plot.setXRange(0, npts-1);
+		//setXRange(0, npts-1);
 		blitz::Array<double, 1> xpts(npts);
 		blitz::Array<double, 1> ypts(npts);
 		blitz::Array<double, 1> zpts(npts);
@@ -55,14 +53,13 @@ public:
 		t2.setXYData(xpts.begin(), xpts.end(), zpts.begin(), zpts.end());
 		t2.setXYData(zpts.begin(), zpts.end(), ypts.begin(), ypts.end());
 
-		plot.setXRange(-scale, scale);
-		plot.setYRange(-scale, scale);
+		setXRange(-scale, scale);
+		setYRange(-scale, scale);
 
 		return true;
 	}
 
 	double alpha;
-	Plot1D &plot;
 	PlotTrace t1;
 	PlotTrace t2;
 	PlotTrace t3;
@@ -74,11 +71,10 @@ int main(int argc, char *argv[]) {
 	Gtk::Window win;
 	win.set_title("Test");
 
-	Plot1D plot;
-	win.add(plot);
-	plot.show();
+	Sinewave sw;
 
-	Sinewave sw(plot);
+	win.add(sw);
+	sw.show();
 
 	Gtk::Main::run(win);
 
