@@ -6,7 +6,6 @@
 
 Plot1D::Plot1D() :
 	x_auto(true), y_auto(true),
-	xmin(0), xmax(1), ymin(0), ymax(1),
 	swap_axes(false), 
 	draw_x_axis(false), draw_y_axis(false),
 	draw_x_grid(false), draw_y_grid(false)

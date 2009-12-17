@@ -23,6 +23,10 @@ public:
 		blitz::Array<double, 2> data_b
 	);
 
+	void screenToGrid(double sx, double sy, double *tx, double *ty);
+
+	void gridToScreen(double tx, double ty, double *sx, double *sy);
+
 protected:
 	virtual bool on_expose_event(GdkEventExpose* event);
 
@@ -36,10 +40,6 @@ public:
 	MouseCanvas();
 
 	virtual ~MouseCanvas();
-
-	void screenToGrid(double sx, double sy, double *tx, double *ty);
-
-	void gridToScreen(double tx, double ty, double *sx, double *sy);
 
 	virtual void mouse_motion();
 

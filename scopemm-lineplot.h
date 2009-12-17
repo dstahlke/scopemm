@@ -6,13 +6,20 @@
 #include <gtkmm/drawingarea.h>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#ifdef SCOPEMM_ENABLE_BLITZ
 #include <blitz/array.h>
+#endif
+
+#include "scopemm-base.h"
 
 class Plot1D;
 class PlotTrace;
 
-class Plot1D : public Gtk::DrawingArea, public boost::noncopyable {
+class Plot1D : 
+	public PlotBase,
+	public Gtk::DrawingArea, 
+	public boost::noncopyable 
+{
 public:
 	Plot1D();
 	~Plot1D();
@@ -33,11 +40,7 @@ public:
 	void setDrawXGrid(bool state=true);
 	void setDrawYGrid(bool state=true);
 
-	double getXMin() { return xmin; }
-	double getXMax() { return xmax; }
-	double getYMin() { return ymin; }
-	double getYMax() { return ymax; }
-	bool getSwapAxes() { return swap_axes; }
+	bool getSwapAxes() const { return swap_axes; }
 
 	bool on_expose_event(GdkEventExpose* event);
 	void fireChangeEvent();
@@ -69,7 +72,6 @@ private:
 
 	std::vector<PlotTrace> traces;
 	bool x_auto, y_auto;
-	double xmin, xmax, ymin, ymax;
 	bool swap_axes;
 	bool draw_x_axis, draw_y_axis;
 	bool draw_x_grid, draw_y_grid;

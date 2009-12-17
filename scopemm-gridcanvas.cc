@@ -85,6 +85,22 @@ bool GridCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) )
 	return true;
 }
 
+void GridCanvas::screenToGrid(double sx, double sy, double *tx, double *ty) {
+	Gtk::Allocation allocation = get_allocation();
+	const int aw = allocation.get_width();
+	const int ah = allocation.get_height();
+	*tx = sx * (data_w-1) / (aw-1);
+	*ty = sy * (data_h-1) / (ah-1);
+}
+
+void GridCanvas::gridToScreen(double tx, double ty, double *sx, double *sy) {
+	Gtk::Allocation allocation = get_allocation();
+	const int aw = allocation.get_width();
+	const int ah = allocation.get_height();
+	*sx = tx * (aw-1) / (data_w-1);
+	*sy = ty * (ah-1) / (data_h-1);
+}
+
 ///////////////////////////////////////////////////////////
 
 MouseCanvas::MouseCanvas() {
@@ -97,22 +113,6 @@ MouseCanvas::MouseCanvas() {
 }
 
 MouseCanvas::~MouseCanvas() { }
-
-void MouseCanvas::screenToGrid(double sx, double sy, double *tx, double *ty) {
-	Gtk::Allocation allocation = get_allocation();
-	const int aw = allocation.get_width();
-	const int ah = allocation.get_height();
-	*tx = sx * (data_w-1) / (aw-1);
-	*ty = sy * (data_h-1) / (ah-1);
-}
-
-void MouseCanvas::gridToScreen(double tx, double ty, double *sx, double *sy) {
-	Gtk::Allocation allocation = get_allocation();
-	const int aw = allocation.get_width();
-	const int ah = allocation.get_height();
-	*sx = tx * (aw-1) / (data_w-1);
-	*sy = ty * (ah-1) / (data_h-1);
-}
 
 void MouseCanvas::updateMouseCoords(int evt_x, int evt_y) {
 	screenToGrid(evt_x, evt_y, &mouse_x, &mouse_y);
