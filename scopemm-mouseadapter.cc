@@ -75,8 +75,10 @@ void MouseAdapter::mouse_motion() {
 //		<< "mouse: " << mouse_in << "," << mouse_x << "," << mouse_y
 //		<< " / " << button1 << "," << button2 << "," << button3
 //		<< std::endl;
+	signal_motion();
 }
 
 void MouseAdapter::mouse_clicked(int button) {
 	std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << "," << button_state << std::endl;
+	signal_clicked(button);
 }

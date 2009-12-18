@@ -18,6 +18,9 @@ public:
 	bool button2()  const { return button_state & 2; }
 	bool button3()  const { return button_state & 4; }
 
+	sigc::signal<void, int> signal_clicked;
+	sigc::signal<void> signal_motion;
+
 private:
 	void updateState(gdouble evt_x, gdouble evt_y, guint evt_state);
 	bool on_motion_notify_event(GdkEventMotion* event);
@@ -25,7 +28,6 @@ private:
 	bool on_leave_notify_event(GdkEventCrossing* event);
 	bool on_button_press_event(GdkEventButton* event);
 
-private:
 	PlotBase *plot;
 	bool mouse_in;
 	double mouse_x, mouse_y;

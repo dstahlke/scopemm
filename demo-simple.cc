@@ -16,16 +16,14 @@ int main(int argc, char *argv[]) {
 	plot.setDrawAxes(true);
 	plot.setDrawGrids(true);
 
-	PlotTrace t1 = plot.addTrace();
-	PlotTrace t2 = plot.addTrace();
-	t1.setColor(1, 0, 0);
-	t2.setColor(0, 1, 0);
+	PlotTrace t1 = plot.addTrace().setColor(1, 0, 0);
+	PlotTrace t2 = plot.addTrace().setColor(0, 1, 0);
 
 	const int nsamps = 100;
 
 	std::vector<double> ypts;
 	for(int i=0; i<nsamps; i++) {
-		double theta = double(i) / nsamps * 2.0 * M_PI;
+		double theta = double(i) / (nsamps-1) * 2.0 * M_PI;
 		ypts.push_back(sin(theta));
 	}
 	t1.setYData(ypts.begin(), ypts.end());
@@ -33,7 +31,7 @@ int main(int argc, char *argv[]) {
 	std::vector<float> xpts;
 	ypts.clear();
 	for(int i=0; i<nsamps; i++) {
-		double theta = double(i) / nsamps * 2.0 * M_PI;
+		double theta = double(i) / (nsamps-1) * 2.0 * M_PI;
 		// The call to setYData above implicitly used an X range
 		// of [0, nsamps-1].  We multiply X by nsamps here in order
 		// to occupy the same range.
