@@ -44,6 +44,8 @@ public:
 
 	~GridCanvas();
 
+	void setXRange(double min, double max);
+	void setYRange(double min, double max);
 	void setSwapAxes(bool state=true);
 
 	void fireChangeEvent();

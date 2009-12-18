@@ -18,8 +18,8 @@ public:
 	bool getSwapAxes() const { return swap_axes; }
 
 	inline void coordToScreen(double xi, double yi, double &xo, double &yo) const {
-		double x = (xi-xmin)/(xmax-xmin);
-		double y = (yi-ymin)/(ymax-ymin);
+		double x = (xmax==xmin) ? 0.5 : (xi-xmin)/(xmax-xmin);
+		double y = (ymax==ymin) ? 0.5 : (yi-ymin)/(ymax-ymin);
 		if(swap_axes) std::swap(x, y);
 		y = 1.0-y;
 		xo = x * (screen_w-1);
@@ -27,8 +27,8 @@ public:
 	}
 
 	inline void screenToCoord(double xi, double yi, double &xo, double &yo) const {
-		double x = xi / (screen_w-1);
-		double y = yi / (screen_h-1);
+		double x = (screen_w<=1) ? 0.5 : xi / (screen_w-1);
+		double y = (screen_w<=1) ? 0.5 : yi / (screen_h-1);
 		if(swap_axes) std::swap(x, y);
 		y = 1.0-y;
 		xo = x * (xmax-xmin) + xmin;
