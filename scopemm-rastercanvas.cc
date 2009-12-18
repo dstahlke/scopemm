@@ -6,23 +6,34 @@
 
 using namespace scopemm;
 
-void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h) {
+void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose) {
 	resize(new_w, new_h);
 	if(!w || !h) return;
 	assert(in.w && in.h);
-	for(size_t y=0; y<h; y++) {
-		const size_t j = (h==1) ? 0 : y*(in.h-1)/(h-1);
-		for(size_t x=0; x<w; x++) {
-			const size_t i = (w==1) ? 0 : x*(in.w-1)/(w-1);
-			for(size_t band=0; band<3; band++) {
-				(*this)(x, y, band) = in(i, j, band);
+	if(transpose) {
+		for(size_t y=0; y<h; y++) {
+			const size_t i = (h==1) ? 0 : y*(in.w-1)/(h-1);
+			for(size_t x=0; x<w; x++) {
+				const size_t j = (w==1) ? 0 : x*(in.h-1)/(w-1);
+				for(size_t band=0; band<3; band++) {
+					(*this)(x, y, band) = in(i, j, band);
+				}
+			}
+		}
+	} else {
+		for(size_t y=0; y<h; y++) {
+			const size_t j = (h==1) ? 0 : y*(in.h-1)/(h-1);
+			for(size_t x=0; x<w; x++) {
+				const size_t i = (w==1) ? 0 : x*(in.w-1)/(w-1);
+				for(size_t band=0; band<3; band++) {
+					(*this)(x, y, band) = in(i, j, band);
+				}
 			}
 		}
 	}
 }
 
 void RasterCanvas::setSwapAxes(bool state) {
-	// FIXME - should transpose data
 	swap_axes = state;
 	fireChangeEvent();
 }
@@ -54,8 +65,7 @@ bool RasterCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused))
 		const size_t w = allocation.get_width();
 		const size_t h = allocation.get_height();
 
-		// FIXME - only needed if sizes don't match
-		draw_buf.scale(data_buf, w, h);
+		draw_buf.scale(data_buf, w, h, swap_axes);
 
 		get_window()->draw_rgb_image(
 			get_style()->get_fg_gc(Gtk::STATE_NORMAL),

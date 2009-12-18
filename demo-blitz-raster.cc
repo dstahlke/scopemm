@@ -12,9 +12,6 @@ public:
 		alpha(0),
 		mouse(this)
 	{
-		setXRange(-1, 1);
-		setYRange(-1, 1);
-
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
 	}
@@ -22,8 +19,21 @@ public:
 	virtual bool on_timeout() {
 		alpha += 0.1;
 
+		// changing these will affect the resolution and the
+		// position of the pattern, but the red dot should
+		// always line up with the mouse cursor
+		bool swap_axes = false;
 		int w = 100;
 		int h = 100;
+		double xmin = -1;
+		double xmax =  1;
+		double ymin = -1;
+		double ymax =  1;
+
+		setXRange(xmin, xmax);
+		setYRange(ymin, ymax);
+		setSwapAxes(swap_axes);
+
 		if(data_r.shape()[0] != w || data_r.shape()[1] != h) {
 			data_r.resize(w, h);
 			data_g.resize(w, h);
@@ -32,10 +42,10 @@ public:
 
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
-				double x =  (double(i)/(w-1)*2.0-1.0);
-				double y = -(double(j)/(h-1)*2.0-1.0);
-				data_b(i, j) = sin(sqrt((x*x+y*y)*200.0) + alpha);
-				data_g(i, j) = cos(sqrt((x*x+y*y)*200.0) + alpha);
+				double x = (    double(i)/(w-1))*(xmax-xmin)+xmin;
+				double y = (1.0-double(j)/(h-1))*(ymax-ymin)+ymin;
+				data_b(i, j) = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+				data_g(i, j) = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				x -= mouse.mouseX();
 				y -= mouse.mouseY();
 				if(mouse.mouseIn()) {

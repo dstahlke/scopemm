@@ -5,6 +5,8 @@ CPPFLAGS += -Wall -I. `pkg-config blitz gtkmm-2.4 --cflags`
 
 # blitz lib only needed if -DBZ_DEBUG used
 LDFLAGS += `pkg-config blitz gtkmm-2.4 --libs`
+# FIXME
+LDFLAGS += -lprofiler
 
 PROGS = demo-blitz demo-simple demo-stl demo-mouse demo-blitz-raster demo-raster
 

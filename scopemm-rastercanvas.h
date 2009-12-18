@@ -34,7 +34,7 @@ public:
 		return data[(y*w+x)*3+band];
 	}
 
-	void scale(const RawRGB &in, size_t new_w, size_t new_h);
+	void scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose);
 
 	size_t w;
 	size_t h;
@@ -119,8 +119,8 @@ void setData(
 	blitz::Array<T, 2> data_b, T min_b, T max_b
 ) {
 	blitz::Array<T, 2> data[3] = { data_r, data_g, data_b };
-	const size_t w = data[0].shape()[swap_axes ? 1 : 0];
-	const size_t h = data[0].shape()[swap_axes ? 0 : 1];
+	const size_t w = data[0].shape()[0];
+	const size_t h = data[0].shape()[1];
 	blitz::TinyVector<T, 3> min_vals(min_r, min_g, min_b);
 	blitz::TinyVector<T, 3> max_vals(max_r, max_g, max_b);
 
@@ -129,25 +129,12 @@ void setData(
 	for(size_t band=0; band<3; band++) {
 		T min = min_vals[band];
 		T max = max_vals[band];
-		if(swap_axes) {
-			for(size_t y=0; y<h; y++) {
-				for(size_t x=0; x<w; x++) {
-					// this next line is the only one that is different
-					// between this block and the next:
-					T v = data[band](int(y), int(x));
-					v = std::max(min, std::min(max, v));
-					data_buf(x, y, band) = (min==max) ? 0 : 
-						uint8_t(255.0 * (v-min) / (max-min));
-				}
-			}
-		} else {
-			for(size_t y=0; y<h; y++) {
-				for(size_t x=0; x<w; x++) {
-					T v = data[band](int(x), int(y));
-					v = std::max(min, std::min(max, v));
-					data_buf(x, y, band) = (min==max) ? 0 : 
-						uint8_t(255.0 * (v-min) / (max-min));
-				}
+		for(size_t y=0; y<h; y++) {
+			for(size_t x=0; x<w; x++) {
+				T v = data[band](int(x), int(y));
+				v = std::max(min, std::min(max, v));
+				data_buf(x, y, band) = (min==max) ? 0 : 
+					uint8_t(255.0 * (v-min) / (max-min));
 			}
 		}
 	}
