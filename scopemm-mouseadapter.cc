@@ -5,7 +5,11 @@
 MouseAdapter::MouseAdapter(
 	PlotBase *_plot
 ) : 
-	plot(_plot)
+	plot(_plot),
+	mouse_in(false),
+	mouse_x(0),
+	mouse_y(0),
+	button_state(0)
 {
 	plot->set_events(
 		plot->get_events() | 
@@ -27,16 +31,18 @@ MouseAdapter::MouseAdapter(
 		*this, &MouseAdapter::on_button_press_event));
 }
 
-void MouseAdapter::updateMouseCoords(int evt_x, int evt_y) {
+void MouseAdapter::updateState(gdouble evt_x, gdouble evt_y, guint evt_state) {
 	plot->screenToCoord(evt_x, evt_y, mouse_x, mouse_y);
+
+	button_state =
+		(evt_state & Gdk::BUTTON1_MASK ? 1 : 0) |
+		(evt_state & Gdk::BUTTON2_MASK ? 2 : 0) |
+		(evt_state & Gdk::BUTTON3_MASK ? 4 : 0);
 }
 
 bool MouseAdapter::on_motion_notify_event(GdkEventMotion* event) {
 	//std::cout << "Motion " << event->state << std::endl;
-	updateMouseCoords(event->x, event->y);
-	button1 = (event->state & Gdk::BUTTON1_MASK);
-	button2 = (event->state & Gdk::BUTTON2_MASK);
-	button3 = (event->state & Gdk::BUTTON3_MASK);
+	updateState(event->x, event->y, event->state);
 	mouse_motion();
 	return true;
 }
@@ -44,10 +50,7 @@ bool MouseAdapter::on_motion_notify_event(GdkEventMotion* event) {
 bool MouseAdapter::on_enter_notify_event(GdkEventCrossing* event) {
 	//std::cout << "enter_notify" << event->state << std::endl;
 	mouse_in = true;
-	updateMouseCoords(event->x, event->y);
-	button1 = (event->state & Gdk::BUTTON1_MASK);
-	button2 = (event->state & Gdk::BUTTON2_MASK);
-	button3 = (event->state & Gdk::BUTTON3_MASK);
+	updateState(event->x, event->y, event->state);
 	mouse_motion();
 	return true;
 }
@@ -55,16 +58,14 @@ bool MouseAdapter::on_enter_notify_event(GdkEventCrossing* event) {
 bool MouseAdapter::on_leave_notify_event(GdkEventCrossing* event) {
 	//std::cout << "leave_notify" << event->state << std::endl;
 	mouse_in = false;
-	button1 = (event->state & Gdk::BUTTON1_MASK);
-	button2 = (event->state & Gdk::BUTTON2_MASK);
-	button3 = (event->state & Gdk::BUTTON3_MASK);
+	updateState(event->x, event->y, event->state);
 	mouse_motion();
 	return true;
 }
 
 bool MouseAdapter::on_button_press_event(GdkEventButton* event) {
-	updateMouseCoords(event->x, event->y);
 	//std::cout << "state " << event->state << "," << event->button << std::endl;
+	updateState(event->x, event->y, event->state);
 	mouse_clicked(event->button);
 	return true;
 }
@@ -77,5 +78,5 @@ void MouseAdapter::mouse_motion() {
 }
 
 void MouseAdapter::mouse_clicked(int button) {
-	std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << std::endl;
+	std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << "," << button_state << std::endl;
 }
