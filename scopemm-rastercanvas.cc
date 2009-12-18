@@ -21,10 +21,6 @@ void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h) {
 	}
 }
 
-RasterCanvas::GridCanvas() { }
-
-RasterCanvas::~GridCanvas() { }
-
 void RasterCanvas::setSwapAxes(bool state) {
 	// FIXME - should transpose data
 	swap_axes = state;

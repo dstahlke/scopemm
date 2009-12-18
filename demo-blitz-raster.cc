@@ -46,7 +46,18 @@ public:
 			}
 		}
 
-		setData(data_r, data_g, data_b);
+		// Autoscale:
+		// setData(data_r, data_g, data_b);
+		// Same scale for each band:
+		// setData(data_r, data_g, data_b, -1.0, 1.0);
+		// Different scale for each band:
+		setData(
+			data_r,  0.0, 1.0,
+			data_g, -1.0, 1.0,
+			data_b, -1.0, 1.0
+		);
+		// Grascale:
+		//setData(data_r, 0.0, 1.0);
 
 		return true;
 	}
