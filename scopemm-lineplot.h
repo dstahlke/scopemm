@@ -17,7 +17,6 @@ class PlotTrace;
 
 class Plot1D : 
 	public PlotBase,
-	public Gtk::DrawingArea, 
 	public boost::noncopyable 
 {
 public:
@@ -40,8 +39,6 @@ public:
 	void setDrawXGrid(bool state=true);
 	void setDrawYGrid(bool state=true);
 
-	bool getSwapAxes() const { return swap_axes; }
-
 	bool on_expose_event(GdkEventExpose* event);
 	void fireChangeEvent();
 
@@ -59,20 +56,10 @@ private:
 
 	void drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const;
 
-	inline void coordToScreen(int w, int h, double xi, double yi, double &xo, double &yo) const {
-		double x = (xi-xmin)/(xmax-xmin);
-		double y = (yi-ymin)/(ymax-ymin);
-		if(swap_axes) std::swap(x, y);
-		y = 1.0-y;
-		xo = x * (w-1);
-		yo = y * (h-1);
-	}
-
 	void recalcAutoRange();
 
 	std::vector<PlotTrace> traces;
 	bool x_auto, y_auto;
-	bool swap_axes;
 	bool draw_x_axis, draw_y_axis;
 	bool draw_x_grid, draw_y_grid;
 };

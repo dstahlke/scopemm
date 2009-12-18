@@ -6,7 +6,6 @@
 
 Plot1D::Plot1D() :
 	x_auto(true), y_auto(true),
-	swap_axes(false), 
 	draw_x_axis(false), draw_y_axis(false),
 	draw_x_grid(false), draw_y_grid(false)
 { }
@@ -99,13 +98,10 @@ void Plot1D::drawStripes(
 ) const {
 	if(from > to) std::swap(from, to);
 
-	const int w = get_allocation().get_width();
-	const int h = get_allocation().get_height();
-
 	for(double p=from; p<=to; p+=step) {
 		double x1, y1, x2, y2;
-		coordToScreen(w, h, horiz ? p : xmin, horiz ? ymin : p, x1, y1);
-		coordToScreen(w, h, horiz ? p : xmax, horiz ? ymax : p, x2, y2);
+		coordToScreen(horiz ? p : xmin, horiz ? ymin : p, x1, y1);
+		coordToScreen(horiz ? p : xmax, horiz ? ymax : p, x2, y2);
 		cr->move_to(x1, y1);
 		cr->line_to(x2, y2);
 	}
@@ -170,54 +166,56 @@ void Plot1D::drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const {
 
 bool Plot1D::on_expose_event(GdkEventExpose* event) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
-	if(window) {
-		const int w = get_allocation().get_width();
-		const int h = get_allocation().get_height();
 
-		Cairo::RefPtr<Cairo::Context> cr = window->create_cairo_context();
-		if(event) {
-			cr->rectangle(event->area.x, event->area.y,
-				event->area.width, event->area.height);
-			cr->clip();
-		}
+	if(!window) return true;
 
-		cr->save();
-		cr->set_source_rgb(1, 1, 1);
-		cr->paint();
-		cr->restore();
+	screen_w = get_allocation().get_width();
+	screen_h = get_allocation().get_height();
 
-		if(draw_x_grid || draw_y_grid) {
-			drawGrid(cr);
-		}
-
-		if(draw_x_axis || draw_y_axis) {
-			cr->save();
-			cr->set_line_width(1);
-			cr->set_source_rgb(0.3, 0.3, 0.3);
-			cr->set_antialias(Cairo::ANTIALIAS_NONE);
-			if(draw_x_axis) {
-				double x1, y1, x2, y2;
-				coordToScreen(w, h, 0, ymin, x1, y1);
-				coordToScreen(w, h, 0, ymax, x2, y2);
-				cr->move_to(x1, y1);
-				cr->line_to(x2, y2);
-				cr->stroke();
-			}
-			if(draw_y_axis) {
-				double x1, y1, x2, y2;
-				coordToScreen(w, h, xmin, 0, x1, y1);
-				coordToScreen(w, h, xmax, 0, x2, y2);
-				cr->move_to(x1, y1);
-				cr->line_to(x2, y2);
-				cr->stroke();
-			}
-			cr->restore();
-		}
-
-		BOOST_FOREACH(PlotTrace &t, traces) {
-			t.draw(this, cr);
-		}
+	Cairo::RefPtr<Cairo::Context> cr = window->create_cairo_context();
+	if(event) {
+		cr->rectangle(event->area.x, event->area.y,
+			event->area.width, event->area.height);
+		cr->clip();
 	}
+
+	cr->save();
+	cr->set_source_rgb(1, 1, 1);
+	cr->paint();
+	cr->restore();
+
+	if(draw_x_grid || draw_y_grid) {
+		drawGrid(cr);
+	}
+
+	if(draw_x_axis || draw_y_axis) {
+		cr->save();
+		cr->set_line_width(1);
+		cr->set_source_rgb(0.3, 0.3, 0.3);
+		cr->set_antialias(Cairo::ANTIALIAS_NONE);
+		if(draw_x_axis) {
+			double x1, y1, x2, y2;
+			coordToScreen(0, ymin, x1, y1);
+			coordToScreen(0, ymax, x2, y2);
+			cr->move_to(x1, y1);
+			cr->line_to(x2, y2);
+			cr->stroke();
+		}
+		if(draw_y_axis) {
+			double x1, y1, x2, y2;
+			coordToScreen(xmin, 0, x1, y1);
+			coordToScreen(xmax, 0, x2, y2);
+			cr->move_to(x1, y1);
+			cr->line_to(x2, y2);
+			cr->stroke();
+		}
+		cr->restore();
+	}
+
+	BOOST_FOREACH(PlotTrace &t, traces) {
+		t.draw(this, cr);
+	}
+
 	return true;
 }
 
