@@ -6,7 +6,7 @@ CPPFLAGS += -Wall -I. `pkg-config blitz gtkmm-2.4 --cflags`
 # blitz lib only needed if -DBZ_DEBUG used
 LDFLAGS += `pkg-config blitz gtkmm-2.4 --libs`
 
-PROGS = demo-blitz demo-simple demo-stl demo-mouse demo-blitz-raster
+PROGS = demo-blitz demo-simple demo-stl demo-mouse demo-blitz-raster demo-raster
 
 COMMON_OBJS = scopemm-gridcanvas.o scopemm-lineplot.o scopemm-mouseadapter.o
 
@@ -16,6 +16,9 @@ demo-simple: demo-simple.o $(COMMON_OBJS)
 	g++ -o $@ $^ $(LDFLAGS)
 
 demo-stl: demo-stl.o $(COMMON_OBJS)
+	g++ -o $@ $^ $(LDFLAGS)
+
+demo-raster: demo-raster.o $(COMMON_OBJS)
 	g++ -o $@ $^ $(LDFLAGS)
 
 demo-mouse: demo-mouse.o $(COMMON_OBJS)

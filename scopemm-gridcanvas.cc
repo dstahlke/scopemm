@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <vector>
+#include <assert.h>
 
 #include "scopemm-gridcanvas.h"
 
@@ -42,44 +43,6 @@ void GridCanvas::setYRange(double min, double max) {
 
 void GridCanvas::fireChangeEvent() {
 	queue_draw();
-}
-
-void GridCanvas::setData(blitz::Array<double, 2> data) {
-	setData(data, data, data);
-}
-
-void GridCanvas::setData(
-	blitz::Array<double, 2> data_r,
-	blitz::Array<double, 2> data_g,
-	blitz::Array<double, 2> data_b
-) {
-	blitz::Array<double, 2> data[3] = { data_r, data_g, data_b };
-	const size_t w = data[0].shape()[swap_axes ? 1 : 0];
-	const size_t h = data[0].shape()[swap_axes ? 0 : 1];
-
-	data_buf.resize(w, h);
-
-	for(size_t band=0; band<3; band++) {
-		const double min = blitz::min(data[band]);
-		const double max = blitz::max(data[band]);
-		if(swap_axes) {
-			for(size_t y=0; y<h; y++) {
-				for(size_t x=0; x<w; x++) {
-					double v = data[band](int(y), int(x));
-					data_buf(x, y, band) = uint8_t(255.0 * (v-min) / (max-min));
-				}
-			}
-		} else {
-			for(size_t y=0; y<h; y++) {
-				for(size_t x=0; x<w; x++) {
-					double v = data[band](int(x), int(y));
-					data_buf(x, y, band) = uint8_t(255.0 * (v-min) / (max-min));
-				}
-			}
-		}
-	}
-
-	fireChangeEvent();
 }
 
 bool GridCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) ) {
