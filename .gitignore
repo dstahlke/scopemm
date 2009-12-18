@@ -4,4 +4,5 @@ demo-mouse
 demo-raster
 demo-simple
 demo-stl
+libscopemm.so
 *.o
