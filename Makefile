@@ -8,7 +8,7 @@ LDFLAGS += `pkg-config blitz gtkmm-2.4 --libs`
 
 PROGS = demo-blitz demo-simple demo-stl demo-mouse demo-blitz-raster demo-raster
 
-COMMON_OBJS = scopemm-gridcanvas.o scopemm-lineplot.o scopemm-mouseadapter.o
+COMMON_OBJS = scopemm-rastercanvas.o scopemm-lineplot.o scopemm-mouseadapter.o
 
 all: $(PROGS)
 
