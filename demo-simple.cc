@@ -10,14 +10,14 @@ int main(int argc, char *argv[]) {
 	Gtk::Window win;
 	win.set_title("Test");
 
-	Plot1D plot;
+	scopemm::Plot1D plot;
 	plot.setXAutoRange();
 	plot.setYAutoRange();
 	plot.setDrawAxes(true);
 	plot.setDrawGrids(true);
 
-	PlotTrace t1 = plot.addTrace().setColor(1, 0, 0);
-	PlotTrace t2 = plot.addTrace().setColor(0, 1, 0);
+	scopemm::PlotTrace t1 = plot.addTrace().setColor(1, 0, 0);
+	scopemm::PlotTrace t2 = plot.addTrace().setColor(0, 1, 0);
 
 	const int nsamps = 100;
 

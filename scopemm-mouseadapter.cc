@@ -2,6 +2,8 @@
 
 #include "scopemm-mouseadapter.h"
 
+using namespace scopemm;
+
 MouseAdapter::MouseAdapter(
 	PlotBase *_plot
 ) : 

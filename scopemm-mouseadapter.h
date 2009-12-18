@@ -3,6 +3,8 @@
 
 #include "scopemm-base.h"
 
+namespace scopemm {
+
 class MouseAdapter {
 public:
 	MouseAdapter(PlotBase *_plot);
@@ -33,5 +35,7 @@ private:
 	double mouse_x, mouse_y;
 	int button_state;
 };
+
+} // namespace scopemm
 
 #endif // SCOPEMM_MOUSEADAPTER_H

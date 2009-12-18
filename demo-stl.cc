@@ -4,7 +4,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-class Sinewave : public Plot1D {
+class Sinewave : public scopemm::Plot1D {
 public:
 	Sinewave() {
 		setXAutoRange();
@@ -63,9 +63,9 @@ public:
 	}
 
 	double alpha;
-	PlotTrace t1;
-	PlotTrace t2;
-	PlotTrace t3;
+	scopemm::PlotTrace t1;
+	scopemm::PlotTrace t2;
+	scopemm::PlotTrace t3;
 };
 
 int main(int argc, char *argv[]) {

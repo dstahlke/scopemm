@@ -4,7 +4,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-class DemoWidget : public Plot1D {
+class DemoWidget : public scopemm::Plot1D {
 public:
 	DemoWidget() :
 		mouse(this)
@@ -56,9 +56,9 @@ public:
 		);
 	}
 
-	MouseAdapter mouse;
-	PlotTrace t1;
-	PlotTrace t2;
+	scopemm::MouseAdapter mouse;
+	scopemm::PlotTrace t1;
+	scopemm::PlotTrace t2;
 };
 
 int main(int argc, char *argv[]) {

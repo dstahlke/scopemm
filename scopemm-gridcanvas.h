@@ -7,6 +7,8 @@
 #include <gtkmm/window.h>
 #include <blitz/array.h>
 
+namespace scopemm {
+
 class GridCanvas : public Gtk::DrawingArea {
 public:
 	GridCanvas();
@@ -35,30 +37,6 @@ protected:
 	bool flip_axes;
 };
 
-class MouseCanvas : public GridCanvas {
-public:
-	MouseCanvas();
-
-	virtual ~MouseCanvas();
-
-	virtual void mouse_motion();
-
-	virtual void mouse_clicked(int button);
-
-	virtual bool on_motion_notify_event(GdkEventMotion* event);
-
-	virtual bool on_enter_notify_event(GdkEventCrossing* event);
-
-	virtual bool on_leave_notify_event(GdkEventCrossing* event);
-
-	virtual bool on_button_press_event(GdkEventButton* event);
-
-	bool mouse_in;
-	double mouse_x, mouse_y;
-	bool button1, button2, button3;
-
-private:
-	virtual void updateMouseCoords(int evt_x, int evt_y);
-};
+} // namespace scopemm
 
 #endif // SCOPEMM_GRIDCANVAS_H

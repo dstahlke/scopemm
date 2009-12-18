@@ -2,6 +2,8 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
+using namespace scopemm;
+
 /// Plot1D ////////////////////////////////////////
 
 Plot1D::Plot1D() :

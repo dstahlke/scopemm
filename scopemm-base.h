@@ -3,6 +3,8 @@
 
 #include <gtkmm/drawingarea.h>
 
+namespace scopemm {
+
 class PlotBase : public Gtk::DrawingArea {
 public:
 	PlotBase() :
@@ -38,5 +40,7 @@ protected:
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes;
 };
+
+} // namespace scopemm
 
 #endif // SCOPEMM_BASE_H

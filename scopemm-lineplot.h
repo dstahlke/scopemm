@@ -12,6 +12,8 @@
 
 #include "scopemm-base.h"
 
+namespace scopemm {
+
 class Plot1D;
 class PlotTrace;
 
@@ -202,5 +204,7 @@ void Plot1D::setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata) {
 	}
 }
 #endif // SCOPEMM_ENABLE_BLITZ
+
+} // namespace scopemm
 
 #endif // SCOPEMM_LINEPLOT_H
