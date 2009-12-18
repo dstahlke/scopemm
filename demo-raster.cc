@@ -4,7 +4,7 @@
 #include <gtkmm/window.h>
 #include <iostream>
 
-class Sinewave : public scopemm::GridCanvas {
+class Sinewave : public scopemm::RasterCanvas {
 public:
 	Sinewave() : 
 		alpha(0),

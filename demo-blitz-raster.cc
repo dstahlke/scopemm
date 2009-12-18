@@ -6,7 +6,7 @@
 #include <iostream>
 #include <blitz/array.h>
 
-class Sinewave : public scopemm::GridCanvas {
+class Sinewave : public scopemm::RasterCanvas {
 public:
 	Sinewave() : 
 		alpha(0),

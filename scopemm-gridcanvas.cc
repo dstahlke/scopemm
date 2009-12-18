@@ -21,31 +21,31 @@ void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h) {
 	}
 }
 
-GridCanvas::GridCanvas() { }
+RasterCanvas::GridCanvas() { }
 
-GridCanvas::~GridCanvas() { }
+RasterCanvas::~GridCanvas() { }
 
-void GridCanvas::setSwapAxes(bool state) {
+void RasterCanvas::setSwapAxes(bool state) {
 	// FIXME - should transpose data
 	swap_axes = state;
 	fireChangeEvent();
 }
 
-void GridCanvas::setXRange(double min, double max) {
+void RasterCanvas::setXRange(double min, double max) {
 	xmin = min;
 	xmax = max;
 }
 
-void GridCanvas::setYRange(double min, double max) {
+void RasterCanvas::setYRange(double min, double max) {
 	ymin = min;
 	ymax = max;
 }
 
-void GridCanvas::fireChangeEvent() {
+void RasterCanvas::fireChangeEvent() {
 	queue_draw();
 }
 
-bool GridCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) ) {
+bool RasterCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) ) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
 
 	if(!window) return true;

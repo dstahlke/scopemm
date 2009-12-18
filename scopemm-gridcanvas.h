@@ -41,11 +41,11 @@ public:
 	std::vector<uint8_t> data;
 };
 
-class GridCanvas : public PlotBase {
+class RasterCanvas : public PlotBase {
 public:
-	GridCanvas();
+	RasterCanvas();
 
-	~GridCanvas();
+	~RasterCanvas();
 
 	void setXRange(double min, double max);
 	void setYRange(double min, double max);
@@ -79,12 +79,12 @@ protected:
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 template <class T>
-void GridCanvas::setData(blitz::Array<T, 2> data) {
+void RasterCanvas::setData(blitz::Array<T, 2> data) {
 	setData(data, data, data);
 }
 
 template <class T>
-void GridCanvas::setData(
+void RasterCanvas::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b
