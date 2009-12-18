@@ -15,8 +15,16 @@ public:
 	virtual void mouse_clicked(int button);
 
 	bool mouseIn()  const { return mouse_in; }
-	double mouseX() const { return mouse_x; }
-	double mouseY() const { return mouse_y; }
+	double mouseX() const {
+		double plot_x, plot_y;
+		plot->screenToCoord(mouse_x, mouse_y, plot_x, plot_y);
+		return plot_x;
+	}
+	double mouseY() const {
+		double plot_x, plot_y;
+		plot->screenToCoord(mouse_x, mouse_y, plot_x, plot_y);
+		return plot_y;
+	}
 	bool button1()  const { return button_state & 1; }
 	bool button2()  const { return button_state & 2; }
 	bool button3()  const { return button_state & 4; }

@@ -32,8 +32,8 @@ MouseAdapter::MouseAdapter(
 }
 
 void MouseAdapter::updateState(gdouble evt_x, gdouble evt_y, guint evt_state) {
-	// FIXME - should store screen coords in case viewpoint changes
-	plot->screenToCoord(evt_x, evt_y, mouse_x, mouse_y);
+	mouse_x = evt_x;
+	mouse_y = evt_y;
 
 	button_state =
 		(evt_state & Gdk::BUTTON1_MASK ? 1 : 0) |
