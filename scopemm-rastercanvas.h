@@ -57,24 +57,55 @@ public:
 
 	void gridToScreen(double tx, double ty, double *sx, double *sy);
 
+#ifdef SCOPEMM_ENABLE_BLITZ
+	template <class T>
+	void setData(blitz::Array<T, 2> data);
+
+	template <class T>
+	void setData(blitz::Array<T, 2> data, T min, T max);
+
+	template <class T>
+	void setData(
+		blitz::Array<T, 2> data_r,
+		blitz::Array<T, 2> data_g,
+		blitz::Array<T, 2> data_b
+	);
+
+	template <class T>
+	void setData(
+		blitz::Array<T, 2> data_r,
+		blitz::Array<T, 2> data_g,
+		blitz::Array<T, 2> data_b,
+		T min, T max
+	);
+
+	template <class T>
+	void setData(
+		blitz::Array<T, 2> data_r, T min_r, T max_r,
+		blitz::Array<T, 2> data_g, T min_g, T max_g,
+		blitz::Array<T, 2> data_b, T min_b, T max_b
+	);
+#endif // SCOPEMM_ENABLE_BLITZ
+
 	RawRGB data_buf;
 
 protected:
 	virtual bool on_expose_event(GdkEventExpose* event);
 
+private:
 	RawRGB draw_buf;
+};
 
-public:
 #ifdef SCOPEMM_ENABLE_BLITZ
 template <class T>
-void setData(
+void RasterCanvas::setData(
 	blitz::Array<T, 2> data
 ) {
 	setData(data, blitz::min(data), blitz::max(data));
 }
 
 template <class T>
-void setData(
+void RasterCanvas::setData(
 	blitz::Array<T, 2> data,
 	T min, T max
 ) {
@@ -86,7 +117,7 @@ void setData(
 }
 
 template <class T>
-void setData(
+void RasterCanvas::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b
@@ -99,7 +130,7 @@ void setData(
 }
 
 template <class T>
-void setData(
+void RasterCanvas::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b,
@@ -113,7 +144,7 @@ void setData(
 }
 
 template <class T>
-void setData(
+void RasterCanvas::setData(
 	blitz::Array<T, 2> data_r, T min_r, T max_r,
 	blitz::Array<T, 2> data_g, T min_g, T max_g,
 	blitz::Array<T, 2> data_b, T min_b, T max_b
@@ -142,7 +173,6 @@ void setData(
 	fireChangeEvent();
 }
 #endif // SCOPEMM_ENABLE_BLITZ
-};
 
 } // namespace scopemm
 
