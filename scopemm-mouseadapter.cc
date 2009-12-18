@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "scopemm-mouseadapter.h"
 
 using namespace scopemm;
@@ -81,6 +79,6 @@ void MouseAdapter::mouse_motion() {
 }
 
 void MouseAdapter::mouse_clicked(int button) {
-	std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << "," << button_state << std::endl;
+	//std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << "," << button_state << std::endl;
 	signal_clicked(button);
 }
