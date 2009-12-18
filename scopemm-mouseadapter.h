@@ -9,8 +9,9 @@ class MouseAdapter {
 public:
 	MouseAdapter(PlotBase *_plot);
 
-	virtual void mouse_motion();
+	virtual ~MouseAdapter() { }
 
+	virtual void mouse_motion();
 	virtual void mouse_clicked(int button);
 
 	bool mouseIn()  const { return mouse_in; }

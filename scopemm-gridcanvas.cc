@@ -5,14 +5,31 @@
 
 using namespace scopemm;
 
-GridCanvas::GridCanvas() : 
-	flip_axes(false)
-{ }
+void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h) {
+	assert(in.w && in.h);
+	resize(new_w, new_h);
+	for(size_t y=0; y<h; y++) {
+		const size_t j = y * (in.h-1) / (h-1);
+		for(size_t x=0; x<w; x++) {
+			const size_t i = x * (in.w-1) / (w-1);
+			for(size_t band=0; band<3; band++) {
+				(*this)(x, y, band) = in(i, j, band);
+			}
+		}
+	}
+}
+
+GridCanvas::GridCanvas() { }
 
 GridCanvas::~GridCanvas() { }
 
-void GridCanvas::setFlipAxes(bool state) {
-	flip_axes = state;
+void GridCanvas::setSwapAxes(bool state) {
+	swap_axes = state;
+	fireChangeEvent();
+}
+
+void GridCanvas::fireChangeEvent() {
+	queue_draw();
 }
 
 void GridCanvas::setData(blitz::Array<double, 2> data) {
@@ -25,80 +42,56 @@ void GridCanvas::setData(
 	blitz::Array<double, 2> data_b
 ) {
 	blitz::Array<double, 2> data[3] = { data_r, data_g, data_b };
-	const int w = data[0].shape()[flip_axes ? 0 : 1];
-	const int h = data[0].shape()[flip_axes ? 1 : 0];
-	data_w = w;
-	data_h = h;
+	const size_t w = data[0].shape()[swap_axes ? 0 : 1];
+	const size_t h = data[0].shape()[swap_axes ? 1 : 0];
 
-	if(h>0 && w>0) {
-		buf.resize(h*w*3);
+	// FIXME
+	xmin = 0;
+	xmax = 0;
+	ymin = h-1;
+	ymax = w-1;
 
-		for(int band=0; band<3; band++) {
-			const double min = blitz::min(data[band]);
-			const double max = blitz::max(data[band]);
-			if(flip_axes) {
-				for(int y=0; y<data_h; y++) {
-					for(int x=0; x<data_w; x++) {
-						const int v = int(255.0 * (data[band](x,y)-min) / (max-min));
-						buf[(y*data_w + x)*3 + band] = v;
-					}
+	data_buf.resize(w, h);
+
+	for(size_t band=0; band<3; band++) {
+		const double min = blitz::min(data[band]);
+		const double max = blitz::max(data[band]);
+		if(swap_axes) {
+			for(size_t y=0; y<h; y++) {
+				for(size_t x=0; x<w; x++) {
+					double v = data[band](int(x), int(y));
+					data_buf(x, y, band) = uint8_t(255.0 * (v-min) / (max-min));
 				}
-			} else {
-				for(int y=0; y<data_h; y++) {
-					for(int x=0; x<data_w; x++) {
-						const int v = int(255.0 * (data[band](y,x)-min) / (max-min));
-						buf[(y*data_w + x)*3 + band] = v;
-					}
+			}
+		} else {
+			for(size_t y=0; y<h; y++) {
+				for(size_t x=0; x<w; x++) {
+					double v = data[band](int(y), int(x));
+					data_buf(x, y, band) = uint8_t(255.0 * (v-min) / (max-min));
 				}
 			}
 		}
 	}
 
-	queue_draw();
+	fireChangeEvent();
 }
 
 bool GridCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) ) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
-	if(window && buf.size()) {
+	if(window && data_buf.w && data_buf.h) {
 		Gtk::Allocation allocation = get_allocation();
-		const int width = allocation.get_width();
-		const int height = allocation.get_height();
+		const size_t w = allocation.get_width();
+		const size_t h = allocation.get_height();
 
 		// FIXME - only needed if sizes don't match
-		std::vector<guchar> buf2(height*width*3);
-		for(int y=0; y<height; y++) {
-			const int j = y * (data_h-1) / (height-1);
-			for(int x=0; x<width; x++) {
-				const int i = x * (data_w-1) / (width-1);
-				for(int band=0; band<3; band++) {
-					buf2[(y*width + x)*3 + band] =
-						buf[(j*data_w + i)*3 + band];
-				}
-			}
-		}
+		draw_buf.scale(data_buf, w, h);
 
 		get_window()->draw_rgb_image(
 			get_style()->get_fg_gc(Gtk::STATE_NORMAL),
-			0, 0, width, height,
+			0, 0, w, h,
 			Gdk::RGB_DITHER_NONE,
-			&buf2[0], width*3
+			&draw_buf.data[0], w*3
 		);
 	}
 	return true;
-}
-
-void GridCanvas::screenToGrid(double sx, double sy, double *tx, double *ty) {
-	Gtk::Allocation allocation = get_allocation();
-	const int aw = allocation.get_width();
-	const int ah = allocation.get_height();
-	*tx = sx * (data_w-1) / (aw-1);
-	*ty = sy * (data_h-1) / (ah-1);
-}
-
-void GridCanvas::gridToScreen(double tx, double ty, double *sx, double *sy) {
-	Gtk::Allocation allocation = get_allocation();
-	const int aw = allocation.get_width();
-	const int ah = allocation.get_height();
-	*sx = tx * (aw-1) / (data_w-1);
-	*sy = ty * (ah-1) / (data_h-1);
 }
