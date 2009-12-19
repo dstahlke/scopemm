@@ -1,9 +1,20 @@
 #ifndef SCOPEMM_AFFINE_H
 #define SCOPEMM_AFFINE_H
 
+#include <assert.h>
+
 namespace scopemm {
 
 class Bbox {
+public:
+	Bbox(
+		double _xmin, double _xmax,
+		double _ymin, double _ymax
+	) :
+		xmin(_xmin), xmax(_xmax),
+		ymin(_ymin), ymax(_ymax)
+	{ }
+
 	double xmin, xmax, ymin, ymax;
 };
 
@@ -36,26 +47,32 @@ public:
 		return HalfAffine(i00, i10, i01, i11, i02, i12);
 	}
 
-	const double m00, m10, m01, m11, m02, m12;
+	double m00, m10, m01, m11, m02, m12;
 };
 
 class AffineTransform {
 public:
-	AffineTransform(HalfAffine _fwd) :
-		fwd(_fwd),
-		inv(_fwd.inverse())
+	AffineTransform() :
+		fwd(HalfAffine(1, 0, 0, 1, 0, 0)),
+		inv(fwd.inverse())
 	{ }
 
-	static AffineTransform(Bbox from, Bbox to) {
+	AffineTransform(HalfAffine _fwd) :
+		fwd(_fwd),
+		inv(fwd.inverse())
+	{ }
+
+	static AffineTransform boxToBox(Bbox from, Bbox to) {
 		double sx = (to.xmax-to.xmin) / (from.xmax-from.xmin);
 		double sy = (to.ymax-to.ymin) / (from.ymax-from.ymin);
 		double dx = to.xmin - from.xmin*sx;
 		double dy = to.ymin - from.ymin*sy;
-		return AffineTransform(sx, 0, 0, sy, dx, dy);
+		return AffineTransform(HalfAffine(
+			sx, 0.0, 0.0, sy, dx, dy));
 	}
 
-	const HalfAffine fwd;
-	const HalfAffine inv;
+	HalfAffine fwd;
+	HalfAffine inv;
 };
 
 } // namespace scopemm

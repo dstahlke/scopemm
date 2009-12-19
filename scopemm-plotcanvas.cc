@@ -11,7 +11,7 @@ PlotCanvas::PlotCanvas() :
 	grid_layer(new GridLayer()),
 	x_auto(true), y_auto(true),
 	draw_x_axis(false), draw_y_axis(false),
-	xmin(0), xmax(1), ymin(0), ymax(1), swap_axes(false)
+	bbox(0, 1, 0, 1), swap_axes(false)
 { }
 
 PlotCanvas::~PlotCanvas() {
@@ -50,17 +50,19 @@ void PlotCanvas::setYAutoRange() {
 
 void PlotCanvas::setXRange(double min, double max) {
 	assert(min < max);
-	xmin = min;
-	xmax = max;
+	bbox.xmin = min;
+	bbox.xmax = max;
 	x_auto = false;
+	recalcAffine();
 	fireChangeEvent();
 }
 
 void PlotCanvas::setYRange(double min, double max) {
 	assert(min < max);
-	ymin = min;
-	ymax = max;
+	bbox.ymin = min;
+	bbox.ymax = max;
 	y_auto = false;
+	recalcAffine();
 	fireChangeEvent();
 }
 
@@ -121,16 +123,16 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 		cr->set_antialias(Cairo::ANTIALIAS_NONE);
 		if(draw_x_axis) {
 			double x1, y1, x2, y2;
-			coordToScreen(0, ymin, x1, y1);
-			coordToScreen(0, ymax, x2, y2);
+			coordToScreen(0, bbox.ymin, x1, y1);
+			coordToScreen(0, bbox.ymax, x2, y2);
 			cr->move_to(x1, y1);
 			cr->line_to(x2, y2);
 			cr->stroke();
 		}
 		if(draw_y_axis) {
 			double x1, y1, x2, y2;
-			coordToScreen(xmin, 0, x1, y1);
-			coordToScreen(xmax, 0, x2, y2);
+			coordToScreen(bbox.xmin, 0, x1, y1);
+			coordToScreen(bbox.xmax, 0, x2, y2);
 			cr->move_to(x1, y1);
 			cr->line_to(x2, y2);
 			cr->stroke();
@@ -173,8 +175,8 @@ void PlotCanvas::recalcAutoRange() {
 		// if no layers had min/max
 		if(first) { min = 0; max = 1; }
 		if(min == max) { min -= 1; max += 1; }
-		xmin = min;
-		xmax = max;
+		bbox.xmin = min;
+		bbox.xmax = max;
 	}
 	if(y_auto) {
 		bool first = true;
@@ -193,9 +195,15 @@ void PlotCanvas::recalcAutoRange() {
 		// if no layers had min/max
 		if(first) { min = 0; max = 1; }
 		if(min == max) { min -= 1; max += 1; }
-		ymin = min;
-		ymax = max;
+		bbox.ymin = min;
+		bbox.ymax = max;
 	}
+}
+
+void PlotCanvas::recalcAffine() {
+	assert(!swap_axes); // FIXME
+	Bbox screen_bbox(0, screen_w-1, screen_h-1, 0);
+	affine = AffineTransform::boxToBox(bbox, screen_bbox);
 }
 
 /// PlotLayerBase ////////////////////////////////////

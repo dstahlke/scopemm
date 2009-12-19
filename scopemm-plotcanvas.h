@@ -44,28 +44,31 @@ public:
 	void setDrawXGrid(bool state=true);
 	void setDrawYGrid(bool state=true);
 
-	double getXMin() const { return xmin; }
-	double getXMax() const { return xmax; }
-	double getYMin() const { return ymin; }
-	double getYMax() const { return ymax; }
+	double getXMin() const { return bbox.xmin; }
+	double getXMax() const { return bbox.xmax; }
+	double getYMin() const { return bbox.ymin; }
+	double getYMax() const { return bbox.ymax; }
 	bool getSwapAxes() const { return swap_axes; }
 
-	inline void coordToScreen(double xi, double yi, double &xo, double &yo) const {
-		double x = (xmax==xmin) ? 0.5 : (xi-xmin)/(xmax-xmin);
-		double y = (ymax==ymin) ? 0.5 : (yi-ymin)/(ymax-ymin);
-		if(swap_axes) std::swap(x, y);
-		y = 1.0-y;
-		xo = x * (screen_w-1);
-		yo = y * (screen_h-1);
+	void coordToScreen(double xi, double yi, double &xo, double &yo) const {
+		affine.fwd(xi, yi, xo, yo);
+		//double x = (xmax==xmin) ? 0.5 : (xi-xmin)/(xmax-xmin);
+		//double y = (ymax==ymin) ? 0.5 : (yi-ymin)/(ymax-ymin);
+		//if(swap_axes) std::swap(x, y);
+		//y = 1.0-y;
+		//xo = x * (screen_w-1);
+		//yo = y * (screen_h-1);
 	}
 
-	inline void screenToCoord(double xi, double yi, double &xo, double &yo) const {
-		double x = (screen_w<=1) ? 0.5 : xi / (screen_w-1);
-		double y = (screen_w<=1) ? 0.5 : yi / (screen_h-1);
-		if(swap_axes) std::swap(x, y);
-		y = 1.0-y;
-		xo = x * (xmax-xmin) + xmin;
-		yo = y * (ymax-ymin) + ymin;
+	void screenToCoord(double xi, double yi, double &xo, double &yo) const {
+		affine.inv(xi, yi, xo, yo);
+		////double x = (xmax==xmin) ? 0.5 : (xi-xmin)/(xmax-xmin);
+		//double x = (screen_w<=1) ? 0.5 : xi / (screen_w-1);
+		//double y = (screen_w<=1) ? 0.5 : yi / (screen_h-1);
+		//if(swap_axes) std::swap(x, y);
+		//y = 1.0-y;
+		//xo = x * (xmax-xmin) + xmin;
+		//yo = y * (ymax-ymin) + ymin;
 	}
 
 	bool on_expose_event(GdkEventExpose* event);
@@ -73,6 +76,7 @@ public:
 
 private:
 	void recalcAutoRange();
+	void recalcAffine();
 
 	std::set<PlotLayerImplPtr> layers;
 	// pointer is needed here because GridLayer is an incomplete type
@@ -80,7 +84,8 @@ private:
 	bool x_auto, y_auto;
 	bool draw_x_axis, draw_y_axis;
 	int screen_w, screen_h;
-	double xmin, xmax, ymin, ymax;
+	Bbox bbox;
+	AffineTransform affine;
 	bool swap_axes;
 };
 
