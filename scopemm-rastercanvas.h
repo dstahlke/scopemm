@@ -49,9 +49,7 @@ public:
 	void setBbox(Bbox bbox);
 	void setSwapAxes(bool state=true);
 	RawRGB &getDataBuf();
-
-	//void coordToRaster(double xi, double yi, double &xo, double &yo) const;
-	//void rasterToCoord(double xi, double yi, double &xo, double &yo) const;
+	AffineTransform getAffine();
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>

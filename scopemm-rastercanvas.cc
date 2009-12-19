@@ -17,12 +17,11 @@ public:
 	virtual Bbox getBbox() const { return bbox; }
 	virtual double getZOrder() const { return 0; }
 
-	//void coordToRaster(double xi, double yi, double &xo, double &yo) const;
-	//void rasterToCoord(double xi, double yi, double &xo, double &yo) const;
+	AffineTransform getAffine();
 
 	Bbox bbox;
 	AffineTransform affine;
-	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
+	bool swap_axes;
 	RawRGB data_buf;
 	RawRGB draw_buf;
 };
@@ -67,13 +66,10 @@ void RasterAreaImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) 
 		const size_t w = parent->get_allocation().get_width();
 		const size_t h = parent->get_allocation().get_height();
 
-		AffineTransform data_aff = AffineTransform::boxToBox(
-			Bbox(0, data_buf.w-1, data_buf.h-1, 0), bbox, swap_axes);
-
 		draw_buf.resize(w, h);
 		draw_buf.transform(
 			data_buf,
-			(data_aff.inv * parent->getAffine().inv)
+			(getAffine().inv * parent->getAffine().inv)
 		);
 
 		window->draw_rgb_image(
@@ -85,6 +81,13 @@ void RasterAreaImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) 
 	}
 }
 
+AffineTransform RasterAreaImpl::getAffine() {
+	return AffineTransform::boxToBox(
+		Bbox(0, data_buf.w-1, data_buf.h-1, 0), bbox, swap_axes);
+}
+
 RawRGB &RasterArea::getDataBuf() { return impl->data_buf; }
+
+AffineTransform RasterArea::getAffine() { return impl->getAffine(); }
 
 } // namespace scopemm
