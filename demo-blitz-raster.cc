@@ -6,12 +6,14 @@
 #include <iostream>
 #include <blitz/array.h>
 
-class Sinewave : public scopemm::RasterCanvas {
+class Sinewave : public scopemm::Plot1D {
 public:
 	Sinewave() : 
 		alpha(0),
 		mouse(this)
 	{
+		addTrace(raster);
+
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
 	}
@@ -30,9 +32,9 @@ public:
 		double ymin = -1;
 		double ymax =  1;
 
-		setXRange(xmin, xmax);
-		setYRange(ymin, ymax);
-		setSwapAxes(swap_axes);
+		raster.setXRange(xmin, xmax);
+		raster.setYRange(ymin, ymax);
+		raster.setSwapAxes(swap_axes);
 
 		if(data_r.shape()[0] != w || data_r.shape()[1] != h) {
 			data_r.resize(w, h);
@@ -61,7 +63,7 @@ public:
 		// Same scale for each band:
 		// setData(data_r, data_g, data_b, -1.0, 1.0);
 		// Different scale for each band:
-		setData(
+		raster.setData(
 			data_r,  0.0, 1.0,
 			data_g, -1.0, 1.0,
 			data_b, -1.0, 1.0
@@ -76,6 +78,7 @@ public:
 	blitz::Array<double, 2> data_r;
 	blitz::Array<double, 2> data_g;
 	blitz::Array<double, 2> data_b;
+	scopemm::RasterArea raster;
 	scopemm::MouseAdapter mouse;
 };
 

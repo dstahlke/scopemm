@@ -33,47 +33,44 @@ void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose)
 	}
 }
 
-void RasterCanvas::setSwapAxes(bool state) {
-	swap_axes = state;
+RasterArea::RasterArea() :
+	impl(new RasterAreaImpl())
+{
+	impl_base = PlotLayerImplPtr(impl);
+}
+
+void RasterArea::setSwapAxes(bool state) {
+	impl->swap_axes = state;
 	fireChangeEvent();
 }
 
-void RasterCanvas::setXRange(double min, double max) {
-	xmin = min;
-	xmax = max;
+void RasterArea::setXRange(double min, double max) {
+	impl->xmin = min;
+	impl->xmax = max;
+	fireChangeEvent();
 }
 
-void RasterCanvas::setYRange(double min, double max) {
-	ymin = min;
-	ymax = max;
+void RasterArea::setYRange(double min, double max) {
+	impl->ymin = min;
+	impl->ymax = max;
+	fireChangeEvent();
 }
 
-void RasterCanvas::fireChangeEvent() {
-	queue_draw();
-}
+void RasterAreaImpl::draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context> cr) {
+	Glib::RefPtr<Gdk::Window> window = parent->get_window();
 
-bool RasterCanvas::on_expose_event(GdkEventExpose* event __attribute__((unused)) ) {
-	Glib::RefPtr<Gdk::Window> window = get_window();
+	if(window && data_buf.w && data_buf.h) {
+		const size_t w = parent->get_allocation().get_width();
+		const size_t h = parent->get_allocation().get_height();
 
-	if(!window) return true;
-
-	screen_w = get_allocation().get_width();
-	screen_h = get_allocation().get_height();
-
-	if(data_buf.w && data_buf.h) {
-		Gtk::Allocation allocation = get_allocation();
-		const size_t w = allocation.get_width();
-		const size_t h = allocation.get_height();
-
+		// FIXME - it is necessary to consider our range in relation to the plot range
 		draw_buf.scale(data_buf, w, h, swap_axes);
 
-		get_window()->draw_rgb_image(
-			get_style()->get_fg_gc(Gtk::STATE_NORMAL),
+		window->draw_rgb_image(
+			parent->get_style()->get_fg_gc(Gtk::STATE_NORMAL),
 			0, 0, w, h,
 			Gdk::RGB_DITHER_NONE,
 			&draw_buf.data[0], w*3
 		);
 	}
-
-	return true;
 }

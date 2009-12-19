@@ -17,7 +17,7 @@ class PlotLayerBase;
 class PlotLayerImplBase;
 typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;
 
-class Plot1D : 
+class Plot1D : // FIXME - rename
 	public PlotBase,
 	public boost::noncopyable 
 {

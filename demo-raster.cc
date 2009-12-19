@@ -4,12 +4,14 @@
 #include <gtkmm/window.h>
 #include <iostream>
 
-class Sinewave : public scopemm::RasterCanvas {
+class Sinewave : public scopemm::Plot1D {
 public:
 	Sinewave() : 
 		alpha(0),
 		mouse(this)
 	{
+		addTrace(raster);
+
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
 	}
@@ -28,14 +30,16 @@ public:
 		double ymin = -1;
 		double ymax =  1;
 
-		setXRange(xmin, xmax);
-		setYRange(ymin, ymax);
-		setSwapAxes(swap_axes);
+		raster.setXRange(xmin, xmax);
+		raster.setYRange(ymin, ymax);
+		raster.setSwapAxes(swap_axes);
 
+		scopemm::RawRGB &data_buf = raster.getDataBuf();
 		data_buf.resize(w, h);
 
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
+				// FIXME - add a RasterArea::dataIdxToCoord function
 				double x = (    double(i)/(w-1))*(xmax-xmin)+xmin;
 				double y = (1.0-double(j)/(h-1))*(ymax-ymin)+ymin;
 				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
@@ -60,6 +64,7 @@ public:
 	}
 
 	double alpha;
+	scopemm::RasterArea raster;
 	scopemm::MouseAdapter mouse;
 };
 

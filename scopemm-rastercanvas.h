@@ -5,14 +5,11 @@
 
 #include <stdint.h>
 
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/window.h>
-
 #ifdef SCOPEMM_ENABLE_BLITZ
 #include <blitz/array.h>
 #endif // SCOPEMM_ENABLE_BLITZ
 
-#include "scopemm-base.h"
+#include "scopemm-plotcanvas.h"
 
 namespace scopemm {
 
@@ -41,17 +38,35 @@ public:
 	std::vector<uint8_t> data;
 };
 
-class RasterCanvas : public PlotBase {
+class RasterAreaImpl : public PlotLayerImplBase {
+	friend class RasterArea;
 public:
-	RasterCanvas() { }
+	virtual void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual bool hasMinMax() { return true; }
+	virtual double getMinX() { return xmin; }
+	virtual double getMaxX() { return xmax; }
+	virtual double getMinY() { return ymin; }
+	virtual double getMaxY() { return ymax; }
 
-	~RasterCanvas() { }
+private:
+	RasterAreaImpl() { }
+
+	double xmin, xmax, ymin, ymax;
+	bool swap_axes; // FIXME - how should this interact with Plot1D::swap_axes?
+	RawRGB data_buf;
+	RawRGB draw_buf;
+};
+
+class RasterArea : public PlotLayerBase {
+public:
+	RasterArea();
+
+	~RasterArea() { }
 
 	void setXRange(double min, double max);
 	void setYRange(double min, double max);
 	void setSwapAxes(bool state=true);
-
-	void fireChangeEvent();
+	RawRGB &getDataBuf() { return impl->data_buf; }
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
@@ -83,25 +98,19 @@ public:
 	);
 #endif // SCOPEMM_ENABLE_BLITZ
 
-	RawRGB data_buf;
-
-protected:
-	virtual bool on_expose_event(GdkEventExpose* event);
-
-private:
-	RawRGB draw_buf;
+	RasterAreaImpl *impl;
 };
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 template <class T>
-void RasterCanvas::setData(
+void RasterArea::setData(
 	blitz::Array<T, 2> data
 ) {
 	setData(data, blitz::min(data), blitz::max(data));
 }
 
 template <class T>
-void RasterCanvas::setData(
+void RasterArea::setData(
 	blitz::Array<T, 2> data,
 	T min, T max
 ) {
@@ -113,7 +122,7 @@ void RasterCanvas::setData(
 }
 
 template <class T>
-void RasterCanvas::setData(
+void RasterArea::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b
@@ -126,7 +135,7 @@ void RasterCanvas::setData(
 }
 
 template <class T>
-void RasterCanvas::setData(
+void RasterArea::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b,
@@ -140,7 +149,7 @@ void RasterCanvas::setData(
 }
 
 template <class T>
-void RasterCanvas::setData(
+void RasterArea::setData(
 	blitz::Array<T, 2> data_r, T min_r, T max_r,
 	blitz::Array<T, 2> data_g, T min_g, T max_g,
 	blitz::Array<T, 2> data_b, T min_b, T max_b
@@ -151,6 +160,7 @@ void RasterCanvas::setData(
 	blitz::TinyVector<T, 3> min_vals(min_r, min_g, min_b);
 	blitz::TinyVector<T, 3> max_vals(max_r, max_g, max_b);
 
+	RawRGB &data_buf = impl->data_buf;
 	data_buf.resize(w, h);
 
 	for(size_t band=0; band<3; band++) {
