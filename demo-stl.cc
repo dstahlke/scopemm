@@ -13,9 +13,9 @@ public:
 		setDrawAxes();
 		setDrawGrids();
 
-		addTrace(t1);
-		addTrace(t2);
-		addTrace(t3);
+		addLayer(t1);
+		addLayer(t2);
+		addLayer(t3);
 
 		t1.setColor(1, 0, 0);
 		t2.setColor(0, 1, 0);

@@ -28,8 +28,8 @@ public:
 	PlotCanvas();
 	~PlotCanvas();
 
-	PlotCanvas &addTrace(PlotLayerBase &layer); // FIXME rename trace to layer
-	PlotCanvas &removeTrace(PlotLayerBase &layer);
+	PlotCanvas &addLayer(PlotLayerBase &layer);
+	PlotCanvas &removeLayer(PlotLayerBase &layer);
 
 	// FIXME - these should all return a reference to *this
 	void setXAutoRange();

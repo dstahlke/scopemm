@@ -12,7 +12,7 @@ public:
 		alpha(0),
 		mouse(this)
 	{
-		addTrace(raster);
+		addLayer(raster);
 
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));

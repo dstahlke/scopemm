@@ -22,14 +22,14 @@ PlotCanvas::~PlotCanvas() {
 	}
 }
 
-PlotCanvas &PlotCanvas::addTrace(PlotLayerBase &layer) {
+PlotCanvas &PlotCanvas::addLayer(PlotLayerBase &layer) {
 	layer.impl_base->change_listeners.insert(this);
 	layers.insert(layer.impl_base);
 	fireChangeEvent();
 	return *this;
 }
 
-PlotCanvas &PlotCanvas::removeTrace(PlotLayerBase &layer) {
+PlotCanvas &PlotCanvas::removeLayer(PlotLayerBase &layer) {
 	layer.impl_base->change_listeners.erase(this);
 	layers.erase(layer.impl_base);
 	fireChangeEvent();
@@ -87,9 +87,9 @@ void PlotCanvas::setDrawYAxis(bool state) {
 
 void PlotCanvas::setDrawGrids(bool state) {
 	if(state) {
-		addTrace(*grid_layer);
+		addLayer(*grid_layer);
 	} else {
-		removeTrace(*grid_layer);
+		removeLayer(*grid_layer);
 	}
 	fireChangeEvent();
 }
