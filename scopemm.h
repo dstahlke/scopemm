@@ -5,5 +5,6 @@
 #include "scopemm-rastercanvas.h"
 #include "scopemm-lineplot.h"
 #include "scopemm-mouseadapter.h"
+#include "scopemm-grid.h"
 
 #endif // SCOPEMM_H

@@ -18,7 +18,7 @@ all: $(PROGS)
 clean:
 	rm -f *.o $(PROGS)
 
-libscopemm.so: scopemm-rastercanvas.o scopemm-lineplot.o scopemm-mouseadapter.o scopemm-plotcanvas.o
+libscopemm.so: scopemm-rastercanvas.o scopemm-lineplot.o scopemm-mouseadapter.o scopemm-plotcanvas.o scopemm-grid.o
 	gcc -shared -o $@ $^ $(LDFLAGS)
 
 demo-simple: demo-simple.o

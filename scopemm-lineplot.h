@@ -1,8 +1,6 @@
 #ifndef SCOPEMM_LINEPLOT_H
 #define SCOPEMM_LINEPLOT_H
 
-#include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
 #ifdef SCOPEMM_ENABLE_BLITZ
 #include <blitz/array.h>
 #endif

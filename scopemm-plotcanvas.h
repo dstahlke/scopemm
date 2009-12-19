@@ -18,6 +18,7 @@ namespace scopemm {
 class PlotLayerBase;
 class PlotLayerImplBase;
 typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;
+class GridLayer;
 
 class PlotCanvas : 
 	public Gtk::DrawingArea,
@@ -27,7 +28,8 @@ public:
 	PlotCanvas();
 	~PlotCanvas();
 
-	PlotCanvas &addTrace(PlotLayerBase &layer);
+	PlotCanvas &addTrace(PlotLayerBase &layer); // FIXME rename trace to layer
+	PlotCanvas &removeTrace(PlotLayerBase &layer);
 
 	// FIXME - these should all return a reference to *this
 	void setXAutoRange();
@@ -70,20 +72,12 @@ public:
 	void fireChangeEvent();
 
 private:
-	void drawStripes(
-		const Cairo::RefPtr<Cairo::Context> &cr,
-		double from, double to, double step,
-		bool horiz
-	) const;
-
-	void drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const;
-
 	void recalcAutoRange();
 
-	std::vector<PlotLayerImplPtr> layers;
+	std::set<PlotLayerImplPtr> layers;
+	std::auto_ptr<GridLayer> grid_layer;
 	bool x_auto, y_auto;
 	bool draw_x_axis, draw_y_axis;
-	bool draw_x_grid, draw_y_grid;
 	int screen_w, screen_h;
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes;
@@ -94,11 +88,11 @@ public:
 	PlotLayerImplBase() { }
 	virtual ~PlotLayerImplBase() { }
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>) = 0;
-	virtual bool hasMinMax() = 0;
-	virtual double getMinX() = 0;
-	virtual double getMaxX() = 0;
-	virtual double getMinY() = 0;
-	virtual double getMaxY() = 0;
+	virtual bool hasMinMax() { return false; }
+	virtual double getMinX() { assert(0); }
+	virtual double getMaxX() { assert(0); }
+	virtual double getMinY() { assert(0); }
+	virtual double getMaxY() { assert(0); }
 
 	std::set<PlotCanvas *> change_listeners;
 };

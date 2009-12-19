@@ -8,23 +8,30 @@ using namespace scopemm;
 /// PlotCanvas ////////////////////////////////////////
 
 PlotCanvas::PlotCanvas() :
+	grid_layer(new GridLayer()),
 	x_auto(true), y_auto(true),
 	draw_x_axis(false), draw_y_axis(false),
-	draw_x_grid(false), draw_y_grid(false),
 	xmin(0), xmax(1), ymin(0), ymax(1), swap_axes(false)
 { }
 
 PlotCanvas::~PlotCanvas() {
 	// now that our object no longer exists, it must not receive
 	// any more events
-	BOOST_FOREACH(PlotLayerImplPtr &layer, layers) {
+	BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
 		layer->change_listeners.erase(this);
 	}
 }
 
 PlotCanvas &PlotCanvas::addTrace(PlotLayerBase &layer) {
 	layer.impl_base->change_listeners.insert(this);
-	layers.push_back(layer.impl_base);
+	layers.insert(layer.impl_base);
+	fireChangeEvent();
+	return *this;
+}
+
+PlotCanvas &PlotCanvas::removeTrace(PlotLayerBase &layer) {
+	layer.impl_base->change_listeners.erase(this);
+	layers.erase(layer.impl_base);
 	fireChangeEvent();
 	return *this;
 }
@@ -79,92 +86,12 @@ void PlotCanvas::setDrawYAxis(bool state) {
 }
 
 void PlotCanvas::setDrawGrids(bool state) {
-	draw_x_grid = state;
-	draw_y_grid = state;
+	if(state) {
+		addTrace(*grid_layer);
+	} else {
+		removeTrace(*grid_layer);
+	}
 	fireChangeEvent();
-}
-
-void PlotCanvas::setDrawXGrid(bool state) {
-	draw_x_grid = state;
-	fireChangeEvent();
-}
-
-void PlotCanvas::setDrawYGrid(bool state) {
-	draw_y_grid = state;
-	fireChangeEvent();
-}
-
-void PlotCanvas::drawStripes(
-	const Cairo::RefPtr<Cairo::Context> &cr,
-	double from, double to, double step,
-	bool horiz
-) const {
-	if(from > to) std::swap(from, to);
-
-	for(double p=from; p<=to; p+=step) {
-		double x1, y1, x2, y2;
-		coordToScreen(horiz ? p : xmin, horiz ? ymin : p, x1, y1);
-		coordToScreen(horiz ? p : xmax, horiz ? ymax : p, x2, y2);
-		cr->move_to(x1, y1);
-		cr->line_to(x2, y2);
-	}
-
-	cr->stroke();
-}
-
-static double rangeMagnitude(double span) {
-	return log(fabs(span) * 1.0) / log(10);
-}
-
-void PlotCanvas::drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const {
-	double grid_fg = 0.7;
-	double canvas_bg = 1.0;
-
-	cr->save();
-	cr->set_line_width(1);
-	cr->set_antialias(Cairo::ANTIALIAS_NONE);
-
-	if(draw_x_grid) {
-		double mag = rangeMagnitude(xmax-xmin);
-		double frac = ceil(mag) - mag;
-		frac = frac*2.0 - 1.0;
-		if(frac > 0) {
-			double color = grid_fg*frac + canvas_bg*(1.0-frac);
-			cr->set_source_rgb(color, color, color);
-			double step = pow(10, floor(mag)-1.0);
-			drawStripes(cr, step*ceil(xmin/step), xmax, step, true);
-		}
-	}
-
-	if(draw_y_grid) {
-		double mag = rangeMagnitude(ymax-ymin);
-		double frac = ceil(mag) - mag;
-		frac = frac*2.0 - 1.0;
-		if(frac > 0) {
-			double color = grid_fg*frac + canvas_bg*(1.0-frac);
-			cr->set_source_rgb(color, color, color);
-			double step = pow(10, floor(mag)-1.0);
-			drawStripes(cr, step*ceil(ymin/step), ymax, step, false);
-		}
-	}
-
-	if(draw_x_grid) {
-		double mag = rangeMagnitude(xmax-xmin);
-
-		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
-		double step = pow(10, floor(mag));
-		drawStripes(cr, step*ceil(xmin/step), xmax, step, true);
-	}
-
-	if(draw_y_grid) {
-		double mag = rangeMagnitude(ymax-ymin);
-
-		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
-		double step = pow(10, floor(mag));
-		drawStripes(cr, step*ceil(ymin/step), ymax, step, false);
-	}
-
-	cr->restore();
 }
 
 bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
@@ -186,10 +113,6 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 	cr->set_source_rgb(1, 1, 1);
 	cr->paint();
 	cr->restore();
-
-	if(draw_x_grid || draw_y_grid) {
-		drawGrid(cr);
-	}
 
 	if(draw_x_axis || draw_y_axis) {
 		cr->save();
@@ -215,7 +138,7 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 		cr->restore();
 	}
 
-	BOOST_FOREACH(PlotLayerImplPtr &layer, layers) {
+	BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
 		layer->draw(this, cr);
 	}
 
@@ -231,7 +154,7 @@ void PlotCanvas::recalcAutoRange() {
 	if(x_auto) {
 		bool first = true;
 		double min=0, max=0;
-		BOOST_FOREACH(PlotLayerImplPtr &layer, layers) {
+		BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
 			if(!layer->hasMinMax()) continue;
 			double sub_min = layer->getMinX();
 			double sub_max = layer->getMaxX();
@@ -251,7 +174,7 @@ void PlotCanvas::recalcAutoRange() {
 	if(y_auto) {
 		bool first = true;
 		double min=0, max=0;
-		BOOST_FOREACH(PlotLayerImplPtr &layer, layers) {
+		BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
 			if(!layer->hasMinMax()) continue;
 			double sub_min = layer->getMinY();
 			double sub_max = layer->getMaxY();
