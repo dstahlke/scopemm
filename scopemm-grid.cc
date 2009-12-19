@@ -3,7 +3,24 @@
 
 #include "scopemm.h"
 
-using namespace scopemm;
+namespace scopemm {
+
+class GridLayerImpl : public PlotLayerImplBase {
+public:
+	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual double getZOrder() { return 1; }
+
+	void drawStripes(
+		const PlotCanvas *parent,
+		const Cairo::RefPtr<Cairo::Context> &cr,
+		double from, double to, double step,
+		bool horiz
+	) const;
+
+	GridLayerImpl();
+
+	bool draw_x_grid, draw_y_grid;
+};
 
 GridLayerImpl::GridLayerImpl() :
 	draw_x_grid(true), draw_y_grid(true)
@@ -102,3 +119,5 @@ void GridLayerImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 
 	cr->restore();
 }
+
+} // namespace scopemm
