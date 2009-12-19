@@ -62,13 +62,22 @@ public:
 		inv(fwd.inverse())
 	{ }
 
-	static AffineTransform boxToBox(Bbox from, Bbox to) {
-		double sx = (to.xmax-to.xmin) / (from.xmax-from.xmin);
-		double sy = (to.ymax-to.ymin) / (from.ymax-from.ymin);
-		double dx = to.xmin - from.xmin*sx;
-		double dy = to.ymin - from.ymin*sy;
-		return AffineTransform(HalfAffine(
-			sx, 0.0, 0.0, sy, dx, dy));
+	static AffineTransform boxToBox(Bbox from, Bbox to, bool swap_axes=false) {
+		if(swap_axes) {
+			double m01 = (to.xmax-to.xmin) / (from.ymax-from.ymin);
+			double m10 = (to.ymax-to.ymin) / (from.xmax-from.xmin);
+			double dx = to.xmin - from.ymin*m01;
+			double dy = to.ymin - from.xmin*m10;
+			return AffineTransform(HalfAffine(
+				0.0, m10, m01, 0.0, dx, dy));
+		} else {
+			double sx = (to.xmax-to.xmin) / (from.xmax-from.xmin);
+			double sy = (to.ymax-to.ymin) / (from.ymax-from.ymin);
+			double dx = to.xmin - from.xmin*sx;
+			double dy = to.ymin - from.ymin*sy;
+			return AffineTransform(HalfAffine(
+				sx, 0.0, 0.0, sy, dx, dy));
+		}
 	}
 
 	HalfAffine fwd;

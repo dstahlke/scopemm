@@ -202,9 +202,8 @@ void PlotCanvas::recalcAutoRange() {
 }
 
 void PlotCanvas::recalcAffine() {
-	assert(!swap_axes); // FIXME
 	Bbox screen_bbox(0, screen_w-1, screen_h-1, 0);
-	affine = AffineTransform::boxToBox(bbox, screen_bbox);
+	affine = AffineTransform::boxToBox(bbox, screen_bbox, swap_axes);
 }
 
 /// PlotLayerBase ////////////////////////////////////
