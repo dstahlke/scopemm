@@ -33,12 +33,6 @@ void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose)
 	}
 }
 
-RasterArea::RasterArea() :
-	impl(new RasterAreaImpl())
-{
-	impl_base = PlotLayerImplPtr(impl);
-}
-
 void RasterArea::setSwapAxes(bool state) {
 	impl->swap_axes = state;
 	fireChangeEvent();

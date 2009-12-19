@@ -9,12 +9,6 @@ GridLayerImpl::GridLayerImpl() :
 	draw_x_grid(true), draw_y_grid(true)
 { }
 
-GridLayer::GridLayer() :
-	impl(new GridLayerImpl())
-{ 
-	impl_base = PlotLayerImplPtr(impl);
-}
-
 void GridLayer::setDrawXGrid(bool state) {
 	impl->draw_x_grid = state;
 	fireChangeEvent();

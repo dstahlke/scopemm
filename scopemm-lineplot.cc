@@ -63,10 +63,7 @@ double PlotTraceImpl::getMaxY() {
 	return *std::max_element(ypts.begin(), ypts.end()); 
 }
 
-PlotTrace::PlotTrace() :
-	impl(new PlotTraceImpl())
-{ 
-	impl_base = PlotLayerImplPtr(impl);
+PlotTrace::PlotTrace() { 
 	setColor(1, 0, 0);
 }
 

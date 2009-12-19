@@ -10,8 +10,9 @@
 namespace scopemm {
 
 class PlotTraceImpl : public PlotLayerImplBase {
-	friend class PlotTrace;
 public:
+	PlotTraceImpl() { }
+
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() { return !xpts.empty(); }
 	virtual double getMinX();
@@ -19,15 +20,12 @@ public:
 	virtual double getMinY();
 	virtual double getMaxY();
 
-private:
-	PlotTraceImpl() { }
-
 	std::vector<double> xpts;
 	std::vector<double> ypts;
 	double rgb[3];
 };
 
-class PlotTrace : public PlotLayerBase {
+class PlotTrace : public PlotLayerSub<PlotTraceImpl> {
 public:
 	PlotTrace();
 
@@ -50,9 +48,6 @@ public:
 	template <class T>
 	PlotTrace& setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata);
 #endif // SCOPEMM_ENABLE_BLITZ
-
-private:
-	PlotTraceImpl *impl;
 };
 
 template <class Iter>

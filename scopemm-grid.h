@@ -6,7 +6,6 @@
 namespace scopemm {
 
 class GridLayerImpl : public PlotLayerImplBase {
-	friend class GridLayer;
 public:
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 
@@ -22,17 +21,13 @@ public:
 	bool draw_x_grid, draw_y_grid;
 };
 
-class GridLayer : public PlotLayerBase {
+class GridLayer : public PlotLayerSub<GridLayerImpl> {
 public:
-	GridLayer();
-
+	GridLayer() { }
 	~GridLayer() { }
 
 	void setDrawXGrid(bool state);
 	void setDrawYGrid(bool state);
-
-private:
-	GridLayerImpl *impl;
 };
 
 } // namespace scopemm

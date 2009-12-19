@@ -106,6 +106,17 @@ protected:
 	PlotLayerImplPtr impl_base;
 };
 
+template <class T>
+class PlotLayerSub : public PlotLayerBase {
+public:
+	PlotLayerSub() : impl(new T()) {
+		impl_base = PlotLayerImplPtr(impl);
+	}
+
+protected:
+	T *impl;
+};
+
 } // namespace scopemm
 
 #endif // SCOPEMM_PLOTCANVAS_H

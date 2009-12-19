@@ -39,8 +39,9 @@ public:
 };
 
 class RasterAreaImpl : public PlotLayerImplBase {
-	friend class RasterArea;
 public:
+	RasterAreaImpl() { }
+
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() { return true; }
 	virtual double getMinX() { return xmin; }
@@ -48,18 +49,15 @@ public:
 	virtual double getMinY() { return ymin; }
 	virtual double getMaxY() { return ymax; }
 
-private:
-	RasterAreaImpl() { }
-
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
 	RawRGB data_buf;
 	RawRGB draw_buf;
 };
 
-class RasterArea : public PlotLayerBase {
+class RasterArea : public PlotLayerSub<RasterAreaImpl> {
 public:
-	RasterArea();
+	RasterArea() { }
 
 	~RasterArea() { }
 
@@ -97,8 +95,6 @@ public:
 		blitz::Array<T, 2> data_b, T min_b, T max_b
 	);
 #endif // SCOPEMM_ENABLE_BLITZ
-
-	RasterAreaImpl *impl;
 };
 
 #ifdef SCOPEMM_ENABLE_BLITZ
