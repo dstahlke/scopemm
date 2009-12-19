@@ -19,6 +19,7 @@ public:
 	virtual double getMaxX();
 	virtual double getMinY();
 	virtual double getMaxY();
+	virtual double getZOrder() { return 2; }
 
 	std::vector<double> xpts;
 	std::vector<double> ypts;

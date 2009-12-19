@@ -48,6 +48,7 @@ public:
 	virtual double getMaxX() { return xmax; }
 	virtual double getMinY() { return ymin; }
 	virtual double getMaxY() { return ymax; }
+	virtual double getZOrder() { return 0; }
 
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?

@@ -51,7 +51,7 @@ public:
 			xpts.push_back(x);
 			ypts.push_back(y);
 			zpts.push_back(z);
-			xypts.push_back(std::pair<double, double>(x, y));
+			xypts.push_back(std::make_pair(x, y));
 		}
 
 		t1.setXYData(xypts.begin(), xypts.end());

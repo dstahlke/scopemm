@@ -75,6 +75,7 @@ private:
 	void recalcAutoRange();
 
 	std::set<PlotLayerImplPtr> layers;
+	// pointer is needed here because GridLayer is an incomplete type
 	std::auto_ptr<GridLayer> grid_layer;
 	bool x_auto, y_auto;
 	bool draw_x_axis, draw_y_axis;
@@ -93,6 +94,7 @@ public:
 	virtual double getMaxX() { assert(0); }
 	virtual double getMinY() { assert(0); }
 	virtual double getMaxY() { assert(0); }
+	virtual double getZOrder() = 0;
 
 	std::set<PlotCanvas *> change_listeners;
 };

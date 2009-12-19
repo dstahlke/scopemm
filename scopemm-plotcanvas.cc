@@ -138,8 +138,13 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 		cr->restore();
 	}
 
+	typedef std::pair<double, PlotLayerImplPtr> zbuf_element;
+	std::set<zbuf_element> zsorted;
 	BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
-		layer->draw(this, cr);
+		zsorted.insert(zbuf_element(layer->getZOrder(), layer));
+	}
+	BOOST_FOREACH(const zbuf_element &layer, zsorted) {
+		layer.second->draw(this, cr);
 	}
 
 	return true;
