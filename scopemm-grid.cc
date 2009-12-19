@@ -46,15 +46,13 @@ void GridLayerImpl::drawStripes(
 ) const {
 	if(from > to) std::swap(from, to);
 
-	double xmin = parent->getXMin();
-	double xmax = parent->getXMax();
-	double ymin = parent->getYMin();
-	double ymax = parent->getYMax();
+	const Bbox bbox = parent->getBbox();
+	const AffineTransform affine = parent->getAffine();
 
 	for(double p=from; p<=to; p+=step) {
 		double x1, y1, x2, y2;
-		parent->coordToScreen(horiz ? p : xmin, horiz ? ymin : p, x1, y1);
-		parent->coordToScreen(horiz ? p : xmax, horiz ? ymax : p, x2, y2);
+		affine.fwd(horiz ? p : bbox.xmin, horiz ? bbox.ymin : p, x1, y1);
+		affine.fwd(horiz ? p : bbox.xmax, horiz ? bbox.ymax : p, x2, y2);
 		cr->move_to(x1, y1);
 		cr->line_to(x2, y2);
 	}
@@ -70,53 +68,50 @@ void GridLayerImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	double grid_fg = 0.7;
 	double canvas_bg = 1.0;
 
-	double xmin = parent->getXMin();
-	double xmax = parent->getXMax();
-	double ymin = parent->getYMin();
-	double ymax = parent->getYMax();
+	const Bbox bbox = parent->getBbox();
 
 	cr->save();
 	cr->set_line_width(1);
 	cr->set_antialias(Cairo::ANTIALIAS_NONE);
 
 	if(draw_x_grid) {
-		double mag = rangeMagnitude(xmax-xmin);
+		double mag = rangeMagnitude(bbox.xmax-bbox.xmin);
 		double frac = ceil(mag) - mag;
 		frac = frac*2.0 - 1.0;
 		if(frac > 0) {
 			double color = grid_fg*frac + canvas_bg*(1.0-frac);
 			cr->set_source_rgb(color, color, color);
 			double step = pow(10, floor(mag)-1.0);
-			drawStripes(parent, cr, step*ceil(xmin/step), xmax, step, true);
+			drawStripes(parent, cr, step*ceil(bbox.xmin/step), bbox.xmax, step, true);
 		}
 	}
 
 	if(draw_y_grid) {
-		double mag = rangeMagnitude(ymax-ymin);
+		double mag = rangeMagnitude(bbox.ymax-bbox.ymin);
 		double frac = ceil(mag) - mag;
 		frac = frac*2.0 - 1.0;
 		if(frac > 0) {
 			double color = grid_fg*frac + canvas_bg*(1.0-frac);
 			cr->set_source_rgb(color, color, color);
 			double step = pow(10, floor(mag)-1.0);
-			drawStripes(parent, cr, step*ceil(ymin/step), ymax, step, false);
+			drawStripes(parent, cr, step*ceil(bbox.ymin/step), bbox.ymax, step, false);
 		}
 	}
 
 	if(draw_x_grid) {
-		double mag = rangeMagnitude(xmax-xmin);
+		double mag = rangeMagnitude(bbox.xmax-bbox.xmin);
 
 		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
 		double step = pow(10, floor(mag));
-		drawStripes(parent, cr, step*ceil(xmin/step), xmax, step, true);
+		drawStripes(parent, cr, step*ceil(bbox.xmin/step), bbox.xmax, step, true);
 	}
 
 	if(draw_y_grid) {
-		double mag = rangeMagnitude(ymax-ymin);
+		double mag = rangeMagnitude(bbox.ymax-bbox.ymin);
 
 		cr->set_source_rgb(grid_fg, grid_fg, grid_fg);
 		double step = pow(10, floor(mag));
-		drawStripes(parent, cr, step*ceil(ymin/step), ymax, step, false);
+		drawStripes(parent, cr, step*ceil(bbox.ymin/step), bbox.ymax, step, false);
 	}
 
 	cr->restore();

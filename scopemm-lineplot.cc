@@ -30,27 +30,14 @@ void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	const int w = parent->get_allocation().get_width();
 	const int h = parent->get_allocation().get_height();
 
-	const double xmin = parent->getXMin();
-	const double xmax = parent->getXMax();
-	const double ymin = parent->getYMin();
-	const double ymax = parent->getYMax();
-	const bool swap_axes = parent->getSwapAxes();
+	const AffineTransform affine = parent->getAffine();
 
 	assert(xpts.size() == ypts.size());
 	size_t npts = xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
 	for(size_t i=0; i<npts; ++i) {
-		double x = (xpts[i]-xmin)/(xmax-xmin);
-		double y = (ypts[i]-ymin)/(ymax-ymin);
-		if(swap_axes) std::swap(x, y);
-		y = 1.0-y;
-		x *= (w-1);
-		y *= (h-1);
-		//if(i<5) {
-		//	std::cout << "xpts=" << xpts[i] << std::endl;
-		//	std::cout << "ypts=" << ypts[i] << std::endl;
-		//	std::cout << "xy=" << x << "," << y << std::endl;
-		//}
+		double x, y;
+		affine.fwd(xpts[i], ypts[i], x, y);
 		if(!i) {
 			cr->move_to(x, y);
 		} else {

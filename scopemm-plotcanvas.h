@@ -44,31 +44,16 @@ public:
 	void setDrawXGrid(bool state=true);
 	void setDrawYGrid(bool state=true);
 
-	double getXMin() const { return bbox.xmin; }
-	double getXMax() const { return bbox.xmax; }
-	double getYMin() const { return bbox.ymin; }
-	double getYMax() const { return bbox.ymax; }
+	const Bbox &getBbox() const { return bbox; }
+	const AffineTransform &getAffine() const { return affine; }
 	bool getSwapAxes() const { return swap_axes; }
 
 	void coordToScreen(double xi, double yi, double &xo, double &yo) const {
 		affine.fwd(xi, yi, xo, yo);
-		//double x = (xmax==xmin) ? 0.5 : (xi-xmin)/(xmax-xmin);
-		//double y = (ymax==ymin) ? 0.5 : (yi-ymin)/(ymax-ymin);
-		//if(swap_axes) std::swap(x, y);
-		//y = 1.0-y;
-		//xo = x * (screen_w-1);
-		//yo = y * (screen_h-1);
 	}
 
 	void screenToCoord(double xi, double yi, double &xo, double &yo) const {
 		affine.inv(xi, yi, xo, yo);
-		////double x = (xmax==xmin) ? 0.5 : (xi-xmin)/(xmax-xmin);
-		//double x = (screen_w<=1) ? 0.5 : xi / (screen_w-1);
-		//double y = (screen_w<=1) ? 0.5 : yi / (screen_h-1);
-		//if(swap_axes) std::swap(x, y);
-		//y = 1.0-y;
-		//xo = x * (xmax-xmin) + xmin;
-		//yo = y * (ymax-ymin) + ymin;
 	}
 
 	bool on_expose_event(GdkEventExpose* event);

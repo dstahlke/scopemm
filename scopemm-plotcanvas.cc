@@ -103,6 +103,7 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 
 	screen_w = get_allocation().get_width();
 	screen_h = get_allocation().get_height();
+	recalcAffine();
 
 	Cairo::RefPtr<Cairo::Context> cr = window->create_cairo_context();
 	if(event) {

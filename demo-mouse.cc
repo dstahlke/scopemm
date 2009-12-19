@@ -1,5 +1,6 @@
 #include "scopemm.h"
 
+#include <iostream>
 #include <gtkmm/main.h>
 #include <gtkmm/window.h>
 #include <math.h>
@@ -28,6 +29,8 @@ public:
 	void mouse_clicked(int button) {
 		click_x = mouse.mouseX();
 		click_y = mouse.mouseY();
+
+		std::cout << "x=" << click_x << ", y=" << click_y << std::endl;
 
 		double r = 1.0;
 		const int nsamps = 100;
