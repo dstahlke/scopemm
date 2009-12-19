@@ -51,6 +51,9 @@ public:
 	void setSwapAxes(bool state=true);
 	RawRGB &getDataBuf();
 
+	//void coordToRaster(double xi, double yi, double &xo, double &yo) const;
+	//void rasterToCoord(double xi, double yi, double &xo, double &yo) const;
+
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
 	void setData(blitz::Array<T, 2> data);

@@ -18,6 +18,9 @@ public:
 	virtual double getMaxY() { return ymax; }
 	virtual double getZOrder() { return 0; }
 
+	//void coordToRaster(double xi, double yi, double &xo, double &yo) const;
+	//void rasterToCoord(double xi, double yi, double &xo, double &yo) const;
+
 	double xmin, xmax, ymin, ymax;
 	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
 	RawRGB data_buf;
