@@ -1,13 +1,11 @@
 #ifndef SCOPEMM_MOUSEADAPTER_H
 #define SCOPEMM_MOUSEADAPTER_H
 
-#include "scopemm-base.h"
-
 namespace scopemm {
 
 class MouseAdapter {
 public:
-	MouseAdapter(PlotBase *_plot);
+	MouseAdapter(PlotCanvas *_plot);
 
 	virtual ~MouseAdapter() { }
 
@@ -39,7 +37,7 @@ private:
 	bool on_leave_notify_event(GdkEventCrossing* event);
 	bool on_button_press_event(GdkEventButton* event);
 
-	PlotBase *plot;
+	PlotCanvas *plot;
 	bool mouse_in;
 	double mouse_x, mouse_y;
 	int button_state;

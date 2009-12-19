@@ -1,9 +1,9 @@
-#include "scopemm-mouseadapter.h"
+#include "scopemm.h"
 
 using namespace scopemm;
 
 MouseAdapter::MouseAdapter(
-	PlotBase *_plot
+	PlotCanvas *_plot
 ) : 
 	plot(_plot),
 	mouse_in(false),

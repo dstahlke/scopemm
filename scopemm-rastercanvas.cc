@@ -2,7 +2,7 @@
 #include <vector>
 #include <assert.h>
 
-#include "scopemm-rastercanvas.h"
+#include "scopemm.h"
 
 using namespace scopemm;
 

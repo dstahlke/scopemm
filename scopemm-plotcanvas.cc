@@ -1,6 +1,7 @@
-#include "scopemm-plotcanvas.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
+
+#include "scopemm.h"
 
 using namespace scopemm;
 
@@ -9,7 +10,8 @@ using namespace scopemm;
 PlotCanvas::PlotCanvas() :
 	x_auto(true), y_auto(true),
 	draw_x_axis(false), draw_y_axis(false),
-	draw_x_grid(false), draw_y_grid(false)
+	draw_x_grid(false), draw_y_grid(false),
+	xmin(0), xmax(1), ymin(0), ymax(1), swap_axes(false)
 { }
 
 PlotCanvas::~PlotCanvas() {

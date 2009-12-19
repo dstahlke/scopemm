@@ -1,6 +1,7 @@
-#include "scopemm-lineplot.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
+
+#include "scopemm.h"
 
 using namespace scopemm;
 
