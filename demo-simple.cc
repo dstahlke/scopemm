@@ -16,8 +16,11 @@ int main(int argc, char *argv[]) {
 	plot.setDrawAxes(true);
 	plot.setDrawGrids(true);
 
-	scopemm::PlotTrace t1 = plot.addTrace().setColor(1, 0, 0);
-	scopemm::PlotTrace t2 = plot.addTrace().setColor(0, 1, 0);
+	scopemm::PlotTrace t1;
+	scopemm::PlotTrace t2;
+	t1.setColor(1, 0, 0);
+	t2.setColor(0, 1, 0);
+	plot.addTrace(t1).addTrace(t2);
 
 	const int nsamps = 100;
 

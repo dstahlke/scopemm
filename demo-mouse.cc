@@ -16,8 +16,8 @@ public:
 		setDrawAxes(true);
 		setDrawGrids(true);
 
-		t1 = addTrace();
-		t2 = addTrace();
+		addTrace(t1);
+		addTrace(t2);
 
 		mouse.signal_clicked.connect(sigc::mem_fun(
 			this, &DemoWidget::mouse_clicked));

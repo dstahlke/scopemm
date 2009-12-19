@@ -1,6 +1,8 @@
 #ifndef SCOPEMM_LINEPLOT_H
 #define SCOPEMM_LINEPLOT_H
 
+#include <set>
+
 #include <gtkmm/main.h>
 #include <gtkmm/box.h>
 #include <gtkmm/drawingarea.h>
@@ -15,7 +17,9 @@
 namespace scopemm {
 
 class Plot1D;
-class PlotTrace;
+class PlotLayerBase;
+class PlotLayerImplBase;
+typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;
 
 class Plot1D : 
 	public PlotBase,
@@ -25,10 +29,9 @@ public:
 	Plot1D();
 	~Plot1D();
 
-	PlotTrace addTrace();
-	const PlotTrace &trace(int idx) const;
-	PlotTrace &trace(int idx);
+	Plot1D &addTrace(PlotLayerBase &layer);
 
+	// FIXME - these should all return a reference to *this
 	void setXAutoRange();
 	void setYAutoRange();
 	void setXRange(double min, double max);
@@ -44,10 +47,10 @@ public:
 	bool on_expose_event(GdkEventExpose* event);
 	void fireChangeEvent();
 
-#ifdef SCOPEMM_ENABLE_BLITZ
-	template <class T, int N>
-	void setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata);
-#endif // SCOPEMM_ENABLE_BLITZ
+//#ifdef SCOPEMM_ENABLE_BLITZ
+//	template <class T, int N>
+//	void setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata);
+//#endif // SCOPEMM_ENABLE_BLITZ
 
 private:
 	void drawStripes(
@@ -60,32 +63,57 @@ private:
 
 	void recalcAutoRange();
 
-	std::vector<PlotTrace> traces;
+	std::vector<PlotLayerImplPtr> layers;
 	bool x_auto, y_auto;
 	bool draw_x_axis, draw_y_axis;
 	bool draw_x_grid, draw_y_grid;
 };
 
-class PlotTraceImpl : private boost::noncopyable {
+class PlotLayerImplBase : private boost::noncopyable {
+public:
+	PlotLayerImplBase() { }
+	virtual ~PlotLayerImplBase() { }
+	virtual void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>) = 0;
+	virtual bool hasMinMax() = 0;
+	virtual double getMinX() = 0;
+	virtual double getMaxX() = 0;
+	virtual double getMinY() = 0;
+	virtual double getMaxY() = 0;
+
+	std::set<Plot1D *> change_listeners;
+};
+
+class PlotLayerBase {
+	friend class Plot1D;
+
+protected:
+	void fireChangeEvent();
+
+	PlotLayerImplPtr impl_base;
+};
+
+///////////////////////////
+// FIXME - move this to another file
+
+class PlotTraceImpl : public PlotLayerImplBase {
 	friend class PlotTrace;
+public:
+	virtual void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual bool hasMinMax() { return !xpts.empty(); }
+	virtual double getMinX();
+	virtual double getMaxX();
+	virtual double getMinY();
+	virtual double getMaxY();
 
 private:
-	PlotTraceImpl();
+	PlotTraceImpl() { }
 
-	// this is set just after construction of PlotTrace and is
-	// reset during destruction of Plot1D
-	void setChangeListener(Plot1D *p) { parent = p; }
-
-	void fireChangeEvent() { if(parent) parent->fireChangeEvent(); }
-
-	Plot1D *parent;
 	std::vector<double> xpts;
 	std::vector<double> ypts;
 	double rgb[3];
 };
 
-class PlotTrace {
-	friend class Plot1D;
+class PlotTrace : public PlotLayerBase {
 public:
 	PlotTrace();
 
@@ -109,20 +137,10 @@ public:
 	PlotTrace& setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata);
 #endif // SCOPEMM_ENABLE_BLITZ
 
-	void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>);
-
 	bool empty() { return impl->xpts.empty(); }
-	double getMinX();
-	double getMaxX();
-	double getMinY();
-	double getMaxY();
 
 private:
-	void setChangeListener(Plot1D *p) { impl->setChangeListener(p); }
-
-	void fireChangeEvent() { impl->fireChangeEvent(); }
-
-	boost::shared_ptr<PlotTraceImpl> impl;
+	PlotTraceImpl *impl;
 };
 
 template <class Iter>
@@ -196,13 +214,13 @@ PlotTrace& PlotTrace::setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata)
 	);
 }
 
-template <class T, int N>
-void Plot1D::setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata) {
-	assert(N == traces.size());
-	for(int i=0; i<N; i++) {
-		traces[i].setYData(ydata[i]);
-	}
-}
+//template <class T, int N>
+//void Plot1D::setYData(blitz::Array<blitz::TinyVector<T, N>, 1> ydata) {
+//	assert(N == traces.size());
+//	for(int i=0; i<N; i++) {
+//		traces[i].setYData(ydata[i]);
+//	}
+//}
 #endif // SCOPEMM_ENABLE_BLITZ
 
 } // namespace scopemm

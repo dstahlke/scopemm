@@ -53,10 +53,6 @@ public:
 
 	void fireChangeEvent();
 
-	void screenToGrid(double sx, double sy, double *tx, double *ty);
-
-	void gridToScreen(double tx, double ty, double *sx, double *sy);
-
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
 	void setData(blitz::Array<T, 2> data);

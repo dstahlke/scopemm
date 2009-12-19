@@ -13,9 +13,13 @@ public:
 		setDrawAxes();
 		setDrawGrids();
 
-		t1 = addTrace().setColor(1, 0, 0);
-		t2 = addTrace().setColor(0, 1, 0);
-		t3 = addTrace().setColor(0, 0, 1);
+		addTrace(t1);
+		addTrace(t2);
+		addTrace(t3);
+
+		t1.setColor(1, 0, 0);
+		t2.setColor(0, 1, 0);
+		t3.setColor(0, 0, 1);
 
 		alpha = 0;
 
