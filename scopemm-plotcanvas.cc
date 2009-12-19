@@ -49,7 +49,6 @@ void PlotCanvas::setYAutoRange() {
 }
 
 void PlotCanvas::setXRange(double min, double max) {
-	assert(min < max);
 	bbox.xmin = min;
 	bbox.xmax = max;
 	x_auto = false;
@@ -58,9 +57,16 @@ void PlotCanvas::setXRange(double min, double max) {
 }
 
 void PlotCanvas::setYRange(double min, double max) {
-	assert(min < max);
 	bbox.ymin = min;
 	bbox.ymax = max;
+	y_auto = false;
+	recalcAffine();
+	fireChangeEvent();
+}
+
+void PlotCanvas::setBbox(Bbox new_bbox) {
+	bbox = new_bbox;
+	x_auto = false;
 	y_auto = false;
 	recalcAffine();
 	fireChangeEvent();

@@ -36,6 +36,7 @@ public:
 	void setYAutoRange();
 	void setXRange(double min, double max);
 	void setYRange(double min, double max);
+	void setBbox(Bbox new_bbox);
 	void setSwapAxes(bool state=true);
 	void setDrawAxes(bool state=true); // FIXME - make this a layer
 	void setDrawXAxis(bool state=true);
