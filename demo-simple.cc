@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 	Gtk::Window win;
 	win.set_title("Test");
 
-	scopemm::Plot1D plot;
+	scopemm::PlotCanvas plot;
 	plot.setXAutoRange();
 	plot.setYAutoRange();
 	plot.setDrawAxes(true);

@@ -4,7 +4,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-class DemoWidget : public scopemm::Plot1D {
+class DemoWidget : public scopemm::PlotCanvas {
 public:
 	DemoWidget() :
 		mouse(this),

@@ -41,7 +41,7 @@ public:
 class RasterAreaImpl : public PlotLayerImplBase {
 	friend class RasterArea;
 public:
-	virtual void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() { return true; }
 	virtual double getMinX() { return xmin; }
 	virtual double getMaxX() { return xmax; }
@@ -52,7 +52,7 @@ private:
 	RasterAreaImpl() { }
 
 	double xmin, xmax, ymin, ymax;
-	bool swap_axes; // FIXME - how should this interact with Plot1D::swap_axes?
+	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
 	RawRGB data_buf;
 	RawRGB draw_buf;
 };

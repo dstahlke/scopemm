@@ -4,7 +4,7 @@
 #include <gtkmm/window.h>
 #include <iostream>
 
-class Sinewave : public scopemm::Plot1D {
+class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() : 
 		alpha(0),

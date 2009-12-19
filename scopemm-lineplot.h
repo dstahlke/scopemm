@@ -14,7 +14,7 @@ namespace scopemm {
 class PlotTraceImpl : public PlotLayerImplBase {
 	friend class PlotTrace;
 public:
-	virtual void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() { return !xpts.empty(); }
 	virtual double getMinX();
 	virtual double getMaxX();

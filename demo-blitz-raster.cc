@@ -6,7 +6,7 @@
 #include <iostream>
 #include <blitz/array.h>
 
-class Sinewave : public scopemm::Plot1D {
+class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() : 
 		alpha(0),

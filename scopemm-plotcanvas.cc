@@ -4,15 +4,15 @@
 
 using namespace scopemm;
 
-/// Plot1D ////////////////////////////////////////
+/// PlotCanvas ////////////////////////////////////////
 
-Plot1D::Plot1D() :
+PlotCanvas::PlotCanvas() :
 	x_auto(true), y_auto(true),
 	draw_x_axis(false), draw_y_axis(false),
 	draw_x_grid(false), draw_y_grid(false)
 { }
 
-Plot1D::~Plot1D() {
+PlotCanvas::~PlotCanvas() {
 	// now that our object no longer exists, it must not receive
 	// any more events
 	BOOST_FOREACH(PlotLayerImplPtr &layer, layers) {
@@ -20,26 +20,26 @@ Plot1D::~Plot1D() {
 	}
 }
 
-Plot1D &Plot1D::addTrace(PlotLayerBase &layer) {
+PlotCanvas &PlotCanvas::addTrace(PlotLayerBase &layer) {
 	layer.impl_base->change_listeners.insert(this);
 	layers.push_back(layer.impl_base);
 	fireChangeEvent();
 	return *this;
 }
 
-void Plot1D::setXAutoRange() {
+void PlotCanvas::setXAutoRange() {
 	x_auto = true;
 	recalcAutoRange();
 	fireChangeEvent();
 }
 
-void Plot1D::setYAutoRange() {
+void PlotCanvas::setYAutoRange() {
 	y_auto = true;
 	recalcAutoRange();
 	fireChangeEvent();
 }
 
-void Plot1D::setXRange(double min, double max) {
+void PlotCanvas::setXRange(double min, double max) {
 	assert(min < max);
 	xmin = min;
 	xmax = max;
@@ -47,7 +47,7 @@ void Plot1D::setXRange(double min, double max) {
 	fireChangeEvent();
 }
 
-void Plot1D::setYRange(double min, double max) {
+void PlotCanvas::setYRange(double min, double max) {
 	assert(min < max);
 	ymin = min;
 	ymax = max;
@@ -55,44 +55,44 @@ void Plot1D::setYRange(double min, double max) {
 	fireChangeEvent();
 }
 
-void Plot1D::setSwapAxes(bool state) {
+void PlotCanvas::setSwapAxes(bool state) {
 	swap_axes = state;
 	fireChangeEvent();
 }
 
-void Plot1D::setDrawAxes(bool state) {
+void PlotCanvas::setDrawAxes(bool state) {
 	draw_x_axis = state;
 	draw_y_axis = state;
 	fireChangeEvent();
 }
 
-void Plot1D::setDrawXAxis(bool state) {
+void PlotCanvas::setDrawXAxis(bool state) {
 	draw_x_axis = state;
 	fireChangeEvent();
 }
 
-void Plot1D::setDrawYAxis(bool state) {
+void PlotCanvas::setDrawYAxis(bool state) {
 	draw_y_axis = state;
 	fireChangeEvent();
 }
 
-void Plot1D::setDrawGrids(bool state) {
+void PlotCanvas::setDrawGrids(bool state) {
 	draw_x_grid = state;
 	draw_y_grid = state;
 	fireChangeEvent();
 }
 
-void Plot1D::setDrawXGrid(bool state) {
+void PlotCanvas::setDrawXGrid(bool state) {
 	draw_x_grid = state;
 	fireChangeEvent();
 }
 
-void Plot1D::setDrawYGrid(bool state) {
+void PlotCanvas::setDrawYGrid(bool state) {
 	draw_y_grid = state;
 	fireChangeEvent();
 }
 
-void Plot1D::drawStripes(
+void PlotCanvas::drawStripes(
 	const Cairo::RefPtr<Cairo::Context> &cr,
 	double from, double to, double step,
 	bool horiz
@@ -114,7 +114,7 @@ static double rangeMagnitude(double span) {
 	return log(fabs(span) * 1.0) / log(10);
 }
 
-void Plot1D::drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const {
+void PlotCanvas::drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const {
 	double grid_fg = 0.7;
 	double canvas_bg = 1.0;
 
@@ -165,7 +165,7 @@ void Plot1D::drawGrid(const Cairo::RefPtr<Cairo::Context> &cr) const {
 	cr->restore();
 }
 
-bool Plot1D::on_expose_event(GdkEventExpose* event) {
+bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
 
 	if(!window) return true;
@@ -220,12 +220,12 @@ bool Plot1D::on_expose_event(GdkEventExpose* event) {
 	return true;
 }
 
-void Plot1D::fireChangeEvent() {
+void PlotCanvas::fireChangeEvent() {
 	recalcAutoRange();
 	queue_draw();
 }
 
-void Plot1D::recalcAutoRange() {
+void PlotCanvas::recalcAutoRange() {
 	if(x_auto) {
 		bool first = true;
 		double min=0, max=0;
@@ -271,7 +271,7 @@ void Plot1D::recalcAutoRange() {
 /// PlotLayerBase ////////////////////////////////////
 
 void PlotLayerBase::fireChangeEvent() {
-	BOOST_FOREACH(Plot1D *l, impl_base->change_listeners) {
+	BOOST_FOREACH(PlotCanvas *l, impl_base->change_listeners) {
 		l->fireChangeEvent();
 	}
 }

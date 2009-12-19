@@ -56,7 +56,7 @@ void RasterArea::setYRange(double min, double max) {
 	fireChangeEvent();
 }
 
-void RasterAreaImpl::draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context> cr) {
+void RasterAreaImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	Glib::RefPtr<Gdk::Window> window = parent->get_window();
 
 	if(window && data_buf.w && data_buf.h) {

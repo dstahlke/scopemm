@@ -17,15 +17,15 @@ class PlotLayerBase;
 class PlotLayerImplBase;
 typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;
 
-class Plot1D : // FIXME - rename
+class PlotCanvas :
 	public PlotBase,
 	public boost::noncopyable 
 {
 public:
-	Plot1D();
-	~Plot1D();
+	PlotCanvas();
+	~PlotCanvas();
 
-	Plot1D &addTrace(PlotLayerBase &layer);
+	PlotCanvas &addTrace(PlotLayerBase &layer);
 
 	// FIXME - these should all return a reference to *this
 	void setXAutoRange();
@@ -64,18 +64,18 @@ class PlotLayerImplBase : private boost::noncopyable {
 public:
 	PlotLayerImplBase() { }
 	virtual ~PlotLayerImplBase() { }
-	virtual void draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context>) = 0;
+	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>) = 0;
 	virtual bool hasMinMax() = 0;
 	virtual double getMinX() = 0;
 	virtual double getMaxX() = 0;
 	virtual double getMinY() = 0;
 	virtual double getMaxY() = 0;
 
-	std::set<Plot1D *> change_listeners;
+	std::set<PlotCanvas *> change_listeners;
 };
 
 class PlotLayerBase {
-	friend class Plot1D;
+	friend class PlotCanvas;
 
 protected:
 	void fireChangeEvent();

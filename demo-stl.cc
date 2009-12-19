@@ -4,7 +4,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-class Sinewave : public scopemm::Plot1D {
+class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() {
 		setXAutoRange();

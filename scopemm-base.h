@@ -5,7 +5,7 @@
 
 namespace scopemm {
 
-class PlotBase : public Gtk::DrawingArea {
+class PlotBase : public Gtk::DrawingArea { // FIXME - absorb this into PlotCanvas
 public:
 	PlotBase() :
 		xmin(0), xmax(1), ymin(0), ymax(1), swap_axes(false)

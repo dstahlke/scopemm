@@ -4,7 +4,7 @@
 
 using namespace scopemm;
 
-void PlotTraceImpl::draw(Plot1D *parent, Cairo::RefPtr<Cairo::Context> cr) {
+void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	cr->save();
 	cr->set_line_width(1);
 	cr->set_source_rgb(rgb[0], rgb[1], rgb[2]);
