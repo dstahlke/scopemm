@@ -26,6 +26,8 @@ GridLayerImpl::GridLayerImpl() :
 	draw_x_grid(true), draw_y_grid(true)
 { }
 
+GridLayer::GridLayer() { }
+
 void GridLayer::setDrawXGrid(bool state) {
 	impl->draw_x_grid = state;
 	fireChangeEvent();

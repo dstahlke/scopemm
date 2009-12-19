@@ -9,7 +9,7 @@ class GridLayerImpl;
 
 class GridLayer : public PlotLayerSub<GridLayerImpl> {
 public:
-	GridLayer() { }
+	GridLayer();
 	~GridLayer() { }
 
 	void setDrawXGrid(bool state);

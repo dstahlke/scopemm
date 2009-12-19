@@ -4,7 +4,25 @@
 
 #include "scopemm.h"
 
-using namespace scopemm;
+namespace scopemm {
+
+class RasterAreaImpl : public PlotLayerImplBase {
+public:
+	RasterAreaImpl() { }
+
+	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual bool hasMinMax() { return true; }
+	virtual double getMinX() { return xmin; }
+	virtual double getMaxX() { return xmax; }
+	virtual double getMinY() { return ymin; }
+	virtual double getMaxY() { return ymax; }
+	virtual double getZOrder() { return 0; }
+
+	double xmin, xmax, ymin, ymax;
+	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
+	RawRGB data_buf;
+	RawRGB draw_buf;
+};
 
 void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose) {
 	resize(new_w, new_h);
@@ -32,6 +50,8 @@ void RawRGB::scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose)
 		}
 	}
 }
+
+RasterArea::RasterArea() { }
 
 void RasterArea::setSwapAxes(bool state) {
 	impl->swap_axes = state;
@@ -68,3 +88,7 @@ void RasterAreaImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) 
 		);
 	}
 }
+
+RawRGB &RasterArea::getDataBuf() { return impl->data_buf; }
+
+} // namespace scopemm

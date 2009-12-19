@@ -38,34 +38,18 @@ public:
 	std::vector<uint8_t> data;
 };
 
-class RasterAreaImpl : public PlotLayerImplBase {
-public:
-	RasterAreaImpl() { }
-
-	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
-	virtual bool hasMinMax() { return true; }
-	virtual double getMinX() { return xmin; }
-	virtual double getMaxX() { return xmax; }
-	virtual double getMinY() { return ymin; }
-	virtual double getMaxY() { return ymax; }
-	virtual double getZOrder() { return 0; }
-
-	double xmin, xmax, ymin, ymax;
-	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
-	RawRGB data_buf;
-	RawRGB draw_buf;
-};
+class RasterAreaImpl;
 
 class RasterArea : public PlotLayerSub<RasterAreaImpl> {
 public:
-	RasterArea() { }
+	RasterArea();
 
 	~RasterArea() { }
 
 	void setXRange(double min, double max);
 	void setYRange(double min, double max);
 	void setSwapAxes(bool state=true);
-	RawRGB &getDataBuf() { return impl->data_buf; }
+	RawRGB &getDataBuf();
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
@@ -157,7 +141,7 @@ void RasterArea::setData(
 	blitz::TinyVector<T, 3> min_vals(min_r, min_g, min_b);
 	blitz::TinyVector<T, 3> max_vals(max_r, max_g, max_b);
 
-	RawRGB &data_buf = impl->data_buf;
+	RawRGB &data_buf = getDataBuf();
 	data_buf.resize(w, h);
 
 	for(size_t band=0; band<3; band++) {
