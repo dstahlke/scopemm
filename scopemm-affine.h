@@ -35,6 +35,19 @@ public:
 		yo = m10*xi + m11*yi + m12;
 	}
 
+	HalfAffine &operator*(const HalfAffine &b) {
+		double c00 = m00*b.m00 + m01*b.m10;
+		double c10 = m10*b.m00 + m11*b.m10;
+		double c01 = m00*b.m01 + m01*b.m11;
+		double c11 = m10*b.m01 + m11*b.m11;
+		double c02, c12;
+		(*this)(b.m02, b.m12, c02, c12);
+		m00 = c00; m10 = c10;
+		m01 = c01; m11 = c11;
+		m02 = c02; m12 = c12;
+		return *this;
+	}
+
 	HalfAffine inverse() {
 		double det = m00*m11 - m10*m01;
 		assert(det);

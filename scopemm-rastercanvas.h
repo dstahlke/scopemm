@@ -31,7 +31,7 @@ public:
 		return data[(y*w+x)*3+band];
 	}
 
-	void scale(const RawRGB &in, size_t new_w, size_t new_h, bool transpose);
+	void transform(const RawRGB &in, HalfAffine affine);
 
 	size_t w;
 	size_t h;

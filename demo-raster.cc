@@ -22,13 +22,16 @@ public:
 		// changing these will affect the resolution and the
 		// position of the pattern, but the red dot should
 		// always line up with the mouse cursor
-		bool swap_axes = false;
+		bool plot_swap_axes = false;
+		bool data_swap_axes = false;
 		int w = 100;
 		int h = 100;
 		scopemm::Bbox bbox(-1, 1, -1, 1);
 
+		setXRange(-2, 1);
 		raster.setBbox(bbox);
-		raster.setSwapAxes(swap_axes);
+		raster.setSwapAxes(data_swap_axes);
+		setSwapAxes(plot_swap_axes);
 
 		scopemm::RawRGB &data_buf = raster.getDataBuf();
 		data_buf.resize(w, h);
