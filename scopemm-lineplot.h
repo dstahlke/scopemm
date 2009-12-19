@@ -9,22 +9,7 @@
 
 namespace scopemm {
 
-class PlotTraceImpl : public PlotLayerImplBase {
-public:
-	PlotTraceImpl() { }
-
-	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
-	virtual bool hasMinMax() { return !xpts.empty(); }
-	virtual double getMinX();
-	virtual double getMaxX();
-	virtual double getMinY();
-	virtual double getMaxY();
-	virtual double getZOrder() { return 2; }
-
-	std::vector<double> xpts;
-	std::vector<double> ypts;
-	double rgb[3];
-};
+class PlotTraceImpl;
 
 class PlotTrace : public PlotLayerSub<PlotTraceImpl> {
 public:
@@ -33,6 +18,9 @@ public:
 	~PlotTrace() { }
 
 	PlotTrace& setColor(double r, double g, double b);
+
+	std::vector<double> &getXPts();
+	std::vector<double> &getYPts();
 
 	template <class Iter>
 	PlotTrace& setYData(Iter yfirst, Iter ylast, bool steps=false);
@@ -53,27 +41,30 @@ public:
 
 template <class Iter>
 PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
+	std::vector<double> &xpts = getXPts();
+	std::vector<double> &ypts = getYPts();
+
 	size_t npts;
 	if(steps) {
-		impl->ypts.clear();
+		ypts.clear();
 		for(Iter p=yfirst; p!=ylast; ++p) {
-			impl->ypts.push_back(*p);
-			impl->ypts.push_back(*p);
+			ypts.push_back(*p);
+			ypts.push_back(*p);
 		}
-		npts = impl->ypts.size()/2;
+		npts = ypts.size()/2;
 	} else {
-		impl->ypts.assign(yfirst, ylast);
-		npts = impl->ypts.size();
+		ypts.assign(yfirst, ylast);
+		npts = ypts.size();
 	}
 
-	impl->xpts.clear();
+	xpts.clear();
 	if(steps) {
 		for(size_t i=0; i<npts; ++i) {
-			impl->xpts.push_back(i);
-			impl->xpts.push_back(i+1);
+			xpts.push_back(i);
+			xpts.push_back(i+1);
 		}
 	} else {
-		for(size_t i=0; i<npts; ++i) impl->xpts.push_back(i);
+		for(size_t i=0; i<npts; ++i) xpts.push_back(i);
 	}
 
 	fireChangeEvent();
@@ -83,10 +74,13 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 
 template <class IterX, class IterY>
 PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast) {
-	impl->xpts.assign(xfirst, xlast);
-	impl->ypts.assign(yfirst, ylast);
+	std::vector<double> &xpts = getXPts();
+	std::vector<double> &ypts = getYPts();
 
-	assert(impl->xpts.size() == impl->ypts.size());
+	xpts.assign(xfirst, xlast);
+	ypts.assign(yfirst, ylast);
+
+	assert(xpts.size() == ypts.size());
 
 	fireChangeEvent();
 
@@ -95,12 +89,15 @@ PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY y
 
 template <class Iter>
 PlotTrace& PlotTrace::setXYData(Iter xyfirst, Iter xylast) {
-	impl->xpts.clear();
-	impl->ypts.clear();
+	std::vector<double> &xpts = getXPts();
+	std::vector<double> &ypts = getYPts();
+
+	xpts.clear();
+	ypts.clear();
 
 	for(Iter p=xyfirst; p!=xylast; ++p) {
-		impl->xpts.push_back(p->first);
-		impl->ypts.push_back(p->second);
+		xpts.push_back(p->first);
+		ypts.push_back(p->second);
 	}
 
 	fireChangeEvent();

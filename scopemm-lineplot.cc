@@ -3,7 +3,24 @@
 
 #include "scopemm.h"
 
-using namespace scopemm;
+namespace scopemm {
+
+class PlotTraceImpl : public PlotLayerImplBase {
+public:
+	PlotTraceImpl() { }
+
+	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
+	virtual bool hasMinMax() { return !xpts.empty(); }
+	virtual double getMinX();
+	virtual double getMaxX();
+	virtual double getMinY();
+	virtual double getMaxY();
+	virtual double getZOrder() { return 2; }
+
+	std::vector<double> xpts;
+	std::vector<double> ypts;
+	double rgb[3];
+};
 
 void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	cr->save();
@@ -19,6 +36,7 @@ void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	const double ymax = parent->getYMax();
 	const bool swap_axes = parent->getSwapAxes();
 
+	assert(xpts.size() == ypts.size());
 	size_t npts = xpts.size();
 	//std::cout << "npts=" << npts << std::endl;
 	for(size_t i=0; i<npts; ++i) {
@@ -74,3 +92,9 @@ PlotTrace& PlotTrace::setColor(double r, double g, double b) {
 	fireChangeEvent();
 	return *this;
 }
+
+std::vector<double> &PlotTrace::getXPts() { return impl->xpts; }
+
+std::vector<double> &PlotTrace::getYPts() { return impl->ypts; }
+
+} // namespace scopemm
