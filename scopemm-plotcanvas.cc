@@ -164,10 +164,9 @@ void PlotCanvas::recalcAutoRange() {
 		double min=0, max=0;
 		BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
 			if(!layer->hasMinMax()) continue;
-			double sub_min = layer->getMinX();
-			double sub_max = layer->getMaxX();
-			if(first || sub_min < min) min = sub_min;
-			if(first || sub_max > max) max = sub_max;
+			Bbox sub_bbox = layer->getBbox();
+			if(first || sub_bbox.xmin < min) min = sub_bbox.xmin;
+			if(first || sub_bbox.xmax > max) max = sub_bbox.xmax;
 			first = false;
 		}
 		double delta = max-min;
@@ -184,10 +183,9 @@ void PlotCanvas::recalcAutoRange() {
 		double min=0, max=0;
 		BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
 			if(!layer->hasMinMax()) continue;
-			double sub_min = layer->getMinY();
-			double sub_max = layer->getMaxY();
-			if(first || sub_min < min) min = sub_min;
-			if(first || sub_max > max) max = sub_max;
+			Bbox sub_bbox = layer->getBbox();
+			if(first || sub_bbox.ymin < min) min = sub_bbox.ymin;
+			if(first || sub_bbox.ymax > max) max = sub_bbox.ymax;
 			first = false;
 		}
 		double delta = max-min;

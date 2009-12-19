@@ -8,7 +8,7 @@ namespace scopemm {
 class GridLayerImpl : public PlotLayerImplBase {
 public:
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
-	virtual double getZOrder() { return 1; }
+	virtual double getZOrder() const { return 1; }
 
 	void drawStripes(
 		const PlotCanvas *parent,

@@ -46,8 +46,7 @@ public:
 
 	~RasterArea() { }
 
-	void setXRange(double min, double max);
-	void setYRange(double min, double max);
+	void setBbox(Bbox bbox);
 	void setSwapAxes(bool state=true);
 	RawRGB &getDataBuf();
 

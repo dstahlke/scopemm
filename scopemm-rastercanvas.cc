@@ -8,20 +8,19 @@ namespace scopemm {
 
 class RasterAreaImpl : public PlotLayerImplBase {
 public:
-	RasterAreaImpl() { }
+	RasterAreaImpl() :
+		bbox(0, 1, 0, 1)
+	{ }
 
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
-	virtual bool hasMinMax() { return true; }
-	virtual double getMinX() { return xmin; }
-	virtual double getMaxX() { return xmax; }
-	virtual double getMinY() { return ymin; }
-	virtual double getMaxY() { return ymax; }
-	virtual double getZOrder() { return 0; }
+	virtual bool hasMinMax() const { return true; }
+	virtual Bbox getBbox() const { return bbox; }
+	virtual double getZOrder() const { return 0; }
 
 	//void coordToRaster(double xi, double yi, double &xo, double &yo) const;
 	//void rasterToCoord(double xi, double yi, double &xo, double &yo) const;
 
-	double xmin, xmax, ymin, ymax;
+	Bbox bbox;
 	bool swap_axes; // FIXME - how should this interact with PlotCanvas::swap_axes?
 	RawRGB data_buf;
 	RawRGB draw_buf;
@@ -61,15 +60,8 @@ void RasterArea::setSwapAxes(bool state) {
 	fireChangeEvent();
 }
 
-void RasterArea::setXRange(double min, double max) {
-	impl->xmin = min;
-	impl->xmax = max;
-	fireChangeEvent();
-}
-
-void RasterArea::setYRange(double min, double max) {
-	impl->ymin = min;
-	impl->ymax = max;
+void RasterArea::setBbox(Bbox bbox) {
+	impl->bbox = bbox;
 	fireChangeEvent();
 }
 

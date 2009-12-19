@@ -27,13 +27,9 @@ public:
 		bool swap_axes = false;
 		int w = 100;
 		int h = 100;
-		double xmin = -1;
-		double xmax =  1;
-		double ymin = -1;
-		double ymax =  1;
+		scopemm::Bbox bbox(-1, 1, -1, 1);
 
-		raster.setXRange(xmin, xmax);
-		raster.setYRange(ymin, ymax);
+		raster.setBbox(bbox);
 		raster.setSwapAxes(swap_axes);
 
 		if(data_r.shape()[0] != w || data_r.shape()[1] != h) {
@@ -44,8 +40,8 @@ public:
 
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
-				double x = (    double(i)/(w-1))*(xmax-xmin)+xmin;
-				double y = (1.0-double(j)/(h-1))*(ymax-ymin)+ymin;
+				double x = (    double(i)/(w-1))*(bbox.xmax-bbox.xmin)+bbox.xmin;
+				double y = (1.0-double(j)/(h-1))*(bbox.ymax-bbox.ymin)+bbox.ymin;
 				data_b(i, j) = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				data_g(i, j) = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				x -= mouse.mouseX();

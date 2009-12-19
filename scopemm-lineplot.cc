@@ -10,12 +10,9 @@ public:
 	PlotTraceImpl() { }
 
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
-	virtual bool hasMinMax() { return !xpts.empty(); }
-	virtual double getMinX();
-	virtual double getMaxX();
-	virtual double getMinY();
-	virtual double getMaxY();
-	virtual double getZOrder() { return 2; }
+	virtual bool hasMinMax() const { return !xpts.empty(); }
+	virtual Bbox getBbox() const;
+	virtual double getZOrder() const { return 2; }
 
 	std::vector<double> xpts;
 	std::vector<double> ypts;
@@ -26,9 +23,6 @@ void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	cr->save();
 	cr->set_line_width(1);
 	cr->set_source_rgb(rgb[0], rgb[1], rgb[2]);
-
-	const int w = parent->get_allocation().get_width();
-	const int h = parent->get_allocation().get_height();
 
 	const AffineTransform affine = parent->getAffine();
 
@@ -48,24 +42,15 @@ void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	cr->restore();
 }
 
-double PlotTraceImpl::getMinX() { 
+Bbox PlotTraceImpl::getBbox() const { 
 	assert(!xpts.empty());
-	return *std::min_element(xpts.begin(), xpts.end()); 
-}
-
-double PlotTraceImpl::getMaxX() { 
-	assert(!xpts.empty());
-	return *std::max_element(xpts.begin(), xpts.end()); 
-}
-
-double PlotTraceImpl::getMinY() { 
 	assert(!ypts.empty());
-	return *std::min_element(ypts.begin(), ypts.end()); 
-}
-
-double PlotTraceImpl::getMaxY() { 
-	assert(!ypts.empty());
-	return *std::max_element(ypts.begin(), ypts.end()); 
+	return Bbox(
+		*std::min_element(xpts.begin(), xpts.end()),
+		*std::max_element(xpts.begin(), xpts.end()),
+		*std::min_element(ypts.begin(), ypts.end()),
+		*std::max_element(ypts.begin(), ypts.end()) 
+	);
 }
 
 PlotTrace::PlotTrace() { 

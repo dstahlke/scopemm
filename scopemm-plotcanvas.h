@@ -79,12 +79,9 @@ public:
 	PlotLayerImplBase() { }
 	virtual ~PlotLayerImplBase() { }
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>) = 0;
-	virtual bool hasMinMax() { return false; }
-	virtual double getMinX() { assert(0); }
-	virtual double getMaxX() { assert(0); }
-	virtual double getMinY() { assert(0); }
-	virtual double getMaxY() { assert(0); }
-	virtual double getZOrder() = 0;
+	virtual bool hasMinMax() const { return false; }
+	virtual Bbox getBbox() const { assert(0); }
+	virtual double getZOrder() const = 0;
 
 	std::set<PlotCanvas *> change_listeners;
 };
