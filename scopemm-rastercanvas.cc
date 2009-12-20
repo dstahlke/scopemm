@@ -37,7 +37,7 @@ public:
 
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() const { return true; }
-	virtual Bbox getBbox() const { return bbox; }
+	virtual Bbox getBbox() const { return bbox.normalize(); }
 
 	CoordXform getAffine();
 

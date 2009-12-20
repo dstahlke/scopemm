@@ -35,8 +35,17 @@ public:
 		xmax(_xmax), ymax(_ymax)
 	{ }
 
-	Bbox transpose() {
+	Bbox transpose() const {
 		return Bbox(ymin, xmin, ymax, xmax);
+	}
+
+	Bbox normalize() const {
+		return Bbox(
+			std::min(xmin, xmax),
+			std::min(ymin, ymax),
+			std::max(xmin, xmax),
+			std::max(ymin, ymax)
+		);
 	}
 
 	Bbox &operator|=(const Bbox &b) {
