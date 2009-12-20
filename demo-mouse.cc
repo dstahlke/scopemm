@@ -40,7 +40,7 @@ public:
 			xpts.push_back(cos(theta)*r + click_x);
 			ypts.push_back(sin(theta)*r + click_y);
 		}
-		t1.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+		t1.setXYData(xpts, ypts);
 		t1.setColor(
 			button==1 ? 1 : 0,
 			button==2 ? 1 : 0,
@@ -57,7 +57,7 @@ public:
 			ypts.push_back(click_y);
 			ypts.push_back(mouseY());
 		}
-		t2.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+		t2.setXYData(xpts, ypts);
 		t2.setColor(
 			mouseButton1() ? 1 : 0.5,
 			mouseButton2() ? 1 : 0.5,

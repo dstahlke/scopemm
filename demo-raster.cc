@@ -80,7 +80,7 @@ public:
 				ypts.push_back(y + vb*0.1);
 			}
 		}
-		x_trace.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+		x_trace.setXYData(xpts, ypts);
 
 		xpts.clear();
 		ypts.clear();
@@ -96,7 +96,7 @@ public:
 				ypts.push_back(y);
 			}
 		}
-		y_trace.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+		y_trace.setXYData(xpts, ypts);
 
 		fireChangeEvent();
 

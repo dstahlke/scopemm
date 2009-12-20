@@ -22,20 +22,27 @@ public:
 	std::vector<double> &getXPts();
 	std::vector<double> &getYPts();
 
-	template <class Iter>
-	PlotTrace& setYData(Iter yfirst, Iter ylast, bool steps=false);
+	template <class IterY>
+	PlotTrace& setYData(std::pair<IterY, IterY> yiter, bool steps=false);
 
 	// this handles the blitz::Array<double, 1> type, as well as STL containers
-	template <class T>
-	PlotTrace& setYData(T ydata, bool steps=false);
+	template <class ArrY>
+	PlotTrace& setYData(ArrY ydata, bool steps=false);
+
+	template <class ArrX, class ArrY>
+	PlotTrace& setXYData(ArrX xarr, ArrY yarr);
 
 	template <class IterX, class IterY>
-	PlotTrace& setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast);
+	PlotTrace& setXYData(
+		std::pair<IterX, IterX> xiter, 
+		std::pair<IterY, IterY> yiter
+	);
 
-	// too bad we can't differentiate between a pair of containers of double
-	// and a pair of iterators that give std::pair<double>.
-	template <class Iter>
-	PlotTrace& setXYData(Iter xyfirst, Iter xylast);
+	template <class ArrXY>
+	PlotTrace& setXYData(ArrXY xyarr);
+
+	template <class IterXY>
+	PlotTrace& setXYData(std::pair<IterXY, IterXY> xyiter);
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
@@ -43,21 +50,21 @@ public:
 #endif // SCOPEMM_ENABLE_BLITZ
 };
 
-template <class Iter>
-PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
+template <class IterY>
+PlotTrace& PlotTrace::setYData(std::pair<IterY, IterY> yiter, bool steps) {
 	std::vector<double> &xpts = getXPts();
 	std::vector<double> &ypts = getYPts();
 
 	size_t npts;
 	if(steps) {
 		ypts.clear();
-		for(Iter p=yfirst; p!=ylast; ++p) {
+		for(IterY p=yiter.first; p!=yiter.second; ++p) {
 			ypts.push_back(*p);
 			ypts.push_back(*p);
 		}
 		npts = ypts.size()/2;
 	} else {
-		ypts.assign(yfirst, ylast);
+		ypts.assign(yiter.first, yiter.second);
 		npts = ypts.size();
 	}
 
@@ -76,41 +83,56 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 	return *this;
 }
 
-template <class T>
-PlotTrace& PlotTrace::setYData(T ydata, bool steps) {
-	return setYData(ydata.begin(), ydata.end(), steps);
+template <class ArrY>
+PlotTrace& PlotTrace::setYData(ArrY ydata, bool steps) {
+	return setYData(std::make_pair(ydata.begin(), ydata.end()), steps);
 }
 
 template <class IterX, class IterY>
-PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast) {
-	std::vector<double> &xpts = getXPts();
-	std::vector<double> &ypts = getYPts();
+PlotTrace& PlotTrace::setXYData(
+	std::pair<IterX, IterX> xiter, 
+	std::pair<IterY, IterY> yiter
+) {
+	getXPts().assign(xiter.first, xiter.second);
+	getYPts().assign(yiter.first, yiter.second);
 
-	xpts.assign(xfirst, xlast);
-	ypts.assign(yfirst, ylast);
-
-	assert(xpts.size() == ypts.size());
+	assert(getXPts().size() == getYPts().size());
 
 	fireChangeEvent();
 
 	return *this;
 }
 
-template <class Iter>
-PlotTrace& PlotTrace::setXYData(Iter xyfirst, Iter xylast) {
+template <class IterXY>
+PlotTrace& PlotTrace::setXYData(std::pair<IterXY, IterXY> xyiter) {
 	std::vector<double> &xpts = getXPts();
 	std::vector<double> &ypts = getYPts();
 
 	xpts.clear();
 	ypts.clear();
 
-	for(Iter p=xyfirst; p!=xylast; ++p) {
+	for(IterXY p=xyiter.first; p!=xyiter.second; ++p) {
 		xpts.push_back(p->first);
 		ypts.push_back(p->second);
 	}
 
 	fireChangeEvent();
 
+	return *this;
+}
+
+template <class ArrX, class ArrY>
+PlotTrace& PlotTrace::setXYData(ArrX xarr, ArrY yarr) {
+	setXYData(
+		std::make_pair(xarr.begin(), xarr.end()),
+		std::make_pair(yarr.begin(), yarr.end())
+	);
+	return *this;
+}
+
+template <class ArrXY>
+PlotTrace& PlotTrace::setXYData(ArrXY xyarr) {
+	setXYData(std::make_pair(xyarr.begin(), xyarr.end()));
 	return *this;
 }
 
