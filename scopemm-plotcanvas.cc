@@ -39,7 +39,7 @@ public:
 	double border_x, border_y;
 	int screen_w, screen_h;
 	Bbox bbox;
-	AffineTransform affine;
+	CoordXform affine;
 	bool swap_axes;
 	std::set<PlotLayerImplPtr> layers;
 	GridLayer grid_layer;
@@ -96,7 +96,7 @@ void PlotCanvasImpl::recalcAutoRange() {
 
 void PlotCanvasImpl::recalcAffine() {
 	Bbox screen_bbox(0, screen_w, screen_h, 0);
-	affine = AffineTransform::boxToBox(bbox, screen_bbox, swap_axes);
+	affine = CoordXform::boxToBox(bbox, screen_bbox, swap_axes);
 }
 
 /// PlotCanvas ////////////////////////////////////////
@@ -220,7 +220,7 @@ PlotCanvas &PlotCanvas::setDrawGrids(bool xgrid, bool ygrid) {
 
 const Bbox &PlotCanvas::getBbox() const { return impl->bbox; }
 
-const AffineTransform &PlotCanvas::getAffine() const { return impl->affine; }
+const CoordXform &PlotCanvas::getAffine() const { return impl->affine; }
 
 bool PlotCanvas::getSwapAxes() const { return impl->swap_axes; }
 

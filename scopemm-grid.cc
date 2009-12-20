@@ -70,7 +70,7 @@ void GridLayerImpl::drawStripes(
 	if(from > to) std::swap(from, to);
 
 	const Bbox bbox = parent->getBbox();
-	const AffineTransform affine = parent->getAffine();
+	const CoordXform affine = parent->getAffine();
 
 	for(double p=from; p<=to; p+=step) {
 		double x1, y1, x2, y2;

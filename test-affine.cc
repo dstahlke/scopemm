@@ -23,12 +23,12 @@
 using namespace scopemm;
 
 int main() {
-	HalfAffine a(
+	AffineTransform a(
 		2, 1.2,
 		3.5, 5,
 		10, 20
 	);
-	HalfAffine b(
+	AffineTransform b(
 		2.7, 6.2,
 		3.1, 2.3,
 		18, 13.5
@@ -43,7 +43,7 @@ int main() {
 	(b*a).inverse()(x, y, x, y);
 	std::cout << x << "," << y << std::endl;
 
-	AffineTransform c = AffineTransform::boxToBox(
+	CoordXform c = CoordXform::boxToBox(
 		Bbox(1, 3, -4, 3.3),
 		Bbox(3.2, 2.7, -10, 1.1),
 		true

@@ -70,7 +70,7 @@ public:
 	PlotCanvas &setDrawYGrid(bool state=true);
 
 	const Bbox &getBbox() const;
-	const AffineTransform &getAffine() const;
+	const CoordXform &getAffine() const;
 	bool getSwapAxes() const;
 
 	double mouseX() const;

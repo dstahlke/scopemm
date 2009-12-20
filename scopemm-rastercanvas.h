@@ -68,7 +68,7 @@ public:
 	RasterArea &setSwapAxes(bool state=true);
 	RasterArea &setBilinear(bool state=true);
 	RawRGB &getDataBuf();
-	AffineTransform getAffine();
+	CoordXform getAffine();
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>

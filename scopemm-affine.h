@@ -54,12 +54,12 @@ public:
 	double xmin, xmax, ymin, ymax;
 };
 
-class HalfAffine {
+class AffineTransform {
 public:
-	static const HalfAffine IDENTITY;
-	static const HalfAffine SWAP_AXES;
+	static const AffineTransform IDENTITY;
+	static const AffineTransform SWAP_AXES;
 
-	HalfAffine(
+	AffineTransform(
 		double _m00, double _m10,
 		double _m01, double _m11,
 		double _m02, double _m12
@@ -74,7 +74,7 @@ public:
 		yo = m10*xi + m11*yi + m12;
 	}
 
-	HalfAffine &operator*=(const HalfAffine &b) {
+	AffineTransform &operator*=(const AffineTransform &b) {
 		double c00 = m00*b.m00 + m01*b.m10;
 		double c10 = m10*b.m00 + m11*b.m10;
 		double c01 = m00*b.m01 + m01*b.m11;
@@ -87,11 +87,11 @@ public:
 		return *this;
 	}
 
-	HalfAffine operator*(const HalfAffine &b) const {
-		return HalfAffine(*this) *= b;
+	AffineTransform operator*(const AffineTransform &b) const {
+		return AffineTransform(*this) *= b;
 	}
 
-	HalfAffine inverse() {
+	AffineTransform inverse() {
 		double det = m00*m11 - m10*m01;
 		assert(det);
 		double i00 = m11/det;
@@ -100,10 +100,10 @@ public:
 		double i01 = -m01/det;
 		double i02 = -i00*m02 -i01*m12;
 		double i12 = -i10*m02 -i11*m12;
-		return HalfAffine(i00, i10, i01, i11, i02, i12);
+		return AffineTransform(i00, i10, i01, i11, i02, i12);
 	}
 
-	static HalfAffine boxToBox(Bbox from, Bbox to) {
+	static AffineTransform boxToBox(Bbox from, Bbox to) {
 		double sx = 
 			(from.xmax-from.xmin)
 			? (to.xmax-to.xmin) / (from.xmax-from.xmin)
@@ -114,49 +114,49 @@ public:
 			: 1;
 		double dx = to.xmin - from.xmin*sx;
 		double dy = to.ymin - from.ymin*sy;
-		return HalfAffine(sx, 0.0, 0.0, sy, dx, dy);
+		return AffineTransform(sx, 0.0, 0.0, sy, dx, dy);
 	}
 
 	double m00, m10, m01, m11, m02, m12;
 };
 
-class AffineTransform {
+class CoordXform {
 public:
-	AffineTransform() :
-		fwd(HalfAffine::IDENTITY),
-		inv(HalfAffine::IDENTITY)
+	CoordXform() :
+		fwd(AffineTransform::IDENTITY),
+		inv(AffineTransform::IDENTITY)
 	{ }
 
-//	AffineTransform(HalfAffine _fwd) :
+//	CoordXform(AffineTransform _fwd) :
 //		fwd(_fwd),
 //		inv(fwd.inverse())
 //	{ }
 
-	AffineTransform(HalfAffine _fwd, HalfAffine _inv) :
+	CoordXform(AffineTransform _fwd, AffineTransform _inv) :
 		fwd(_fwd),
 		inv(_inv)
 	{ }
 
-	static AffineTransform boxToBox(Bbox from, Bbox to, bool swap_axes=false) {
+	static CoordXform boxToBox(Bbox from, Bbox to, bool swap_axes=false) {
 		// NOTE: if either of the bounding boxes is degenerate, this will
 		// still produce usable transforms, although they will not really
 		// be inverses of each other
 		if(swap_axes) {
-			const HalfAffine sa = HalfAffine::SWAP_AXES;
-			return AffineTransform(
-				HalfAffine::boxToBox(from.transpose(), to) * sa,
-				sa * HalfAffine::boxToBox(to, from.transpose())
+			const AffineTransform sa = AffineTransform::SWAP_AXES;
+			return CoordXform(
+				AffineTransform::boxToBox(from.transpose(), to) * sa,
+				sa * AffineTransform::boxToBox(to, from.transpose())
 			);
 		} else {
-			return AffineTransform(
-				HalfAffine::boxToBox(from, to),
-				HalfAffine::boxToBox(to, from)
+			return CoordXform(
+				AffineTransform::boxToBox(from, to),
+				AffineTransform::boxToBox(to, from)
 			);
 		}
 	}
 
-	HalfAffine fwd;
-	HalfAffine inv;
+	AffineTransform fwd;
+	AffineTransform inv;
 };
 
 } // namespace scopemm

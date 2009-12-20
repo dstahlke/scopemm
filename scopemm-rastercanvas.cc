@@ -41,10 +41,10 @@ public:
 	virtual bool hasMinMax() const { return true; }
 	virtual Bbox getBbox() const { return bbox; }
 
-	AffineTransform getAffine();
+	CoordXform getAffine();
 
 	Bbox bbox;
-	AffineTransform affine;
+	CoordXform affine;
 	bool swap_axes;
 	bool bilinear;
 	RawRGB data_buf;
@@ -53,7 +53,7 @@ public:
 
 static void transform(
 	const RawRGB &in, RawRGB &out, 
-	HalfAffine affine, bool bilinear,
+	AffineTransform affine, bool bilinear,
 	size_t clip_xmin, size_t clip_xmax, 
 	size_t clip_ymin, size_t clip_ymax
 ) {
@@ -150,7 +150,7 @@ void RasterAreaImpl::draw(
 		const int w = parent->get_allocation().get_width();
 		const int h = parent->get_allocation().get_height();
 
-		HalfAffine screen_to_data = 
+		AffineTransform screen_to_data = 
 			getAffine().inv * parent->getAffine().inv;
 
 		int clip_xmin, clip_xmax, clip_ymin, clip_ymax;
@@ -187,13 +187,13 @@ void RasterAreaImpl::draw(
 	}
 }
 
-AffineTransform RasterAreaImpl::getAffine() {
-	return AffineTransform::boxToBox(
+CoordXform RasterAreaImpl::getAffine() {
+	return CoordXform::boxToBox(
 		Bbox(0, data_buf.w, data_buf.h, 0), bbox, swap_axes);
 }
 
 RawRGB &RasterArea::getDataBuf() { return impl->data_buf; }
 
-AffineTransform RasterArea::getAffine() { return impl->getAffine(); }
+CoordXform RasterArea::getAffine() { return impl->getAffine(); }
 
 } // namespace scopemm

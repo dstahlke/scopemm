@@ -59,7 +59,7 @@ public:
 		// will call resize itself, but we still need to do it here in order
 		// for the affine to be valid.
 		data_buf.resize(w, h);
-		scopemm::AffineTransform affine = raster.getAffine();
+		scopemm::CoordXform affine = raster.getAffine();
 
 		if(data_r.shape()[0] != w || data_r.shape()[1] != h) {
 			data_r.resize(w, h);

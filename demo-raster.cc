@@ -59,7 +59,7 @@ public:
 		// resize changes the size of the data_buf array.  This must be done
 		// before writing pixel data and before calling getAffine.
 		data_buf.resize(w, h);
-		scopemm::AffineTransform affine = raster.getAffine();
+		scopemm::CoordXform affine = raster.getAffine();
 
 		double mx = mouseX();
 		double my = mouseY();

@@ -68,7 +68,7 @@ void AxesLayerImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	cr->set_antialias(Cairo::ANTIALIAS_NONE);
 
 	const Bbox bbox = parent->getBbox();
-	const AffineTransform affine = parent->getAffine();
+	const CoordXform affine = parent->getAffine();
 
 	if(draw_x_axis) {
 		double x1, y1, x2, y2;

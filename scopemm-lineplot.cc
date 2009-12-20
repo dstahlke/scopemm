@@ -43,7 +43,7 @@ void PlotTraceImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 	cr->set_line_width(1);
 	cr->set_source_rgb(rgb[0], rgb[1], rgb[2]);
 
-	const AffineTransform affine = parent->getAffine();
+	const CoordXform affine = parent->getAffine();
 
 	assert(xpts.size() == ypts.size());
 	size_t npts = xpts.size();
