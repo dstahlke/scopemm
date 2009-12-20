@@ -40,7 +40,7 @@ public:
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
 				double x, y;
-				affine.fwd(i, j, x, y);
+				affine.fwd(i+0.5, j+0.5, x, y); // FIXME - docs for 0.5
 				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				double vg = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				x -= mouse.mouseX();

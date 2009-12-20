@@ -51,7 +51,6 @@ void AxesLayerImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
 
 	if(draw_x_axis) {
 		double x1, y1, x2, y2;
-		// FIXME - use affine
 		affine.fwd(0, bbox.ymin, x1, y1);
 		affine.fwd(0, bbox.ymax, x2, y2);
 		cr->move_to(x1, y1);

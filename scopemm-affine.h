@@ -1,6 +1,7 @@
 #ifndef SCOPEMM_AFFINE_H
 #define SCOPEMM_AFFINE_H
 
+#include <algorithm>
 #include <assert.h>
 
 namespace scopemm {
@@ -17,6 +18,18 @@ public:
 
 	Bbox transpose() {
 		return Bbox(ymin, ymax, xmin, xmax);
+	}
+
+	Bbox &operator|=(const Bbox &b) {
+		xmin = std::min(xmin, b.xmin);
+		xmax = std::max(xmax, b.xmax);
+		ymin = std::min(ymin, b.ymin);
+		ymax = std::max(ymax, b.ymax);
+		return *this;
+	}
+
+	Bbox operator|(const Bbox &b) const {
+		return Bbox(*this) |= b;
 	}
 
 	double xmin, xmax, ymin, ymax;
@@ -56,9 +69,7 @@ public:
 	}
 
 	HalfAffine operator*(const HalfAffine &b) const {
-		HalfAffine r = *this;
-		r *= b;
-		return r;
+		return HalfAffine(*this) *= b;
 	}
 
 	HalfAffine inverse() {
