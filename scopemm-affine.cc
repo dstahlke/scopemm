@@ -17,7 +17,7 @@
 	along with scopemm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "scopemm-affine.h"
+#include "scopemm/affine.h"
 
 namespace scopemm {
 	const AffineTransform AffineTransform::IDENTITY (1, 0, 0, 1, 0, 0);

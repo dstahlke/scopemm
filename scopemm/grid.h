@@ -17,24 +17,24 @@
 	along with scopemm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCOPEMM_AXES_H
-#define SCOPEMM_AXES_H
+#ifndef SCOPEMM_GRID_H
+#define SCOPEMM_GRID_H
 
-#include "scopemm-plotcanvas.h"
+#include "scopemm/plotcanvas.h"
 
 namespace scopemm {
 
-class AxesLayerImpl;
+class GridLayerImpl;
 
-class AxesLayer : public PlotLayerSub<AxesLayerImpl> {
+class GridLayer : public PlotLayerSub<GridLayerImpl> {
 public:
-	AxesLayer();
-	~AxesLayer() { }
+	GridLayer();
+	~GridLayer() { }
 
-	AxesLayer &setDrawXAxis(bool state);
-	AxesLayer &setDrawYAxis(bool state);
+	GridLayer &setDrawXGrid(bool state);
+	GridLayer &setDrawYGrid(bool state);
 };
 
 } // namespace scopemm
 
-#endif // SCOPEMM_AXES_H
+#endif // SCOPEMM_GRID_H

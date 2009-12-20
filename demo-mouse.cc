@@ -22,7 +22,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-#include "scopemm.h"
+#include "scopemm/scopemm.h"
 
 class DemoWidget : public scopemm::PlotCanvas {
 public:

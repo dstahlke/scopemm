@@ -23,7 +23,7 @@
 #include <blitz/array.h>
 
 #define SCOPEMM_ENABLE_BLITZ
-#include "scopemm.h"
+#include "scopemm/scopemm.h"
 
 class Sinewave : public scopemm::PlotCanvas {
 public:

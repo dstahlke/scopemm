@@ -21,7 +21,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-#include "scopemm.h"
+#include "scopemm/scopemm.h"
 
 class Sinewave : public scopemm::PlotCanvas {
 public:

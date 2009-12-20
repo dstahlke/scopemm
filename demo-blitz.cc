@@ -22,7 +22,7 @@
 #include <iostream>
 #include <blitz/array.h>
 
-#include "scopemm.h"
+#include "scopemm/scopemm.h"
 
 class Sinewave : public scopemm::PlotCanvas {
 public:

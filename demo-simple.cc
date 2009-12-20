@@ -22,7 +22,7 @@
 #include <gtkmm/window.h>
 #include <math.h>
 
-#include "scopemm.h"
+#include "scopemm/scopemm.h"
 
 int main(int argc, char *argv[]) {
 	Gtk::Main kit(argc, argv);

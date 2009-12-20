@@ -22,7 +22,7 @@
 
 #include <assert.h>
 
-#include "scopemm-bbox.h"
+#include "scopemm/bbox.h"
 
 namespace scopemm {
 

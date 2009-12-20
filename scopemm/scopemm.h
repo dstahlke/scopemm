@@ -17,24 +17,20 @@
 	along with scopemm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCOPEMM_GRID_H
-#define SCOPEMM_GRID_H
+#ifndef SCOPEMM_H
+#define SCOPEMM_H
 
-#include "scopemm-plotcanvas.h"
+#define ZORDER_RASTER_AREA 0.0
+#define ZORDER_GRID_LAYER 1.0
+#define ZORDER_AXES_LAYER 2.0
+#define ZORDER_LINE_PLOT 3.0
 
-namespace scopemm {
+#include "scopemm/bbox.h"
+#include "scopemm/affine.h"
+#include "scopemm/grid.h"
+#include "scopemm/axeslayer.h"
+#include "scopemm/plotcanvas.h"
+#include "scopemm/rastercanvas.h"
+#include "scopemm/lineplot.h"
 
-class GridLayerImpl;
-
-class GridLayer : public PlotLayerSub<GridLayerImpl> {
-public:
-	GridLayer();
-	~GridLayer() { }
-
-	GridLayer &setDrawXGrid(bool state);
-	GridLayer &setDrawYGrid(bool state);
-};
-
-} // namespace scopemm
-
-#endif // SCOPEMM_GRID_H
+#endif // SCOPEMM_H

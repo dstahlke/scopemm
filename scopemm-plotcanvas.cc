@@ -20,9 +20,9 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
-#include "scopemm.h"
-#include "scopemm-layerimpl.h"
-#include "scopemm-mouseadapter.h"
+#include "scopemm/scopemm.h"
+#include "scopemm/layerimpl.h"
+#include "scopemm/mouseadapter.h"
 
 namespace scopemm {
 

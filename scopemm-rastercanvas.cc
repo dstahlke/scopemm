@@ -24,8 +24,8 @@
 #include <algorithm>
 #include <math.h>
 
-#include "scopemm.h"
-#include "scopemm-layerimpl.h"
+#include "scopemm/scopemm.h"
+#include "scopemm/layerimpl.h"
 
 namespace scopemm {
 

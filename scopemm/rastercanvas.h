@@ -28,7 +28,7 @@
 #include <blitz/array.h>
 #endif // SCOPEMM_ENABLE_BLITZ
 
-#include "scopemm-plotcanvas.h"
+#include "scopemm/plotcanvas.h"
 
 namespace scopemm {
 

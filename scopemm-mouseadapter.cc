@@ -17,7 +17,7 @@
 	along with scopemm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "scopemm-mouseadapter.h"
+#include "scopemm/mouseadapter.h"
 
 namespace scopemm {
 

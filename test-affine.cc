@@ -19,7 +19,7 @@
 
 #include <iostream>
 
-#include "scopemm-affine.h"
+#include "scopemm/affine.h"
 using namespace scopemm;
 
 int main() {
