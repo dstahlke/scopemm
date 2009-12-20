@@ -30,14 +30,16 @@ GridLayer::GridLayer() {
 	setZOrder(ZORDER_GRID_LAYER);
 }
 
-void GridLayer::setDrawXGrid(bool state) {
+GridLayer &GridLayer::setDrawXGrid(bool state) {
 	impl->draw_x_grid = state;
 	fireChangeEvent();
+	return *this;
 }
 
-void GridLayer::setDrawYGrid(bool state) {
+GridLayer &GridLayer::setDrawYGrid(bool state) {
 	impl->draw_y_grid = state;
 	fireChangeEvent();
+	return *this;
 }
 
 void GridLayerImpl::drawStripes(

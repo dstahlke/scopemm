@@ -12,8 +12,8 @@ public:
 	GridLayer();
 	~GridLayer() { }
 
-	void setDrawXGrid(bool state);
-	void setDrawYGrid(bool state);
+	GridLayer &setDrawXGrid(bool state);
+	GridLayer &setDrawYGrid(bool state);
 };
 
 } // namespace scopemm

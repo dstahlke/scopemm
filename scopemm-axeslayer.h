@@ -12,8 +12,8 @@ public:
 	AxesLayer();
 	~AxesLayer() { }
 
-	void setDrawXAxis(bool state);
-	void setDrawYAxis(bool state);
+	AxesLayer &setDrawXAxis(bool state);
+	AxesLayer &setDrawYAxis(bool state);
 };
 
 } // namespace scopemm

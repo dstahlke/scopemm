@@ -94,27 +94,31 @@ RasterArea::RasterArea() {
 	setZOrder(ZORDER_RASTER_AREA);
 }
 
-void RasterArea::setSwapAxes(bool state) {
+RasterArea &RasterArea::setSwapAxes(bool state) {
 	impl->swap_axes = state;
 	fireChangeEvent();
+	return *this;
 }
 
-void RasterArea::setBilinear(bool state) {
+RasterArea &RasterArea::setBilinear(bool state) {
 	impl->bilinear = state;
 	fireChangeEvent();
+	return *this;
 }
 
-void RasterArea::setBbox(Bbox bbox) {
+RasterArea &RasterArea::setBbox(Bbox bbox) {
 	impl->bbox = bbox;
 	fireChangeEvent();
+	return *this;
 }
 
-void RasterArea::setBboxFromDataSize() {
+RasterArea &RasterArea::setBboxFromDataSize() {
 	if(impl->swap_axes) {
 		setBbox(Bbox(0, impl->data_buf.h, impl->data_buf.w, 0));
 	} else {
 		setBbox(Bbox(0, impl->data_buf.w, impl->data_buf.h, 0));
 	}
+	return *this;
 }
 
 void RasterAreaImpl::draw(

@@ -44,29 +44,29 @@ public:
 
 	~RasterArea() { }
 
-	void setBbox(Bbox bbox);
-	void setBboxFromDataSize();
-	void setSwapAxes(bool state=true);
-	void setBilinear(bool state=true);
+	RasterArea &setBbox(Bbox bbox);
+	RasterArea &setBboxFromDataSize();
+	RasterArea &setSwapAxes(bool state=true);
+	RasterArea &setBilinear(bool state=true);
 	RawRGB &getDataBuf();
 	AffineTransform getAffine();
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 	template <class T>
-	void setData(blitz::Array<T, 2> data);
+	RasterArea &setData(blitz::Array<T, 2> data);
 
 	template <class T>
-	void setData(blitz::Array<T, 2> data, T min, T max);
+	RasterArea &setData(blitz::Array<T, 2> data, T min, T max);
 
 	template <class T>
-	void setData(
+	RasterArea &setData(
 		blitz::Array<T, 2> data_r,
 		blitz::Array<T, 2> data_g,
 		blitz::Array<T, 2> data_b
 	);
 
 	template <class T>
-	void setData(
+	RasterArea &setData(
 		blitz::Array<T, 2> data_r,
 		blitz::Array<T, 2> data_g,
 		blitz::Array<T, 2> data_b,
@@ -74,7 +74,7 @@ public:
 	);
 
 	template <class T>
-	void setData(
+	RasterArea &setData(
 		blitz::Array<T, 2> data_r, T min_r, T max_r,
 		blitz::Array<T, 2> data_g, T min_g, T max_g,
 		blitz::Array<T, 2> data_b, T min_b, T max_b
@@ -84,14 +84,15 @@ public:
 
 #ifdef SCOPEMM_ENABLE_BLITZ
 template <class T>
-void RasterArea::setData(
+RasterArea &RasterArea::setData(
 	blitz::Array<T, 2> data
 ) {
 	setData(data, blitz::min(data), blitz::max(data));
+	return *this;
 }
 
 template <class T>
-void RasterArea::setData(
+RasterArea &RasterArea::setData(
 	blitz::Array<T, 2> data,
 	T min, T max
 ) {
@@ -100,10 +101,11 @@ void RasterArea::setData(
 		data, min, max,
 		data, min, max
 	);
+	return *this;
 }
 
 template <class T>
-void RasterArea::setData(
+RasterArea &RasterArea::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b
@@ -113,10 +115,11 @@ void RasterArea::setData(
 		data_g, blitz::min(data_g), blitz::max(data_g),
 		data_b, blitz::min(data_b), blitz::max(data_b)
 	);
+	return *this;
 }
 
 template <class T>
-void RasterArea::setData(
+RasterArea &RasterArea::setData(
 	blitz::Array<T, 2> data_r,
 	blitz::Array<T, 2> data_g,
 	blitz::Array<T, 2> data_b,
@@ -127,10 +130,11 @@ void RasterArea::setData(
 		data_g, min, max,
 		data_b, min, max
 	);
+	return *this;
 }
 
 template <class T>
-void RasterArea::setData(
+RasterArea &RasterArea::setData(
 	blitz::Array<T, 2> data_r, T min_r, T max_r,
 	blitz::Array<T, 2> data_g, T min_g, T max_g,
 	blitz::Array<T, 2> data_b, T min_b, T max_b
@@ -158,6 +162,7 @@ void RasterArea::setData(
 	}
 
 	fireChangeEvent();
+	return *this;
 }
 #endif // SCOPEMM_ENABLE_BLITZ
 

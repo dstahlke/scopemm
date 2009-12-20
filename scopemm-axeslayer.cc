@@ -30,14 +30,16 @@ AxesLayer::AxesLayer() {
 	setZOrder(ZORDER_AXES_LAYER);
 }
 
-void AxesLayer::setDrawXAxis(bool state) {
+AxesLayer &AxesLayer::setDrawXAxis(bool state) {
 	impl->draw_x_axis = state;
 	fireChangeEvent();
+	return *this;
 }
 
-void AxesLayer::setDrawYAxis(bool state) {
+AxesLayer &AxesLayer::setDrawYAxis(bool state) {
 	impl->draw_y_axis = state;
 	fireChangeEvent();
+	return *this;
 }
 
 void AxesLayerImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) {
