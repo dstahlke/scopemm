@@ -41,7 +41,8 @@ public:
 	void setDrawAxes(bool state=true); // FIXME - make this a layer
 	void setDrawXAxis(bool state=true);
 	void setDrawYAxis(bool state=true);
-	void setDrawGrids(bool state=true); // FIXME - params for x_grid and y_grid
+	void setDrawGrids(bool state=true);
+	void setDrawGrids(bool xgrid, bool ygrid);
 	void setDrawXGrid(bool state=true);
 	void setDrawYGrid(bool state=true);
 

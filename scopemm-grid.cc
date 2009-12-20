@@ -14,7 +14,7 @@ public:
 		const PlotCanvas *parent,
 		const Cairo::RefPtr<Cairo::Context> &cr,
 		double from, double to, double step,
-		bool horiz
+		bool vertical
 	) const;
 
 	GridLayerImpl();
@@ -42,7 +42,7 @@ void GridLayerImpl::drawStripes(
 	const PlotCanvas *parent,
 	const Cairo::RefPtr<Cairo::Context> &cr,
 	double from, double to, double step,
-	bool horiz
+	bool vertical
 ) const {
 	if(from > to) std::swap(from, to);
 
@@ -51,8 +51,8 @@ void GridLayerImpl::drawStripes(
 
 	for(double p=from; p<=to; p+=step) {
 		double x1, y1, x2, y2;
-		affine.fwd(horiz ? p : bbox.xmin, horiz ? bbox.ymin : p, x1, y1);
-		affine.fwd(horiz ? p : bbox.xmax, horiz ? bbox.ymax : p, x2, y2);
+		affine.fwd(vertical ? p : bbox.xmin, vertical ? bbox.ymin : p, x1, y1);
+		affine.fwd(vertical ? p : bbox.xmax, vertical ? bbox.ymax : p, x2, y2);
 		cr->move_to(x1, y1);
 		cr->line_to(x2, y2);
 	}

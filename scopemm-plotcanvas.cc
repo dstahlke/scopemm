@@ -94,7 +94,13 @@ void PlotCanvas::setDrawYAxis(bool state) {
 }
 
 void PlotCanvas::setDrawGrids(bool state) {
-	if(state) {
+	setDrawGrids(state, state);
+}
+
+void PlotCanvas::setDrawGrids(bool xgrid, bool ygrid) {
+	if(xgrid || ygrid) {
+		grid_layer->setDrawXGrid(xgrid);
+		grid_layer->setDrawYGrid(ygrid);
 		addLayer(*grid_layer);
 	} else {
 		removeLayer(*grid_layer);

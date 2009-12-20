@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	plot.setXAutoRange();
 	plot.setYAutoRange();
 	plot.setDrawAxes(true);
-	plot.setDrawGrids(true);
+	plot.setDrawGrids(false, true);
 	//plot.setSwapAxes();
 
 	scopemm::PlotTrace t1;
