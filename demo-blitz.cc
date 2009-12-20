@@ -66,7 +66,7 @@ public:
 		ypts = sin(10.0 * 2.0 * 3.14159 * (i-npts/2) / npts + alpha / 200.0) *
 			exp(-(i-npts/2)*(i-npts/2)/alpha) * scale;
 
-		zpts = 2.0 * (i-npts/2) / (double)npts * scale;
+		zpts = 2.0 * (i-npts/2) / double(npts) * scale;
 
 		xypts[0] = xpts;
 		xypts[1] = ypts;

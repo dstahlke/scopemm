@@ -20,8 +20,6 @@
 #include <algorithm>
 #include <vector>
 #include <assert.h>
-
-#include <algorithm>
 #include <math.h>
 
 #include "scopemm/scopemm.h"

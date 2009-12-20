@@ -20,6 +20,9 @@
 #ifndef SCOPEMM_LINEPLOT_H
 #define SCOPEMM_LINEPLOT_H
 
+#include <utility>
+#include <vector>
+
 #include "scopemm/plotcanvas.h"
 
 namespace scopemm {

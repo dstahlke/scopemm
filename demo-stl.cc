@@ -65,7 +65,7 @@ public:
 			double y = sin(10.0 * 2.0 * 3.14159 * (i-npts/2) / npts + alpha / 200.0) *
 				exp(-(i-npts/2)*(i-npts/2)/alpha) * scale;
 
-			double z = 2.0 * (i-npts/2) / (double)npts * scale;
+			double z = 2.0 * (i-npts/2) / double(npts) * scale;
 
 			xpts.push_back(x);
 			ypts.push_back(y);

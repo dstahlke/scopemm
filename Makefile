@@ -48,3 +48,9 @@ demo-blitz-raster.o: demo-blitz-raster.cc
 
 demo-blitz-raster: demo-blitz-raster.o
 	g++ -o $@ $^ $(LDFLAGS) $(EXE_LDFLAGS) `pkg-config blitz --libs`
+
+lint:
+	cpplint.py --filter=-whitespace,-readability/streams,-build/include_order,-legal/copyright,-build/header_guard \
+		*.[ch]* scopemm/*.h 2>&1 \
+		|grep -v 'Include the directory when naming .h files' \
+		|grep -v 'Using deprecated casting style.  Use static_cast<\(double\|int\)>'

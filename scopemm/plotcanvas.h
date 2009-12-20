@@ -52,8 +52,8 @@ public:
 	PlotCanvas();
 	~PlotCanvas();
 
-	PlotCanvas &addLayer(PlotLayerBase &layer);
-	PlotCanvas &removeLayer(PlotLayerBase &layer);
+	PlotCanvas &addLayer(const PlotLayerBase &layer);
+	PlotCanvas &removeLayer(const PlotLayerBase &layer);
 
 	PlotCanvas &setXAutoRange();
 	PlotCanvas &setYAutoRange();

@@ -115,14 +115,14 @@ PlotCanvas::~PlotCanvas() {
 	}
 }
 
-PlotCanvas &PlotCanvas::addLayer(PlotLayerBase &layer) {
+PlotCanvas &PlotCanvas::addLayer(const PlotLayerBase &layer) {
 	layer.impl_base->change_listeners.insert(this);
 	impl->layers.insert(layer.impl_base);
 	fireChangeEvent();
 	return *this;
 }
 
-PlotCanvas &PlotCanvas::removeLayer(PlotLayerBase &layer) {
+PlotCanvas &PlotCanvas::removeLayer(const PlotLayerBase &layer) {
 	layer.impl_base->change_listeners.erase(this);
 	impl->layers.erase(layer.impl_base);
 	fireChangeEvent();

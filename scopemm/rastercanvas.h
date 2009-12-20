@@ -20,8 +20,8 @@
 #ifndef SCOPEMM_GRIDCANVAS_H
 #define SCOPEMM_GRIDCANVAS_H
 
+#include <algorithm>
 #include <vector>
-
 #include <stdint.h>
 
 #ifdef SCOPEMM_ENABLE_BLITZ
