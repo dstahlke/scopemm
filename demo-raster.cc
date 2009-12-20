@@ -33,13 +33,18 @@ public:
 		int h = 100;
 
 		scopemm::RawRGB &data_buf = raster.getDataBuf();
+		// resize changes the size of the data_buf array.  This must be done
+		// before writing pixel data and before calling getAffine.
 		data_buf.resize(w, h);
-		scopemm::AffineTransform affine = raster.getAffine(); // FIXME - docs (requires resize)
+		scopemm::AffineTransform affine = raster.getAffine();
 
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
 				double x, y;
-				affine.fwd(i+0.5, j+0.5, x, y); // FIXME - docs for 0.5
+				// It is necessary to add 0.5 in order to get the coords of the
+				// pixel center rather than the pixel edge.  This really only
+				// matters when the pixels are big.
+				affine.fwd(i+0.5, j+0.5, x, y);
 				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				double vg = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				x -= mouseX();

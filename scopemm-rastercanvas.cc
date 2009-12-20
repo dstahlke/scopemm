@@ -111,7 +111,7 @@ void RasterArea::setBbox(Bbox bbox) {
 
 void RasterAreaImpl::draw(
 	PlotCanvas *parent,
-	Cairo::RefPtr<Cairo::Context> cr
+	Cairo::RefPtr<Cairo::Context> cr __attribute__((unused))
 ) {
 	Glib::RefPtr<Gdk::Window> window = parent->get_window();
 
