@@ -33,19 +33,18 @@ public:
 	PlotCanvas &addLayer(PlotLayerBase &layer);
 	PlotCanvas &removeLayer(PlotLayerBase &layer);
 
-	// FIXME - these should all return a reference to *this
-	void setXAutoRange();
-	void setYAutoRange();
-	void setXRange(double min, double max);
-	void setYRange(double min, double max);
-	void setBbox(Bbox new_bbox);
-	void setSwapAxes(bool state=true);
-	void setDrawAxes(bool state=true);
-	void setDrawAxes(bool xaxis, bool yaxis);
-	void setDrawGrids(bool state=true);
-	void setDrawGrids(bool xgrid, bool ygrid);
-	void setDrawXGrid(bool state=true);
-	void setDrawYGrid(bool state=true);
+	PlotCanvas &setXAutoRange();
+	PlotCanvas &setYAutoRange();
+	PlotCanvas &setXRange(double min, double max);
+	PlotCanvas &setYRange(double min, double max);
+	PlotCanvas &setBbox(Bbox new_bbox);
+	PlotCanvas &setSwapAxes(bool state=true);
+	PlotCanvas &setDrawAxes(bool state=true);
+	PlotCanvas &setDrawAxes(bool xaxis, bool yaxis);
+	PlotCanvas &setDrawGrids(bool state=true);
+	PlotCanvas &setDrawGrids(bool xgrid, bool ygrid);
+	PlotCanvas &setDrawXGrid(bool state=true);
+	PlotCanvas &setDrawYGrid(bool state=true);
 
 	const Bbox &getBbox() const;
 	const AffineTransform &getAffine() const;
@@ -62,7 +61,7 @@ public:
 	sigc::signal<void> &signal_plot_motion();
 
 	bool on_expose_event(GdkEventExpose* event);
-	void fireChangeEvent();
+	PlotCanvas &fireChangeEvent();
 
 private:
 	PlotCanvasImplPtr impl;

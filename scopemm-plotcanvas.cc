@@ -108,52 +108,59 @@ PlotCanvas &PlotCanvas::removeLayer(PlotLayerBase &layer) {
 	return *this;
 }
 
-void PlotCanvas::setXAutoRange() {
+PlotCanvas &PlotCanvas::setXAutoRange() {
 	impl->x_auto = true;
 	impl->recalcAutoRange();
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setYAutoRange() {
+PlotCanvas &PlotCanvas::setYAutoRange() {
 	impl->y_auto = true;
 	impl->recalcAutoRange();
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setXRange(double min, double max) {
+PlotCanvas &PlotCanvas::setXRange(double min, double max) {
 	impl->bbox.xmin = min;
 	impl->bbox.xmax = max;
 	impl->x_auto = false;
 	impl->recalcAffine();
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setYRange(double min, double max) {
+PlotCanvas &PlotCanvas::setYRange(double min, double max) {
 	impl->bbox.ymin = min;
 	impl->bbox.ymax = max;
 	impl->y_auto = false;
 	impl->recalcAffine();
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setBbox(Bbox new_bbox) {
+PlotCanvas &PlotCanvas::setBbox(Bbox new_bbox) {
 	impl->bbox = new_bbox;
 	impl->x_auto = false;
 	impl->y_auto = false;
 	impl->recalcAffine();
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setSwapAxes(bool state) {
+PlotCanvas &PlotCanvas::setSwapAxes(bool state) {
 	impl->swap_axes = state;
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setDrawAxes(bool state) {
+PlotCanvas &PlotCanvas::setDrawAxes(bool state) {
 	setDrawAxes(state, state);
+	return *this;
 }
 
-void PlotCanvas::setDrawAxes(bool xaxis, bool yaxis) {
+PlotCanvas &PlotCanvas::setDrawAxes(bool xaxis, bool yaxis) {
 	if(xaxis || yaxis) {
 		impl->axes_layer.setDrawXAxis(xaxis);
 		impl->axes_layer.setDrawYAxis(yaxis);
@@ -162,13 +169,15 @@ void PlotCanvas::setDrawAxes(bool xaxis, bool yaxis) {
 		removeLayer(impl->axes_layer);
 	}
 	fireChangeEvent();
+	return *this;
 }
 
-void PlotCanvas::setDrawGrids(bool state) {
+PlotCanvas &PlotCanvas::setDrawGrids(bool state) {
 	setDrawGrids(state, state);
+	return *this;
 }
 
-void PlotCanvas::setDrawGrids(bool xgrid, bool ygrid) {
+PlotCanvas &PlotCanvas::setDrawGrids(bool xgrid, bool ygrid) {
 	if(xgrid || ygrid) {
 		impl->grid_layer.setDrawXGrid(xgrid);
 		impl->grid_layer.setDrawYGrid(ygrid);
@@ -177,6 +186,7 @@ void PlotCanvas::setDrawGrids(bool xgrid, bool ygrid) {
 		removeLayer(impl->grid_layer);
 	}
 	fireChangeEvent();
+	return *this;
 }
 
 const Bbox &PlotCanvas::getBbox() const { return impl->bbox; }
@@ -252,9 +262,10 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 	return true;
 }
 
-void PlotCanvas::fireChangeEvent() {
+PlotCanvas &PlotCanvas::fireChangeEvent() {
 	impl->recalcAutoRange();
 	queue_draw();
+	return *this;
 }
 
 /// PlotLayerBase ////////////////////////////////////
