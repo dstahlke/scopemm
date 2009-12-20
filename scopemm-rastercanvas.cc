@@ -32,7 +32,7 @@ namespace scopemm {
 class RasterAreaImpl : public PlotLayerImplBase {
 public:
 	RasterAreaImpl() :
-		bbox(0, 1, 0, 1),
+		bbox(0, 0, 1, 1),
 		swap_axes(false),
 		bilinear(false)
 	{ }
@@ -133,9 +133,9 @@ RasterArea &RasterArea::setBbox(Bbox bbox) {
 
 RasterArea &RasterArea::setBboxFromDataSize() {
 	if(impl->swap_axes) {
-		setBbox(Bbox(0, impl->data_buf.h, impl->data_buf.w, 0));
-	} else {
 		setBbox(Bbox(0, impl->data_buf.w, impl->data_buf.h, 0));
+	} else {
+		setBbox(Bbox(0, impl->data_buf.h, impl->data_buf.w, 0));
 	}
 	return *this;
 }
@@ -157,13 +157,13 @@ void RasterAreaImpl::draw(
 		{
 			double x, y;
 			parent->getAffine().fwd(bbox.xmin, bbox.ymin, x, y);
-			Bbox clip_bbox(x, x, y, y);              
+			Bbox clip_bbox(x, y, x, y);              
 			parent->getAffine().fwd(bbox.xmin, bbox.ymax, x, y);
-			clip_bbox |= Bbox(x, x, y, y) ;          
+			clip_bbox |= Bbox(x, y, x, y) ;          
 			parent->getAffine().fwd(bbox.xmax, bbox.ymin, x, y);
-			clip_bbox |= Bbox(x, x, y, y) ;          
+			clip_bbox |= Bbox(x, y, x, y) ;          
 			parent->getAffine().fwd(bbox.xmax, bbox.ymax, x, y);
-			clip_bbox |= Bbox(x, x, y, y);
+			clip_bbox |= Bbox(x, y, x, y);
 
 			clip_xmin = std::max(int(ceil(clip_bbox.xmin)), 0);
 			clip_xmax = std::min(int(floor(clip_bbox.xmax)), w);
@@ -189,7 +189,7 @@ void RasterAreaImpl::draw(
 
 CoordXform RasterAreaImpl::getAffine() {
 	return CoordXform::boxToBox(
-		Bbox(0, data_buf.w, data_buf.h, 0), bbox, swap_axes);
+		Bbox(0, data_buf.h, data_buf.w, 0), bbox, swap_axes);
 }
 
 RawRGB &RasterArea::getDataBuf() { return impl->data_buf; }

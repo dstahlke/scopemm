@@ -50,7 +50,7 @@ public:
 PlotCanvasImpl::PlotCanvasImpl() : 
 	x_auto(true), y_auto(true),
 	border_x(0.02), border_y(0.02),
-	bbox(0, 1, 0, 1), swap_axes(false)
+	bbox(0, 0, 1, 1), swap_axes(false)
 { }
 
 void PlotCanvasImpl::recalcAutoRange() {
@@ -95,7 +95,7 @@ void PlotCanvasImpl::recalcAutoRange() {
 }
 
 void PlotCanvasImpl::recalcAffine() {
-	Bbox screen_bbox(0, screen_w, screen_h, 0);
+	Bbox screen_bbox(0, screen_h, screen_w, 0);
 	affine = CoordXform::boxToBox(bbox, screen_bbox, swap_axes);
 }
 

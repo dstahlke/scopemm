@@ -35,8 +35,8 @@ public:
 		// changing these will affect the resolution and the
 		// position of the pattern, but the red dot should
 		// always line up with the mouse cursor
-		//setBbox(scopemm::Bbox(-2, 3, -2, 3));
-		raster.setBbox(scopemm::Bbox(-1, 1, -1, 1));
+		//setBbox(scopemm::Bbox(-2, -2, 3, 3));
+		raster.setBbox(scopemm::Bbox(-1, -1, 1, 1));
 		raster.setSwapAxes(false);
 		setSwapAxes(false);
 

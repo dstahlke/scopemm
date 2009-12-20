@@ -66,9 +66,9 @@ Bbox PlotTraceImpl::getBbox() const {
 	assert(!ypts.empty());
 	return Bbox(
 		*std::min_element(xpts.begin(), xpts.end()),
-		*std::max_element(xpts.begin(), xpts.end()),
 		*std::min_element(ypts.begin(), ypts.end()),
-		*std::max_element(ypts.begin(), ypts.end()) 
+		*std::max_element(xpts.begin(), xpts.end()),
+		*std::max_element(ypts.begin(), ypts.end())
 	);
 }
 

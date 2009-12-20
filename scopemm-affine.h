@@ -28,21 +28,21 @@ namespace scopemm {
 class Bbox {
 public:
 	Bbox(
-		double _xmin, double _xmax,
-		double _ymin, double _ymax
+		double _xmin, double _ymin, 
+		double _xmax, double _ymax
 	) :
-		xmin(_xmin), xmax(_xmax),
-		ymin(_ymin), ymax(_ymax)
+		xmin(_xmin), ymin(_ymin), 
+		xmax(_xmax), ymax(_ymax)
 	{ }
 
 	Bbox transpose() {
-		return Bbox(ymin, ymax, xmin, xmax);
+		return Bbox(ymin, xmin, ymax, xmax);
 	}
 
 	Bbox &operator|=(const Bbox &b) {
 		xmin = std::min(xmin, b.xmin);
-		xmax = std::max(xmax, b.xmax);
 		ymin = std::min(ymin, b.ymin);
+		xmax = std::max(xmax, b.xmax);
 		ymax = std::max(ymax, b.ymax);
 		return *this;
 	}
@@ -51,7 +51,7 @@ public:
 		return Bbox(*this) |= b;
 	}
 
-	double xmin, xmax, ymin, ymax;
+	double xmin, ymin, xmax, ymax;
 };
 
 class AffineTransform {

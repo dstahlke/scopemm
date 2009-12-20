@@ -44,8 +44,8 @@ int main() {
 	std::cout << x << "," << y << std::endl;
 
 	CoordXform c = CoordXform::boxToBox(
-		Bbox(1, 3, -4, 3.3),
-		Bbox(3.2, 2.7, -10, 1.1),
+		Bbox(1, -4, 3, 3.3),
+		Bbox(3.2, -10, 2.7, 1.1),
 		true
 	);
 	x=1.23; y=7;
