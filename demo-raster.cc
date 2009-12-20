@@ -12,6 +12,17 @@ public:
 	{
 		addLayer(raster);
 
+		// changing these will affect the resolution and the
+		// position of the pattern, but the red dot should
+		// always line up with the mouse cursor
+		//setBbox(scopemm::Bbox(-2, 3, -2, 3));
+		raster.setBbox(scopemm::Bbox(-1, 1, -1, 1));
+		raster.setSwapAxes(false);
+		setSwapAxes(false);
+
+		// bilinear interpolation, makes it look nicer
+		raster.setBilinear(true);
+
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
 	}
@@ -19,19 +30,8 @@ public:
 	virtual bool on_timeout() {
 		alpha += 0.1;
 
-		// changing these will affect the resolution and the
-		// position of the pattern, but the red dot should
-		// always line up with the mouse cursor
-		bool plot_swap_axes = false;
-		bool data_swap_axes = false;
 		int w = 100;
 		int h = 100;
-		scopemm::Bbox bbox(-1, 1, -1, 1);
-
-		//setXRange(-2, 1);
-		raster.setBbox(bbox);
-		raster.setSwapAxes(data_swap_axes);
-		setSwapAxes(plot_swap_axes);
 
 		scopemm::RawRGB &data_buf = raster.getDataBuf();
 		data_buf.resize(w, h);
@@ -47,7 +47,7 @@ public:
 				y -= mouse.mouseY();
 				double vr;
 				if(mouse.mouseIn()) {
-					vr = exp(-(x*x+y*y)*10.0);
+					vr = exp(-(x*x+y*y)*50.0);
 				} else {
 					vr = 0;
 				}
