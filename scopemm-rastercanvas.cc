@@ -37,14 +37,25 @@ void RawRGB::transform(const RawRGB &in, HalfAffine affine, bool bilinear) {
 			double in_x, in_y;
 			affine(out_x, out_y, in_x, in_y);
 			if(bilinear) {
-				int i = int(floor(in_x));
-				int j = int(floor(in_y));
-				if(i>=0 && j>=0 && size_t(i)+1<in.w && size_t(j)+1<in.h) {
+				if(
+					in_x>=0 && 
+					in_y>=0 && 
+					in_x<=double(in.w) && 
+					in_y<=double(in.h)
+				) {
+					in_x -= 0.5;
+					in_y -= 0.5;
+					int i = int(floor(in_x));
+					int j = int(floor(in_y));
 					double dx = in_x-i;
 					double dy = in_y-j;
 					for(size_t band=0; band<3; band++) {
-						double v0 = (1.0-dx)*in(i, j  , band) + dx*in(i+1, j  , band);
-						double v1 = (1.0-dx)*in(i, j+1, band) + dx*in(i+1, j+1, band);
+						int i0 = (i>=0) ? i : i+1;
+						int i1 = (i+1<int(in.w)) ? i+1 : i;
+						int j0 = (j>=0) ? j : j+1;
+						int j1 = (j+1<int(in.h)) ? j+1 : j;
+						double v0 = (1.0-dx)*in(i0, j0, band) + dx*in(i1, j0, band);
+						double v1 = (1.0-dx)*in(i0, j1, band) + dx*in(i1, j1, band);
 						double v  = (1.0-dy)*v0 + dy*v1;
 						(*this)(out_x, out_y, band) = v;
 					}
@@ -55,8 +66,8 @@ void RawRGB::transform(const RawRGB &in, HalfAffine affine, bool bilinear) {
 					}
 				}
 			} else {
-				int i = int(round(in_x));
-				int j = int(round(in_y));
+				int i = int(floor(in_x));
+				int j = int(floor(in_y));
 				if(i>=0 && j>=0 && size_t(i)<in.w && size_t(j)<in.h) {
 					for(size_t band=0; band<3; band++) {
 						(*this)(out_x, out_y, band) = in(i, j, band);
@@ -116,7 +127,7 @@ void RasterAreaImpl::draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context> cr) 
 
 AffineTransform RasterAreaImpl::getAffine() {
 	return AffineTransform::boxToBox(
-		Bbox(0, data_buf.w-1, data_buf.h-1, 0), bbox, swap_axes);
+		Bbox(0, data_buf.w, data_buf.h, 0), bbox, swap_axes);
 }
 
 RawRGB &RasterArea::getDataBuf() { return impl->data_buf; }

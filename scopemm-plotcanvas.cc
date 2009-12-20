@@ -213,7 +213,7 @@ void PlotCanvas::recalcAutoRange() {
 }
 
 void PlotCanvas::recalcAffine() {
-	Bbox screen_bbox(0, screen_w-1, screen_h-1, 0);
+	Bbox screen_bbox(0, screen_w, screen_h, 0);
 	affine = AffineTransform::boxToBox(bbox, screen_bbox, swap_axes);
 }
 
