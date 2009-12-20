@@ -4,7 +4,6 @@
 #include <set>
 
 #include <gtkmm/main.h>
-#include <gtkmm/box.h>
 #include <gtkmm/drawingarea.h>
 
 #include <boost/noncopyable.hpp>
@@ -17,6 +16,9 @@ namespace scopemm {
 
 class PlotCanvasImpl;
 typedef boost::shared_ptr<PlotCanvasImpl> PlotCanvasImplPtr;
+
+class PlotCanvas;
+typedef boost::shared_ptr<scopemm::PlotCanvas> PlotCanvasPtr;
 
 class PlotLayerImplBase;
 typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;

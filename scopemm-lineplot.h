@@ -25,15 +25,19 @@ public:
 	template <class Iter>
 	PlotTrace& setYData(Iter yfirst, Iter ylast, bool steps=false);
 
+	// this handles the blitz::Array<double, 1> type, as well as STL containers
+	template <class T>
+	PlotTrace& setYData(T ydata, bool steps=false);
+
 	template <class IterX, class IterY>
 	PlotTrace& setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast);
 
+	// too bad we can't differentiate between a pair of containers of double
+	// and a pair of iterators that give std::pair<double>.
 	template <class Iter>
 	PlotTrace& setXYData(Iter xyfirst, Iter xylast);
 
 #ifdef SCOPEMM_ENABLE_BLITZ
-	template <class T>
-	PlotTrace& setYData(blitz::Array<T, 1> ydata, bool steps=false);
 	template <class T>
 	PlotTrace& setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata);
 #endif // SCOPEMM_ENABLE_BLITZ
@@ -72,6 +76,11 @@ PlotTrace& PlotTrace::setYData(Iter yfirst, Iter ylast, bool steps) {
 	return *this;
 }
 
+template <class T>
+PlotTrace& PlotTrace::setYData(T ydata, bool steps) {
+	return setYData(ydata.begin(), ydata.end(), steps);
+}
+
 template <class IterX, class IterY>
 PlotTrace& PlotTrace::setXYData(IterX xfirst, IterX xlast, IterY yfirst, IterY ylast) {
 	std::vector<double> &xpts = getXPts();
@@ -106,11 +115,6 @@ PlotTrace& PlotTrace::setXYData(Iter xyfirst, Iter xylast) {
 }
 
 #ifdef SCOPEMM_ENABLE_BLITZ
-template <class T>
-PlotTrace& PlotTrace::setYData(blitz::Array<T, 1> ydata, bool steps) {
-	return setYData(ydata.begin(), ydata.end(), steps);
-}
-
 template <class T>
 PlotTrace& PlotTrace::setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata) {
 	return setXYData(

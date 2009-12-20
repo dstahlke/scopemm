@@ -1,6 +1,9 @@
 #ifndef SCOPEMM_MOUSEADAPTER_H
 #define SCOPEMM_MOUSEADAPTER_H
 
+#include <gtkmm/main.h>
+#include <gtkmm/widget.h>
+
 namespace scopemm {
 
 class MouseAdapter {

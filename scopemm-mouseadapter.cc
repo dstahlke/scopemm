@@ -1,7 +1,6 @@
-#include "scopemm.h"
 #include "scopemm-mouseadapter.h"
 
-using namespace scopemm;
+namespace scopemm {
 
 MouseAdapter::MouseAdapter() : 
 	mouse_in(false),
@@ -83,3 +82,5 @@ void MouseAdapter::mouse_clicked(int button) {
 	//std::cout << "click: " << mouse_x << "," << mouse_y << "," << button << "," << button_state << std::endl;
 	signal_clicked(button);
 }
+
+} // namespace scopemm
