@@ -38,6 +38,7 @@ public:
 
 	PlotCanvas &setXAutoRange();
 	PlotCanvas &setYAutoRange();
+	PlotCanvas &setAutoRangeBorder(double x, double y);
 	PlotCanvas &setXRange(double min, double max);
 	PlotCanvas &setYRange(double min, double max);
 	PlotCanvas &setBbox(Bbox new_bbox);

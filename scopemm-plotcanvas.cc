@@ -17,6 +17,7 @@ public:
 	void recalcAffine();
 
 	bool x_auto, y_auto;
+	double border_x, border_y;
 	int screen_w, screen_h;
 	Bbox bbox;
 	AffineTransform affine;
@@ -29,6 +30,7 @@ public:
 
 PlotCanvasImpl::PlotCanvasImpl() : 
 	x_auto(true), y_auto(true),
+	border_x(0.02), border_y(0.02),
 	bbox(0, 1, 0, 1), swap_axes(false)
 { }
 
@@ -44,8 +46,8 @@ void PlotCanvasImpl::recalcAutoRange() {
 			first = false;
 		}
 		double delta = max-min;
-		min -= delta * 0.05;
-		max += delta * 0.05;
+		min -= delta * border_x;
+		max += delta * border_x;
 		// if no layers had min/max
 		if(first) { min = 0; max = 1; }
 		if(min == max) { min -= 1; max += 1; }
@@ -63,8 +65,8 @@ void PlotCanvasImpl::recalcAutoRange() {
 			first = false;
 		}
 		double delta = max-min;
-		min -= delta * 0.05;
-		max += delta * 0.05;
+		min -= delta * border_y;
+		max += delta * border_y;
 		// if no layers had min/max
 		if(first) { min = 0; max = 1; }
 		if(min == max) { min -= 1; max += 1; }
@@ -118,6 +120,14 @@ PlotCanvas &PlotCanvas::setXAutoRange() {
 PlotCanvas &PlotCanvas::setYAutoRange() {
 	impl->y_auto = true;
 	impl->recalcAutoRange();
+	fireChangeEvent();
+	return *this;
+}
+
+PlotCanvas &PlotCanvas::setAutoRangeBorder(double x, double y) {
+	assert(x >= 0 && y >= 0);
+	impl->border_x = x;
+	impl->border_y = y;
 	fireChangeEvent();
 	return *this;
 }
