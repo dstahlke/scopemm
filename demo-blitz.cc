@@ -73,7 +73,7 @@ public:
 
 		t1.setXYData(xypts[0], xypts[1]);
 		t2.setXYData(xpts, zpts);
-		t2.setXYData(zpts, ypts);
+		t3.setXYData(zpts, ypts);
 
 		// autoscale would work too, but this is smoother and keeps the origin
 		// right in the middle
