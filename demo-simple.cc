@@ -11,10 +11,10 @@ int main(int argc, char *argv[]) {
 	win.set_title("Test");
 
 	scopemm::PlotCanvas plot;
-	plot.setXAutoRange();
-	plot.setYAutoRange();
-	plot.setDrawAxes(true);
-	plot.setDrawGrids(false, true);
+	plot.setXAutoRange()
+		.setYAutoRange()
+		.setDrawAxes(true)
+		.setDrawGrids(false, true);
 	//plot.setSwapAxes();
 
 	scopemm::PlotTrace t1;

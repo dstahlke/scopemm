@@ -10,17 +10,21 @@ public:
 		alpha(0)
 	{
 		addLayer(raster);
+		addLayer(x_trace.setColor(1, 1, 1));
+		addLayer(y_trace.setColor(1, 1, 1));
 
 		// changing these will affect the resolution and the
 		// position of the pattern, but the red dot should
 		// always line up with the mouse cursor
-		//setBbox(scopemm::Bbox(-2, 3, -2, 3));
+		setBbox(scopemm::Bbox(-1, 1, -1, 1));
 		raster.setBbox(scopemm::Bbox(-1, 1, -1, 1));
 		raster.setSwapAxes(false);
 		setSwapAxes(false);
 
 		// bilinear interpolation, makes it look nicer
 		raster.setBilinear(true);
+
+		//setDrawAxes();
 
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
@@ -38,6 +42,9 @@ public:
 		data_buf.resize(w, h);
 		scopemm::AffineTransform affine = raster.getAffine();
 
+		double mx = mouseX();
+		double my = mouseY();
+
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
 				double x, y;
@@ -47,11 +54,9 @@ public:
 				affine.fwd(i+0.5, j+0.5, x, y);
 				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				double vg = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
-				x -= mouseX();
-				y -= mouseY();
 				double vr;
 				if(mouseIn()) {
-					vr = exp(-(x*x+y*y)*50.0);
+					vr = exp(-((x-mx)*(x-mx)+(y-my)*(y-my))*50.0);
 				} else {
 					vr = 0;
 				}
@@ -61,6 +66,38 @@ public:
 			}
 		}
 
+		std::vector<double> xpts;
+		std::vector<double> ypts;
+		if(mouseIn()) {
+			for(int i=0; i<w; i++) {
+				double x, junk;
+				affine.fwd(i+0.5, 0, x, junk);
+				double y = my;
+
+				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+
+				xpts.push_back(x);
+				ypts.push_back(y + vb*0.1);
+			}
+		}
+		x_trace.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+
+		xpts.clear();
+		ypts.clear();
+		if(mouseIn()) {
+			for(int j=0; j<h; j++) {
+				double junk, y;
+				affine.fwd(0, j+0.5, junk, y);
+				double x = mx;
+
+				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+
+				xpts.push_back(x + vb*0.1);
+				ypts.push_back(y);
+			}
+		}
+		y_trace.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
+
 		fireChangeEvent();
 
 		return true;
@@ -68,6 +105,8 @@ public:
 
 	double alpha;
 	scopemm::RasterArea raster;
+	scopemm::PlotTrace x_trace;
+	scopemm::PlotTrace y_trace;
 };
 
 int main(int argc, char *argv[]) {

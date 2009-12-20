@@ -22,6 +22,10 @@ class PlotLayerImplBase;
 typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;
 class PlotLayerBase;
 
+// This is noncopyable mainly because I don't understand what goes on when Gtk
+// objects are copied.  Also, copies would have to be inserted into
+// PlotLayerImpl::change_listeners for each layer in order to receive queue_draw
+// events.
 class PlotCanvas : 
 	public Gtk::DrawingArea,
 	public boost::noncopyable 

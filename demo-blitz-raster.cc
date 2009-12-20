@@ -1,4 +1,3 @@
-// FIXME - sync this with demo-raster.cc
 #define SCOPEMM_ENABLE_BLITZ
 #include "scopemm.h"
 
@@ -14,6 +13,17 @@ public:
 	{
 		addLayer(raster);
 
+		// changing these will affect the resolution and the
+		// position of the pattern, but the red dot should
+		// always line up with the mouse cursor
+		//setBbox(scopemm::Bbox(-2, 3, -2, 3));
+		raster.setBbox(scopemm::Bbox(-1, 1, -1, 1));
+		raster.setSwapAxes(false);
+		setSwapAxes(false);
+
+		// bilinear interpolation, makes it look nicer
+		raster.setBilinear(true);
+
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
 	}
@@ -21,16 +31,16 @@ public:
 	virtual bool on_timeout() {
 		alpha += 0.1;
 
-		// changing these will affect the resolution and the
-		// position of the pattern, but the red dot should
-		// always line up with the mouse cursor
-		bool swap_axes = false;
 		int w = 100;
 		int h = 100;
-		scopemm::Bbox bbox(-1, 1, -1, 1);
 
-		raster.setBbox(bbox);
-		raster.setSwapAxes(swap_axes);
+		scopemm::RawRGB &data_buf = raster.getDataBuf();
+		// resize changes the size of the data_buf array.  This must be done
+		// before writing pixel data and before calling getAffine.  setData
+		// will call resize itself, but we still need to do it here in order
+		// for the affine to be valid.
+		data_buf.resize(w, h);
+		scopemm::AffineTransform affine = raster.getAffine();
 
 		if(data_r.shape()[0] != w || data_r.shape()[1] != h) {
 			data_r.resize(w, h);
@@ -40,8 +50,11 @@ public:
 
 		for(int i=0; i<w; i++) {
 			for(int j=0; j<h; j++) {
-				double x = (    double(i)/(w-1))*(bbox.xmax-bbox.xmin)+bbox.xmin;
-				double y = (1.0-double(j)/(h-1))*(bbox.ymax-bbox.ymin)+bbox.ymin;
+				double x, y;
+				// It is necessary to add 0.5 in order to get the coords of the
+				// pixel center rather than the pixel edge.  This really only
+				// matters when the pixels are big.
+				affine.fwd(i+0.5, j+0.5, x, y);
 				data_b(i, j) = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				data_g(i, j) = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				x -= mouseX();
