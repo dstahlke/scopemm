@@ -1,6 +1,5 @@
-PROGS = libscopemm.so demo-mouse demo-raster demo-simple demo-stl
-# comment this out if you don't have blitz
-PROGS += demo-blitz demo-blitz-raster
+DEMOS = demo-mouse demo-raster demo-simple demo-stl
+DEMOS_BLITZ = demo-blitz demo-blitz-raster
 
 CPPFLAGS    = -I. -Wall -Wextra -fPIC
 EXE_LDFLAGS = -L. -lscopemm
@@ -13,10 +12,15 @@ CPPFLAGS += -g -O2
 CPPFLAGS += `pkg-config gtkmm-2.4 --cflags`
 LDFLAGS += `pkg-config gtkmm-2.4 --libs`
 
-all: $(PROGS)
+all: libscopemm.so demos
+
+demos: $(DEMOS)
+
+# not built be default because some people don't have blitz
+blitz-demos: $(DEMOS_BLITZ)
 
 clean:
-	rm -f *.o $(PROGS)
+	rm -f *.o $(DEMOS) $(DEMOS_BLITZ)
 
 libscopemm.so: scopemm-rastercanvas.o scopemm-lineplot.o scopemm-mouseadapter.o scopemm-plotcanvas.o scopemm-grid.o scopemm-affine.o scopemm-axeslayer.o
 	gcc -shared -o $@ $^ $(LDFLAGS)
