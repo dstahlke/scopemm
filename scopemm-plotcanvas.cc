@@ -16,10 +16,8 @@ public:
 	void recalcAffine();
 
 	std::set<PlotLayerImplPtr> layers;
-	// pointer is needed here because GridLayer is an incomplete type
-	// FIXME - is this still true?
-	std::auto_ptr<GridLayer> grid_layer;
-	std::auto_ptr<AxesLayer> axes_layer;
+	GridLayer grid_layer;
+	AxesLayer axes_layer;
 	bool x_auto, y_auto;
 	int screen_w, screen_h;
 	Bbox bbox;
@@ -28,8 +26,6 @@ public:
 };
 
 PlotCanvasImpl::PlotCanvasImpl() : 
-	grid_layer(new GridLayer()),
-	axes_layer(new AxesLayer()),
 	x_auto(true), y_auto(true),
 	bbox(0, 1, 0, 1), swap_axes(false)
 { }
@@ -155,11 +151,11 @@ void PlotCanvas::setDrawAxes(bool state) {
 
 void PlotCanvas::setDrawAxes(bool xaxis, bool yaxis) {
 	if(xaxis || yaxis) {
-		impl->axes_layer->setDrawXAxis(xaxis);
-		impl->axes_layer->setDrawYAxis(yaxis);
-		addLayer(*impl->axes_layer);
+		impl->axes_layer.setDrawXAxis(xaxis);
+		impl->axes_layer.setDrawYAxis(yaxis);
+		addLayer(impl->axes_layer);
 	} else {
-		removeLayer(*impl->axes_layer);
+		removeLayer(impl->axes_layer);
 	}
 	fireChangeEvent();
 }
@@ -170,11 +166,11 @@ void PlotCanvas::setDrawGrids(bool state) {
 
 void PlotCanvas::setDrawGrids(bool xgrid, bool ygrid) {
 	if(xgrid || ygrid) {
-		impl->grid_layer->setDrawXGrid(xgrid);
-		impl->grid_layer->setDrawYGrid(ygrid);
-		addLayer(*impl->grid_layer);
+		impl->grid_layer.setDrawXGrid(xgrid);
+		impl->grid_layer.setDrawYGrid(ygrid);
+		addLayer(impl->grid_layer);
 	} else {
-		removeLayer(*impl->grid_layer);
+		removeLayer(impl->grid_layer);
 	}
 	fireChangeEvent();
 }
