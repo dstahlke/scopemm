@@ -186,6 +186,7 @@ void RasterAreaImpl::draw(
 }
 
 CoordXform RasterAreaImpl::getAffine() {
+	// FIXME - this may not be quite right when swap_axes==true
 	return CoordXform::boxToBox(
 		Bbox(0, data_buf.h, data_buf.w, 0), bbox, swap_axes);
 }
