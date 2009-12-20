@@ -20,39 +20,11 @@
 #ifndef SCOPEMM_AFFINE_H
 #define SCOPEMM_AFFINE_H
 
-#include <algorithm>
 #include <assert.h>
 
+#include "scopemm-bbox.h"
+
 namespace scopemm {
-
-class Bbox {
-public:
-	Bbox(
-		double _xmin, double _ymin, 
-		double _xmax, double _ymax
-	) :
-		xmin(_xmin), ymin(_ymin), 
-		xmax(_xmax), ymax(_ymax)
-	{ }
-
-	Bbox transpose() {
-		return Bbox(ymin, xmin, ymax, xmax);
-	}
-
-	Bbox &operator|=(const Bbox &b) {
-		xmin = std::min(xmin, b.xmin);
-		ymin = std::min(ymin, b.ymin);
-		xmax = std::max(xmax, b.xmax);
-		ymax = std::max(ymax, b.ymax);
-		return *this;
-	}
-
-	Bbox operator|(const Bbox &b) const {
-		return Bbox(*this) |= b;
-	}
-
-	double xmin, ymin, xmax, ymax;
-};
 
 class AffineTransform {
 public:

@@ -17,20 +17,43 @@
 	along with scopemm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCOPEMM_H
-#define SCOPEMM_H
+#ifndef SCOPEMM_BBOX_H
+#define SCOPEMM_BBOX_H
 
-#define ZORDER_RASTER_AREA 0.0
-#define ZORDER_GRID_LAYER 1.0
-#define ZORDER_AXES_LAYER 2.0
-#define ZORDER_LINE_PLOT 3.0
+#include <algorithm>
+#include <assert.h>
 
-#include "scopemm-bbox.h"
-#include "scopemm-affine.h"
-#include "scopemm-grid.h"
-#include "scopemm-axeslayer.h"
-#include "scopemm-plotcanvas.h"
-#include "scopemm-rastercanvas.h"
-#include "scopemm-lineplot.h"
+namespace scopemm {
 
-#endif // SCOPEMM_H
+class Bbox {
+public:
+	Bbox(
+		double _xmin, double _ymin, 
+		double _xmax, double _ymax
+	) :
+		xmin(_xmin), ymin(_ymin), 
+		xmax(_xmax), ymax(_ymax)
+	{ }
+
+	Bbox transpose() {
+		return Bbox(ymin, xmin, ymax, xmax);
+	}
+
+	Bbox &operator|=(const Bbox &b) {
+		xmin = std::min(xmin, b.xmin);
+		ymin = std::min(ymin, b.ymin);
+		xmax = std::max(xmax, b.xmax);
+		ymax = std::max(ymax, b.ymax);
+		return *this;
+	}
+
+	Bbox operator|(const Bbox &b) const {
+		return Bbox(*this) |= b;
+	}
+
+	double xmin, ymin, xmax, ymax;
+};
+
+} // namespace scopemm
+
+#endif // SCOPEMM_BBOX_H
