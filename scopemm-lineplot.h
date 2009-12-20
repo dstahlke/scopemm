@@ -140,8 +140,8 @@ PlotTrace& PlotTrace::setXYData(ArrXY xyarr) {
 template <class T>
 PlotTrace& PlotTrace::setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata) {
 	return setXYData(
-		xydata[0].begin(), xydata[0].end(), 
-		xydata[1].begin(), xydata[1].end()
+		std::make_pair(xydata[0].begin(), xydata[0].end()), 
+		std::make_pair(xydata[1].begin(), xydata[1].end())
 	);
 }
 

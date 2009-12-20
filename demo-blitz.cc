@@ -54,8 +54,8 @@ public:
 		xypts[1] = ypts;
 
 		t1.setXYData(xypts);
-		t2.setXYData(xpts.begin(), xpts.end(), zpts.begin(), zpts.end());
-		t2.setXYData(zpts.begin(), zpts.end(), ypts.begin(), ypts.end());
+		t2.setXYData(xpts, zpts);
+		t2.setXYData(zpts, ypts);
 
 		// autoscale would work too, but this is smoother and keeps the origin
 		// right in the middle
