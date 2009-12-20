@@ -38,6 +38,11 @@ public:
 		addLayer(t1);
 		addLayer(t2);
 
+		// These are convenience hooks that give an interface much
+		// simpler than the Gtk interface.  You are also free to
+		// just use the normal Gtk mouse hooks, in which case
+		// PlotCanvas::getAffine().inv can be used to transform
+		// from screen coordinates to plot coordinates.
 		signal_plot_clicked().connect(sigc::mem_fun(
 			this, &DemoWidget::mouse_clicked));
 		signal_plot_motion().connect(sigc::mem_fun(
