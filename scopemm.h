@@ -3,7 +3,8 @@
 
 #define ZORDER_RASTER_AREA 0.0
 #define ZORDER_GRID_LAYER 1.0
-#define ZORDER_LINE_PLOT 2.0
+#define ZORDER_AXES_LAYER 2.0
+#define ZORDER_LINE_PLOT 3.0
 
 #include "scopemm-affine.h"
 #include "scopemm-plotcanvas.h"
@@ -11,5 +12,6 @@
 #include "scopemm-lineplot.h"
 #include "scopemm-mouseadapter.h"
 #include "scopemm-grid.h"
+#include "scopemm-axeslayer.h"
 
 #endif // SCOPEMM_H

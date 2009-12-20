@@ -40,9 +40,8 @@ public:
 	void setYRange(double min, double max);
 	void setBbox(Bbox new_bbox);
 	void setSwapAxes(bool state=true);
-	void setDrawAxes(bool state=true); // FIXME - make this a layer
-	void setDrawXAxis(bool state=true);
-	void setDrawYAxis(bool state=true);
+	void setDrawAxes(bool state=true);
+	void setDrawAxes(bool xaxis, bool yaxis);
 	void setDrawGrids(bool state=true);
 	void setDrawGrids(bool xgrid, bool ygrid);
 	void setDrawXGrid(bool state=true);

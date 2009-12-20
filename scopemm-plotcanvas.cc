@@ -17,9 +17,10 @@ public:
 
 	std::set<PlotLayerImplPtr> layers;
 	// pointer is needed here because GridLayer is an incomplete type
+	// FIXME - is this still true?
 	std::auto_ptr<GridLayer> grid_layer;
+	std::auto_ptr<AxesLayer> axes_layer;
 	bool x_auto, y_auto;
-	bool draw_x_axis, draw_y_axis;
 	int screen_w, screen_h;
 	Bbox bbox;
 	AffineTransform affine;
@@ -28,8 +29,8 @@ public:
 
 PlotCanvasImpl::PlotCanvasImpl() : 
 	grid_layer(new GridLayer()),
+	axes_layer(new AxesLayer()),
 	x_auto(true), y_auto(true),
-	draw_x_axis(false), draw_y_axis(false),
 	bbox(0, 1, 0, 1), swap_axes(false)
 { }
 
@@ -149,18 +150,17 @@ void PlotCanvas::setSwapAxes(bool state) {
 }
 
 void PlotCanvas::setDrawAxes(bool state) {
-	impl->draw_x_axis = state;
-	impl->draw_y_axis = state;
-	fireChangeEvent();
+	setDrawAxes(state, state);
 }
 
-void PlotCanvas::setDrawXAxis(bool state) {
-	impl->draw_x_axis = state;
-	fireChangeEvent();
-}
-
-void PlotCanvas::setDrawYAxis(bool state) {
-	impl->draw_y_axis = state;
+void PlotCanvas::setDrawAxes(bool xaxis, bool yaxis) {
+	if(xaxis || yaxis) {
+		impl->axes_layer->setDrawXAxis(xaxis);
+		impl->axes_layer->setDrawYAxis(yaxis);
+		addLayer(*impl->axes_layer);
+	} else {
+		removeLayer(*impl->axes_layer);
+	}
 	fireChangeEvent();
 }
 
@@ -205,30 +205,6 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 	cr->set_source_rgb(1, 1, 1);
 	cr->paint();
 	cr->restore();
-
-	if(impl->draw_x_axis || impl->draw_y_axis) {
-		cr->save();
-		cr->set_line_width(1);
-		cr->set_source_rgb(0.3, 0.3, 0.3);
-		cr->set_antialias(Cairo::ANTIALIAS_NONE);
-		if(impl->draw_x_axis) {
-			double x1, y1, x2, y2;
-			coordToScreen(0, impl->bbox.ymin, x1, y1);
-			coordToScreen(0, impl->bbox.ymax, x2, y2);
-			cr->move_to(x1, y1);
-			cr->line_to(x2, y2);
-			cr->stroke();
-		}
-		if(impl->draw_y_axis) {
-			double x1, y1, x2, y2;
-			coordToScreen(impl->bbox.xmin, 0, x1, y1);
-			coordToScreen(impl->bbox.xmax, 0, x2, y2);
-			cr->move_to(x1, y1);
-			cr->line_to(x2, y2);
-			cr->stroke();
-		}
-		cr->restore();
-	}
 
 	typedef std::pair<double, PlotLayerImplPtr> zbuf_element;
 	std::set<zbuf_element> zsorted;
