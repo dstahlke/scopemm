@@ -5,4 +5,5 @@ demo-raster
 demo-simple
 demo-stl
 libscopemm.so
+test-affine
 *.o
