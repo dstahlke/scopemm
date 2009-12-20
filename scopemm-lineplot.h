@@ -1,10 +1,6 @@
 #ifndef SCOPEMM_LINEPLOT_H
 #define SCOPEMM_LINEPLOT_H
 
-#ifdef SCOPEMM_ENABLE_BLITZ
-#include <blitz/array.h>
-#endif
-
 #include "scopemm-plotcanvas.h"
 
 namespace scopemm {
@@ -43,11 +39,6 @@ public:
 
 	template <class IterXY>
 	PlotTrace& setXYData(std::pair<IterXY, IterXY> xyiter);
-
-#ifdef SCOPEMM_ENABLE_BLITZ
-	template <class T>
-	PlotTrace& setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata);
-#endif // SCOPEMM_ENABLE_BLITZ
 };
 
 template <class IterY>
@@ -135,17 +126,6 @@ PlotTrace& PlotTrace::setXYData(ArrXY xyarr) {
 	setXYData(std::make_pair(xyarr.begin(), xyarr.end()));
 	return *this;
 }
-
-#ifdef SCOPEMM_ENABLE_BLITZ
-template <class T>
-PlotTrace& PlotTrace::setXYData(blitz::Array<blitz::TinyVector<T, 2>, 1> xydata) {
-	return setXYData(
-		std::make_pair(xydata[0].begin(), xydata[0].end()), 
-		std::make_pair(xydata[1].begin(), xydata[1].end())
-	);
-}
-
-#endif // SCOPEMM_ENABLE_BLITZ
 
 } // namespace scopemm
 

@@ -1,4 +1,3 @@
-#define SCOPEMM_ENABLE_BLITZ
 #include "scopemm.h"
 
 #include <gtkmm/main.h>
@@ -53,7 +52,7 @@ public:
 		xypts[0] = xpts;
 		xypts[1] = ypts;
 
-		t1.setXYData(xypts);
+		t1.setXYData(xypts[0], xypts[1]);
 		t2.setXYData(xpts, zpts);
 		t2.setXYData(zpts, ypts);
 
