@@ -109,6 +109,14 @@ void RasterArea::setBbox(Bbox bbox) {
 	fireChangeEvent();
 }
 
+void RasterArea::setBboxFromDataSize() {
+	if(impl->swap_axes) {
+		setBbox(Bbox(0, impl->data_buf.h, impl->data_buf.w, 0));
+	} else {
+		setBbox(Bbox(0, impl->data_buf.w, impl->data_buf.h, 0));
+	}
+}
+
 void RasterAreaImpl::draw(
 	PlotCanvas *parent,
 	Cairo::RefPtr<Cairo::Context> cr __attribute__((unused))

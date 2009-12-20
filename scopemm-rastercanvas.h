@@ -45,6 +45,7 @@ public:
 	~RasterArea() { }
 
 	void setBbox(Bbox bbox);
+	void setBboxFromDataSize();
 	void setSwapAxes(bool state=true);
 	void setBilinear(bool state=true);
 	RawRGB &getDataBuf();
