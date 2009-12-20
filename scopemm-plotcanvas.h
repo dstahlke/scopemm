@@ -76,20 +76,10 @@ private:
 	bool swap_axes;
 };
 
-class PlotLayerImplBase : private boost::noncopyable {
-public:
-	PlotLayerImplBase() { }
-	virtual ~PlotLayerImplBase() { }
-	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>) = 0;
-	virtual bool hasMinMax() const { return false; }
-	virtual Bbox getBbox() const { assert(0); }
-	virtual double getZOrder() const = 0;
-
-	std::set<PlotCanvas *> change_listeners;
-};
-
 class PlotLayerBase {
 	friend class PlotCanvas;
+public:
+	void setZOrder(double z);
 
 protected:
 	void fireChangeEvent();

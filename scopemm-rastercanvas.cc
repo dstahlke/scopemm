@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "scopemm.h"
+#include "scopemm-layerimpl.h"
 
 namespace scopemm {
 
@@ -15,7 +16,6 @@ public:
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() const { return true; }
 	virtual Bbox getBbox() const { return bbox; }
-	virtual double getZOrder() const { return 0; }
 
 	AffineTransform getAffine();
 
@@ -47,7 +47,9 @@ void RawRGB::transform(const RawRGB &in, HalfAffine affine) {
 	}
 }
 
-RasterArea::RasterArea() { }
+RasterArea::RasterArea() {
+	setZOrder(ZORDER_RASTER_AREA);
+}
 
 void RasterArea::setSwapAxes(bool state) {
 	impl->swap_axes = state;

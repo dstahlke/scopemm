@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "scopemm.h"
+#include "scopemm-layerimpl.h"
 
 using namespace scopemm;
 
@@ -156,7 +157,7 @@ bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 	typedef std::pair<double, PlotLayerImplPtr> zbuf_element;
 	std::set<zbuf_element> zsorted;
 	BOOST_FOREACH(const PlotLayerImplPtr &layer, layers) {
-		zsorted.insert(zbuf_element(layer->getZOrder(), layer));
+		zsorted.insert(zbuf_element(layer->zorder, layer));
 	}
 	BOOST_FOREACH(const zbuf_element &layer, zsorted) {
 		layer.second->draw(this, cr);
@@ -217,6 +218,11 @@ void PlotCanvas::recalcAffine() {
 }
 
 /// PlotLayerBase ////////////////////////////////////
+
+void PlotLayerBase::setZOrder(double z) {
+	impl_base->zorder = z;
+	fireChangeEvent();
+}
 
 void PlotLayerBase::fireChangeEvent() {
 	BOOST_FOREACH(PlotCanvas *l, impl_base->change_listeners) {

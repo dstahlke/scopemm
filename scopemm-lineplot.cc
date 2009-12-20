@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "scopemm.h"
+#include "scopemm-layerimpl.h"
 
 namespace scopemm {
 
@@ -12,7 +13,6 @@ public:
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() const { return !xpts.empty(); }
 	virtual Bbox getBbox() const;
-	virtual double getZOrder() const { return 2; }
 
 	std::vector<double> xpts;
 	std::vector<double> ypts;
@@ -54,6 +54,7 @@ Bbox PlotTraceImpl::getBbox() const {
 }
 
 PlotTrace::PlotTrace() { 
+	setZOrder(ZORDER_LINE_PLOT);
 	setColor(1, 0, 0);
 }
 

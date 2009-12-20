@@ -2,13 +2,13 @@
 #include <algorithm>
 
 #include "scopemm.h"
+#include "scopemm-layerimpl.h"
 
 namespace scopemm {
 
 class GridLayerImpl : public PlotLayerImplBase {
 public:
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
-	virtual double getZOrder() const { return 1; }
 
 	void drawStripes(
 		const PlotCanvas *parent,
@@ -26,7 +26,9 @@ GridLayerImpl::GridLayerImpl() :
 	draw_x_grid(true), draw_y_grid(true)
 { }
 
-GridLayer::GridLayer() { }
+GridLayer::GridLayer() {
+	setZOrder(ZORDER_GRID_LAYER);
+}
 
 void GridLayer::setDrawXGrid(bool state) {
 	impl->draw_x_grid = state;
