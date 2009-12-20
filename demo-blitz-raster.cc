@@ -1,3 +1,4 @@
+// FIXME - sync this with demo-raster.cc
 #define SCOPEMM_ENABLE_BLITZ
 #include "scopemm.h"
 
@@ -9,8 +10,7 @@
 class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() : 
-		alpha(0),
-		mouse(this)
+		alpha(0)
 	{
 		addLayer(raster);
 
@@ -44,9 +44,9 @@ public:
 				double y = (1.0-double(j)/(h-1))*(bbox.ymax-bbox.ymin)+bbox.ymin;
 				data_b(i, j) = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				data_g(i, j) = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
-				x -= mouse.mouseX();
-				y -= mouse.mouseY();
-				if(mouse.mouseIn()) {
+				x -= mouseX();
+				y -= mouseY();
+				if(mouseIn()) {
 					data_r(i, j) = exp(-(x*x+y*y)*10.0);
 				} else {
 					data_r(i, j) = 0;
@@ -75,7 +75,6 @@ public:
 	blitz::Array<double, 2> data_g;
 	blitz::Array<double, 2> data_b;
 	scopemm::RasterArea raster;
-	scopemm::MouseAdapter mouse;
 };
 
 int main(int argc, char *argv[]) {

@@ -5,27 +5,14 @@ namespace scopemm {
 
 class MouseAdapter {
 public:
-	MouseAdapter(PlotCanvas *_plot);
+	MouseAdapter();
 
-	virtual ~MouseAdapter() { }
+	~MouseAdapter() { }
 
-	virtual void mouse_motion();
-	virtual void mouse_clicked(int button);
+	void attach(Gtk::Widget *w);
 
-	bool mouseIn()  const { return mouse_in; }
-	double mouseX() const {
-		double plot_x, plot_y;
-		plot->screenToCoord(mouse_x, mouse_y, plot_x, plot_y);
-		return plot_x;
-	}
-	double mouseY() const {
-		double plot_x, plot_y;
-		plot->screenToCoord(mouse_x, mouse_y, plot_x, plot_y);
-		return plot_y;
-	}
-	bool button1()  const { return button_state & 1; }
-	bool button2()  const { return button_state & 2; }
-	bool button3()  const { return button_state & 4; }
+	void mouse_motion();
+	void mouse_clicked(int button);
 
 	sigc::signal<void, int> signal_clicked;
 	sigc::signal<void> signal_motion;
@@ -37,7 +24,7 @@ private:
 	bool on_leave_notify_event(GdkEventCrossing* event);
 	bool on_button_press_event(GdkEventButton* event);
 
-	PlotCanvas *plot;
+public:
 	bool mouse_in;
 	double mouse_x, mouse_y;
 	int button_state;

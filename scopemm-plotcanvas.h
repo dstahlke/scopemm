@@ -51,13 +51,15 @@ public:
 	const AffineTransform &getAffine() const;
 	bool getSwapAxes() const;
 
-	void coordToScreen(double xi, double yi, double &xo, double &yo) const {
-		getAffine().fwd(xi, yi, xo, yo);
-	}
+	double mouseX() const;
+	double mouseY() const;
+	bool mouseIn() const;
+	bool mouseButton1() const;
+	bool mouseButton2() const;
+	bool mouseButton3() const;
 
-	void screenToCoord(double xi, double yi, double &xo, double &yo) const {
-		getAffine().inv(xi, yi, xo, yo);
-	}
+	sigc::signal<void, int> &signal_plot_clicked();
+	sigc::signal<void> &signal_plot_motion();
 
 	bool on_expose_event(GdkEventExpose* event);
 	void fireChangeEvent();

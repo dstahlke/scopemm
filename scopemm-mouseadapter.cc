@@ -1,18 +1,18 @@
 #include "scopemm.h"
+#include "scopemm-mouseadapter.h"
 
 using namespace scopemm;
 
-MouseAdapter::MouseAdapter(
-	PlotCanvas *_plot
-) : 
-	plot(_plot),
+MouseAdapter::MouseAdapter() : 
 	mouse_in(false),
 	mouse_x(0),
 	mouse_y(0),
 	button_state(0)
-{
-	plot->set_events(
-		plot->get_events() | 
+{ }
+
+void MouseAdapter::attach(Gtk::Widget *w) {
+	w->set_events(
+		w->get_events() | 
 		Gdk::POINTER_MOTION_MASK |
 		Gdk::POINTER_MOTION_HINT_MASK |
 		Gdk::ENTER_NOTIFY_MASK |
@@ -21,13 +21,13 @@ MouseAdapter::MouseAdapter(
 		Gdk::BUTTON_RELEASE_MASK
 	);
 
-	plot->signal_motion_notify_event().connect(sigc::mem_fun(
+	w->signal_motion_notify_event().connect(sigc::mem_fun(
 		*this, &MouseAdapter::on_motion_notify_event));
-	plot->signal_enter_notify_event().connect(sigc::mem_fun(
+	w->signal_enter_notify_event().connect(sigc::mem_fun(
 		*this, &MouseAdapter::on_enter_notify_event));
-	plot->signal_leave_notify_event().connect(sigc::mem_fun(
+	w->signal_leave_notify_event().connect(sigc::mem_fun(
 		*this, &MouseAdapter::on_leave_notify_event));
-	plot->signal_button_press_event().connect(sigc::mem_fun(
+	w->signal_button_press_event().connect(sigc::mem_fun(
 		*this, &MouseAdapter::on_button_press_event));
 }
 

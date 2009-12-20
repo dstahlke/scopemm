@@ -8,7 +8,6 @@
 class DemoWidget : public scopemm::PlotCanvas {
 public:
 	DemoWidget() :
-		mouse(this),
 		click_x(0),
 		click_y(0)
 	{
@@ -20,15 +19,15 @@ public:
 		addLayer(t1);
 		addLayer(t2);
 
-		mouse.signal_clicked.connect(sigc::mem_fun(
+		signal_plot_clicked().connect(sigc::mem_fun(
 			this, &DemoWidget::mouse_clicked));
-		mouse.signal_motion.connect(sigc::mem_fun(
+		signal_plot_motion().connect(sigc::mem_fun(
 			this, &DemoWidget::mouse_motion));
 	}
 
 	void mouse_clicked(int button) {
-		click_x = mouse.mouseX();
-		click_y = mouse.mouseY();
+		click_x = mouseX();
+		click_y = mouseY();
 
 		std::cout << "x=" << click_x << ", y=" << click_y << std::endl;
 
@@ -52,21 +51,20 @@ public:
 	void mouse_motion() {
 		std::vector<double> xpts;
 		std::vector<double> ypts;
-		if(mouse.mouseIn()) {
+		if(mouseIn()) {
 			xpts.push_back(click_x);
-			xpts.push_back(mouse.mouseX());
+			xpts.push_back(mouseX());
 			ypts.push_back(click_y);
-			ypts.push_back(mouse.mouseY());
+			ypts.push_back(mouseY());
 		}
 		t2.setXYData(xpts.begin(), xpts.end(), ypts.begin(), ypts.end());
 		t2.setColor(
-			mouse.button1() ? 1 : 0.5,
-			mouse.button2() ? 1 : 0.5,
-			mouse.button3() ? 1 : 0.5
+			mouseButton1() ? 1 : 0.5,
+			mouseButton2() ? 1 : 0.5,
+			mouseButton3() ? 1 : 0.5
 		);
 	}
 
-	scopemm::MouseAdapter mouse;
 	scopemm::PlotTrace t1;
 	scopemm::PlotTrace t2;
 	double click_x;

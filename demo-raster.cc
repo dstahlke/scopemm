@@ -7,8 +7,7 @@
 class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() : 
-		alpha(0),
-		mouse(this)
+		alpha(0)
 	{
 		addLayer(raster);
 
@@ -43,10 +42,10 @@ public:
 				affine.fwd(i+0.5, j+0.5, x, y); // FIXME - docs for 0.5
 				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
 				double vg = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
-				x -= mouse.mouseX();
-				y -= mouse.mouseY();
+				x -= mouseX();
+				y -= mouseY();
 				double vr;
-				if(mouse.mouseIn()) {
+				if(mouseIn()) {
 					vr = exp(-(x*x+y*y)*50.0);
 				} else {
 					vr = 0;
@@ -64,7 +63,6 @@ public:
 
 	double alpha;
 	scopemm::RasterArea raster;
-	scopemm::MouseAdapter mouse;
 };
 
 int main(int argc, char *argv[]) {

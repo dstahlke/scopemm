@@ -3,6 +3,7 @@
 
 #include "scopemm.h"
 #include "scopemm-layerimpl.h"
+#include "scopemm-mouseadapter.h"
 
 namespace scopemm {
 
@@ -15,14 +16,15 @@ public:
 	void recalcAutoRange();
 	void recalcAffine();
 
-	std::set<PlotLayerImplPtr> layers;
-	GridLayer grid_layer;
-	AxesLayer axes_layer;
 	bool x_auto, y_auto;
 	int screen_w, screen_h;
 	Bbox bbox;
 	AffineTransform affine;
 	bool swap_axes;
+	std::set<PlotLayerImplPtr> layers;
+	GridLayer grid_layer;
+	AxesLayer axes_layer;
+	MouseAdapter mouse;
 };
 
 PlotCanvasImpl::PlotCanvasImpl() : 
@@ -80,7 +82,9 @@ void PlotCanvasImpl::recalcAffine() {
 
 PlotCanvas::PlotCanvas() :
 	impl(new PlotCanvasImpl())
-{ }
+{
+	impl->mouse.attach(this);
+}
 
 PlotCanvas::~PlotCanvas() {
 	// now that our object no longer exists, it must not receive
@@ -180,6 +184,40 @@ const Bbox &PlotCanvas::getBbox() const { return impl->bbox; }
 const AffineTransform &PlotCanvas::getAffine() const { return impl->affine; }
 
 bool PlotCanvas::getSwapAxes() const { return impl->swap_axes; }
+
+double PlotCanvas::mouseX() const {
+	double plot_x, plot_y;
+	getAffine().inv(
+		impl->mouse.mouse_x, impl->mouse.mouse_y,
+		plot_x, plot_y
+	);
+	return plot_x;
+}
+
+double PlotCanvas::mouseY() const {
+	double plot_x, plot_y;
+	getAffine().inv(
+		impl->mouse.mouse_x, impl->mouse.mouse_y,
+		plot_x, plot_y
+	);
+	return plot_y;
+}
+
+bool PlotCanvas::mouseIn() const { return impl->mouse.mouse_in; }
+
+bool PlotCanvas::mouseButton1() const { return impl->mouse.button_state & 1; }
+
+bool PlotCanvas::mouseButton2() const { return impl->mouse.button_state & 2; }
+
+bool PlotCanvas::mouseButton3() const { return impl->mouse.button_state & 4; }
+
+sigc::signal<void, int> &PlotCanvas::signal_plot_clicked() {
+	return impl->mouse.signal_clicked;
+}
+
+sigc::signal<void> &PlotCanvas::signal_plot_motion() {
+	return impl->mouse.signal_motion;
+}
 
 bool PlotCanvas::on_expose_event(GdkEventExpose* event) {
 	Glib::RefPtr<Gdk::Window> window = get_window();
