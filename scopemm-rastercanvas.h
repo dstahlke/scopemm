@@ -31,8 +31,6 @@ public:
 		return data[(y*w+x)*3+band];
 	}
 
-	void transform(const RawRGB &in, HalfAffine affine, bool bilinear);
-
 	size_t w;
 	size_t h;
 	std::vector<uint8_t> data;

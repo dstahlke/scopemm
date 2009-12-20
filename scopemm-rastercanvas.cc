@@ -32,9 +32,16 @@ public:
 	RawRGB draw_buf;
 };
 
-void RawRGB::transform(const RawRGB &in, HalfAffine affine, bool bilinear) {
-	for(size_t out_y=0; out_y<h; out_y++) {
-	for(size_t out_x=0; out_x<w; out_x++) {
+static void transform(
+	const RawRGB &in, RawRGB &out, 
+	HalfAffine affine, bool bilinear,
+	size_t clip_xmin, size_t clip_xmax, 
+	size_t clip_ymin, size_t clip_ymax
+) {
+	assert(clip_xmax <= out.w);
+	assert(clip_ymax <= out.h);
+	for(size_t out_y=clip_ymin; out_y<clip_ymax; out_y++) {
+	for(size_t out_x=clip_xmin; out_x<clip_xmax; out_x++) {
 		double in_x, in_y;
 		affine(out_x, out_y, in_x, in_y);
 		if(bilinear) {
@@ -58,12 +65,12 @@ void RawRGB::transform(const RawRGB &in, HalfAffine affine, bool bilinear) {
 					double v0 = (1.0-dx)*in(i0, j0, band) + dx*in(i1, j0, band);
 					double v1 = (1.0-dx)*in(i0, j1, band) + dx*in(i1, j1, band);
 					double v  = (1.0-dy)*v0 + dy*v1;
-					(*this)(out_x, out_y, band) = v;
+					out(out_x, out_y, band) = v;
 				}
 			} else {
 				// FIXME - make transparent
 				for(size_t band=0; band<3; band++) {
-					(*this)(out_x, out_y, band) = 0;
+					out(out_x, out_y, band) = 0;
 				}
 			}
 		} else {
@@ -71,12 +78,12 @@ void RawRGB::transform(const RawRGB &in, HalfAffine affine, bool bilinear) {
 			int j = int(floor(in_y));
 			if(i>=0 && j>=0 && size_t(i)<in.w && size_t(j)<in.h) {
 				for(size_t band=0; band<3; band++) {
-					(*this)(out_x, out_y, band) = in(i, j, band);
+					out(out_x, out_y, band) = in(i, j, band);
 				}
 			} else {
 				// FIXME - make transparent
 				for(size_t band=0; band<3; band++) {
-					(*this)(out_x, out_y, band) = 0;
+					out(out_x, out_y, band) = 0;
 				}
 			}
 		}
@@ -134,7 +141,10 @@ void RasterAreaImpl::draw(
 		}
 
 		draw_buf.resize(w, h);
-		draw_buf.transform(data_buf, screen_to_data, bilinear);
+		transform(
+			data_buf, draw_buf, screen_to_data, bilinear,
+			clip_xmin, clip_xmax, clip_ymin, clip_ymax
+		);
 
 		window->draw_rgb_image(
 			parent->get_style()->get_fg_gc(Gtk::STATE_NORMAL),
