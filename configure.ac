@@ -22,12 +22,26 @@ AC_PROG_CXX
 AC_PROG_CC
 AM_PROG_LIBTOOL
 AM_SANITY_CHECK
+PKG_PROG_PKG_CONFIG
 
 AC_LANG_CPLUSPLUS
 
 PKG_CHECK_MODULES([GTKMM], [gtkmm-2.4 >= 2.10.0])
 AC_SUBST(GTKMM_LIBS)
 AC_SUBST(GTKMM_CFLAGS)
+
+AC_MSG_CHECKING([for blitz])
+PKG_CHECK_EXISTS([blitz], [
+	AC_MSG_RESULT([yes])
+	PKG_CHECK_MODULES([BLITZ], [blitz])
+	AC_SUBST(BLITZ_LIBS)
+	AC_SUBST(BLITZ_CFLAGS)
+	have_blitz="true"
+], [
+	AC_MSG_RESULT([no (some demos won't be built)])
+	have_blitz="false"
+])
+AM_CONDITIONAL(HAVE_BLITZ, test "z$have_blitz" = "ztrue")
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h])
