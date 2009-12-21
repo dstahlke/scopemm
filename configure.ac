@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.63])
 AC_INIT([scopemm], [1.0.0], [dstahlke@gmail.com])
-AC_CONFIG_SRCDIR([scopemm/scopemm-rastercanvas.cc])
+AC_CONFIG_SRCDIR([scopemm/rastercanvas.cc])
 AC_CONFIG_HEADERS([config.h])
 
 PACKAGE_RELEASE=1.0
