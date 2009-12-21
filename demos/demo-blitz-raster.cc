@@ -28,7 +28,7 @@
 class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() : 
-		alpha(0)
+		timeval(0)
 	{
 		addLayer(raster);
 
@@ -37,18 +37,23 @@ public:
 		// always line up with the mouse cursor
 		//setBbox(scopemm::Bbox(-2, -2, 3, 3));
 		raster.setBbox(scopemm::Bbox(-1, -1, 1, 1));
+		// this controls whether the first or second index of the data arrays
+		// correspond to the X axis
 		raster.setSwapAxes(false);
+		// this will flip the entire plot across the x=y line
 		setSwapAxes(false);
 
 		// bilinear interpolation, makes it look nicer
 		raster.setBilinear(true);
+
+		//setDrawAxes();
 
 		Glib::signal_idle().connect(
 			sigc::mem_fun(*this, &Sinewave::on_timeout));
 	}
 
 	virtual bool on_timeout() {
-		alpha += 0.1;
+		timeval += 0.1;
 
 		int w = 100;
 		int h = 100;
@@ -74,8 +79,8 @@ public:
 				// pixel center rather than the pixel edge.  This really only
 				// matters when the pixels are big.
 				affine.fwd(i+0.5, j+0.5, x, y);
-				data_b(i, j) = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
-				data_g(i, j) = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+				data_b(i, j) = sin(sqrt((x*x*4.0+y*y)*200.0) + timeval);
+				data_g(i, j) = cos(sqrt((x*x*4.0+y*y)*200.0) + timeval);
 				x -= mouseX();
 				y -= mouseY();
 				if(mouseIn()) {
@@ -102,7 +107,7 @@ public:
 		return true;
 	}
 
-	double alpha;
+	double timeval;
 	blitz::Array<double, 2> data_r;
 	blitz::Array<double, 2> data_g;
 	blitz::Array<double, 2> data_b;

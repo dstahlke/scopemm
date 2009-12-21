@@ -26,7 +26,7 @@
 class Sinewave : public scopemm::PlotCanvas {
 public:
 	Sinewave() : 
-		alpha(0)
+		timeval(0)
 	{
 		addLayer(raster);
 		addLayer(x_trace.setColor(1, 1, 1));
@@ -37,7 +37,10 @@ public:
 		// always line up with the mouse cursor
 		setBbox(scopemm::Bbox(-1, -1, 1, 1));
 		raster.setBbox(scopemm::Bbox(-1, -1, 1, 1));
+		// this controls whether the first or second index of data_buf
+		// corresponds to the X axis
 		raster.setSwapAxes(false);
+		// this will flip the entire plot across the x=y line
 		setSwapAxes(false);
 
 		// bilinear interpolation, makes it look nicer
@@ -50,7 +53,7 @@ public:
 	}
 
 	virtual bool on_timeout() {
-		alpha += 0.1;
+		timeval += 0.1;
 
 		int w = 100;
 		int h = 100;
@@ -71,14 +74,21 @@ public:
 				// pixel center rather than the pixel edge.  This really only
 				// matters when the pixels are big.
 				affine.fwd(i+0.5, j+0.5, x, y);
-				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
-				double vg = cos(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + timeval);
+				double vg = cos(sqrt((x*x*4.0+y*y)*200.0) + timeval);
 				double vr;
 				if(mouseIn()) {
 					vr = exp(-((x-mx)*(x-mx)+(y-my)*(y-my))*50.0);
 				} else {
 					vr = 0;
 				}
+				// The blitz interface allows pushing of floating-point data
+				// and handles either manual or automatic scaling of data.
+				// Since STL doesn't have a container for 2D arrays, there is
+				// no interface provided for pushing 2D floating-point data and
+				// as a consequence it is necessary to manually convert pixel
+				// data to uint8_t.  Perhaps it would be worth adding support
+				// for boost::multi_array.
 				data_buf(i, j, 0) = uint8_t(vr * 255.0);
 				data_buf(i, j, 1) = uint8_t((vg+1.0)/2.0 * 255.0);
 				data_buf(i, j, 2) = uint8_t((vb+1.0)/2.0 * 255.0);
@@ -88,15 +98,15 @@ public:
 		std::vector<double> xpts;
 		std::vector<double> ypts;
 		if(mouseIn()) {
-			for(int i=0; i<w; i++) {
-				double x, junk;
-				affine.fwd(i+0.5, 0, x, junk);
+			for(double alpha=0; alpha<=1; alpha+=0.01) {
+				double x = getBbox().xmin + 
+					(getBbox().xmax-getBbox().xmin)*alpha;
 				double y = my;
 
-				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+				double v = sin(sqrt((x*x*4.0+y*y)*200.0) + timeval);
 
 				xpts.push_back(x);
-				ypts.push_back(y + vb*0.1);
+				ypts.push_back(y + v*0.1);
 			}
 		}
 		x_trace.setXYData(xpts, ypts);
@@ -104,14 +114,14 @@ public:
 		xpts.clear();
 		ypts.clear();
 		if(mouseIn()) {
-			for(int j=0; j<h; j++) {
-				double junk, y;
-				affine.fwd(0, j+0.5, junk, y);
+			for(double alpha=0; alpha<=1; alpha+=0.01) {
+				double y = getBbox().ymin + 
+					(getBbox().ymax-getBbox().ymin)*alpha;
 				double x = mx;
 
-				double vb = sin(sqrt((x*x*4.0+y*y)*200.0) + alpha);
+				double v = sin(sqrt((x*x*4.0+y*y)*200.0) + timeval);
 
-				xpts.push_back(x + vb*0.1);
+				xpts.push_back(x + v*0.1);
 				ypts.push_back(y);
 			}
 		}
@@ -122,7 +132,7 @@ public:
 		return true;
 	}
 
-	double alpha;
+	double timeval;
 	scopemm::RasterArea raster;
 	scopemm::PlotTrace x_trace;
 	scopemm::PlotTrace y_trace;

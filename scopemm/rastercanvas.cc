@@ -186,9 +186,19 @@ void RasterAreaImpl::draw(
 }
 
 CoordXform RasterAreaImpl::getAffine() {
-	// FIXME - this may not be quite right when swap_axes==true
-	return CoordXform::boxToBox(
-		Bbox(0, data_buf.h, data_buf.w, 0), bbox, swap_axes);
+	if(swap_axes) {
+		// A special case needs to be made since we normally flip
+		// the Y axis of the data array.  With swap_axes, we need
+		// to flip the X axis here so that Y will be flipped after
+		// the axis swap.
+		return CoordXform::boxToBox(
+			Bbox(data_buf.w, 0, 0, data_buf.h), bbox, swap_axes);
+	} else {
+		// Flip Y axis so that data_buf(0,0) corresponds to the top
+		// left corner, as is usually expected with raster data.
+		return CoordXform::boxToBox(
+			Bbox(0, data_buf.h, data_buf.w, 0), bbox, swap_axes);
+	}
 }
 
 RawRGB &RasterArea::getDataBuf() { return impl->data_buf; }
