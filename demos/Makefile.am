@@ -4,7 +4,7 @@ LDADD = $(top_srcdir)/scopemm/.libs/libscopemm-1.0.a
 INCLUDES += $(GTKMM_CFLAGS)
 LDADD += $(GTKMM_LIBS)
 
-bin_PROGRAMS = demo-mouse demo-raster demo-simple demo-stl
+noinst_PROGRAMS = demo-mouse demo-raster demo-simple demo-stl
 # FIXME - detect blitz
 #bin_PROGRAMS += demo-blitz-raster demo-blitz
 
