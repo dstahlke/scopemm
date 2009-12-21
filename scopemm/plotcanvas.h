@@ -33,17 +33,15 @@ namespace scopemm {
 class PlotCanvasImpl;
 typedef boost::shared_ptr<PlotCanvasImpl> PlotCanvasImplPtr;
 
-class PlotCanvas;
-typedef boost::shared_ptr<scopemm::PlotCanvas> PlotCanvasPtr;
-
 class PlotLayerImplBase;
 typedef boost::shared_ptr<PlotLayerImplBase> PlotLayerImplPtr;
 class PlotLayerBase;
 
-// This is noncopyable mainly because I don't understand what goes on when Gtk
-// objects are copied.  Also, copies would have to be inserted into
-// PlotLayerImpl::change_listeners for each layer in order to receive queue_draw
-// events.
+// This is noncopyable because Gtk::Widget is noncopyable.  If there were a way
+// to copy widgets, then this class could be made copyable (using the default
+// copy constructor), although copies would have to be inserted into
+// PlotLayerImpl::change_listeners for each layer in order to receive
+// queue_draw events.
 class PlotCanvas : 
 	public Gtk::DrawingArea,
 	public boost::noncopyable 
