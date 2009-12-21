@@ -16,4 +16,5 @@ libtool
 ltmain.sh
 m4
 missing
+scopemm-1.0.pc
 stamp-h1

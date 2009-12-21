@@ -41,6 +41,7 @@ AC_TYPE_UINT8_T
 AC_CHECK_FUNCS([floor pow sqrt])
 
 AC_CONFIG_FILES([
+	scopemm-1.0.pc
 	Makefile
 	scopemm/Makefile
 	demos/Makefile

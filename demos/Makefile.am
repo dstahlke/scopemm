@@ -5,7 +5,8 @@ INCLUDES += $(GTKMM_CFLAGS)
 LDADD += $(GTKMM_LIBS)
 
 bin_PROGRAMS = demo-mouse demo-raster demo-simple demo-stl
-bin_PROGRAMS += demo-blitz-raster demo-blitz
+# FIXME - detect blitz
+#bin_PROGRAMS += demo-blitz-raster demo-blitz
 
 demo_mouse_SOURCES = demo-mouse.cc
 
@@ -15,6 +16,6 @@ demo_simple_SOURCES = demo-simple.cc
 
 demo_stl_SOURCES = demo-stl.cc
 
-demo_blitz_raster_SOURCES = demo-blitz-raster.cc
+#demo_blitz_raster_SOURCES = demo-blitz-raster.cc
 
-demo_blitz_SOURCES = demo-blitz.cc
+#demo_blitz_SOURCES = demo-blitz.cc
