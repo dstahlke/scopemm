@@ -4,6 +4,9 @@ demo-mouse
 demo-raster
 demo-simple
 demo-stl
-libscopemm.so
-test-affine
+.deps
+.libs
+Makefile.am
 *.o
+*.lo
+*.la
