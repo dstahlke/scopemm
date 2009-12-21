@@ -1,2 +1,2 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = scopemm
+SUBDIRS = scopemm demos

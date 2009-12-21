@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+.deps
+*.o
+demo-blitz
+demo-blitz-raster
+demo-mouse
+demo-raster
+demo-simple
+demo-stl

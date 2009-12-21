@@ -43,5 +43,6 @@ AC_CHECK_FUNCS([floor pow sqrt])
 AC_CONFIG_FILES([
 	Makefile
 	scopemm/Makefile
+	demos/Makefile
 ])
 AC_OUTPUT
