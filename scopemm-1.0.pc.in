@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: scopemm
 Description: Plotting interface for gtkmm.
 Version: @VERSION@
-Libs: -L${libdir} -lscopemm-$(PACKAGE_RELEASE)
-Cflags: -I${libdir}/scopemm-$(PACKAGE_RELEASE)/include
+Libs: -L${libdir} -lscopemm-@PACKAGE_RELEASE@
+Cflags: -I${includedir}/scopemm-@PACKAGE_RELEASE@
 
