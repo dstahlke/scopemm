@@ -4,9 +4,6 @@ LDADD =
 AM_CPPFLAGS += $(GTKMM_CFLAGS)
 LDADD += $(GTKMM_LIBS)
 
-# libtoolize told me to add this
-ACLOCAL_AMFLAGS = -I m4
-
 h_sources = affine.h axeslayer.h bbox.h grid.h layerimpl.h lineplot.h mouseadapter.h plotcanvas.h rastercanvas.h scopemm.h
 cc_sources = affine.cc axeslayer.cc grid.cc lineplot.cc mouseadapter.cc plotcanvas.cc rastercanvas.cc
 

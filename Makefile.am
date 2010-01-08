@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-# libtoolize told me to add this
+# let aclocal know about this include dir
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = scopemm demos
