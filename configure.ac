@@ -43,6 +43,9 @@ PKG_CHECK_EXISTS([blitz], [
 ])
 AM_CONDITIONAL(HAVE_BLITZ, test "z$have_blitz" = "ztrue")
 
+# hopefully this is the right minimum version, I haven't really tested it
+AX_BOOST_BASE([1.34.0], , [AC_MSG_ERROR(boost is required)])
+
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h])
 

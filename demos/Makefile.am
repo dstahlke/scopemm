@@ -4,6 +4,8 @@ LDADD = $(top_srcdir)/scopemm/.libs/libscopemm-1.0.a
 AM_CPPFLAGS += $(GTKMM_CFLAGS)
 LDADD += $(GTKMM_LIBS)
 
+AM_CPPFLAGS += $(BOOST_CPPFLAGS)
+
 noinst_PROGRAMS = demo-mouse demo-raster demo-simple demo-stl
 
 demo_mouse_SOURCES = demo-mouse.cc
