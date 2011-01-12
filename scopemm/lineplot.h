@@ -84,11 +84,11 @@ PlotTrace& PlotTrace::setYData(std::pair<IterY, IterY> yiter, bool steps) {
 	xpts.clear();
 	if(steps) {
 		for(size_t i=0; i<npts; ++i) {
-			xpts.push_back(i);
-			xpts.push_back(i+1);
+			xpts.push_back(double(i));
+			xpts.push_back(double(i+1));
 		}
 	} else {
-		for(size_t i=0; i<npts; ++i) xpts.push_back(i);
+		for(size_t i=0; i<npts; ++i) xpts.push_back(double(i));
 	}
 
 	fireChangeEvent();

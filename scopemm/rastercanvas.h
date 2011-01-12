@@ -167,14 +167,14 @@ RasterArea &RasterArea::setData(
 	RawRGB &data_buf = getDataBuf();
 	data_buf.resize(w, h);
 
-	for(size_t band=0; band<3; band++) {
+	for(int band=0; band<3; band++) {
 		T min = min_vals[band];
 		T max = max_vals[band];
 		for(size_t y=0; y<h; y++) {
 			for(size_t x=0; x<w; x++) {
 				T v = data[band](int(x), int(y));
 				v = std::max(min, std::min(max, v));
-				data_buf(x, y, band) = (min==max) ? 0 : 
+				data_buf(x, y, band) = (min==max) ? uint8_t(0) : 
 					uint8_t(255.0 * (v-min) / (max-min));
 			}
 		}
