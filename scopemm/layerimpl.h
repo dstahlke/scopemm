@@ -33,7 +33,8 @@ namespace scopemm {
 
 class PlotLayerImplBase : private boost::noncopyable {
 public:
-	PlotLayerImplBase() { }
+	PlotLayerImplBase() : zorder(0) { }
+
 	virtual ~PlotLayerImplBase() { }
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>) = 0;
 	virtual bool hasMinMax() const { return false; }

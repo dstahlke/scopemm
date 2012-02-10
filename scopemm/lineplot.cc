@@ -27,7 +27,9 @@ namespace scopemm {
 
 class PlotTraceImpl : public PlotLayerImplBase {
 public:
-	PlotTraceImpl() { }
+	PlotTraceImpl() {
+		for(int i=0; i<3; i++) rgb[i] = 0;
+	}
 
 	virtual void draw(PlotCanvas *parent, Cairo::RefPtr<Cairo::Context>);
 	virtual bool hasMinMax() const { return !xpts.empty(); }

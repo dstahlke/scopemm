@@ -50,6 +50,7 @@ public:
 PlotCanvasImpl::PlotCanvasImpl() : 
 	x_auto(true), y_auto(true),
 	border_x(0.02), border_y(0.02),
+	screen_w(0), screen_h(0),
 	bbox(0, 0, 1, 1), swap_axes(false)
 { }
 
