@@ -21,7 +21,7 @@ libscopemm_1_0_la_SOURCES= $(h_sources) $(cc_sources)
 libscopemm_1_0_la_LDFLAGS= -version-info $(LIBRARY_VERSION) -release $(PACKAGE_RELEASE)
 
 cppcheck:
-	cppcheck $(DEFAULT_INCLUDES) $(INCLUDES) --template gcc --enable=all -q -i attic/ .
+	cppcheck $(DEFAULT_INCLUDES) $(INCLUDES) --template gcc --enable=all -q -i attic/ *.h .
 
 lint:
 	cpplint.py --filter=-whitespace,-readability/streams,-build/header_guard,-build/include_order,-readability/multiline_string \
